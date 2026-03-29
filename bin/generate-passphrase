@@ -29,9 +29,13 @@ readonly E_MISSING_WORD_LIST=3
 #   Writes usage text to stderr
 function usage() {
   cat >&2 <<'USAGE_TEXT'
-Usage: generate-passphrase [minimum-entropy]
+Usage: generate-passphrase [options] [minimum-entropy]
 
 Generate a passphrase and validate its strength using multiple tools.
+
+Options:
+  -c, --copy       Copy the passphrase to the clipboard via pbcopy
+  -h, --help       Show this help message
 
 Arguments:
   minimum-entropy  Minimum entropy in bits (default: 80)
@@ -158,10 +162,25 @@ function check_keepassxc() {
 }
 
 function main() {
-  if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-    usage
-    exit "${E_SUCCESS}"
-  fi
+  local copy_to_clipboard=false
+
+  while [[ "${1:-}" == -* ]]; do
+    case "${1}" in
+      -c | --copy)
+        copy_to_clipboard=true
+        shift
+        ;;
+      -h | --help)
+        usage
+        exit "${E_SUCCESS}"
+        ;;
+      *)
+        echo "Unknown option: ${1}" >&2
+        usage
+        exit 1
+        ;;
+    esac
+  done
 
   local -i minimum_entropy="${1:-${DEFAULT_MINIMUM_ENTROPY}}"
 
@@ -170,6 +189,7 @@ function main() {
   require_command "uv" "brew install uv"
   require_command "curl"
   require_command "shasum"
+  [[ "${copy_to_clipboard}" == true ]] && require_command "pbcopy"
 
   if [[ ! -f "${WORD_LIST}" ]]; then
     echo "Error: word list not found at ${WORD_LIST}" >&2
@@ -206,7 +226,12 @@ function main() {
 
   echo ""
   echo "=== Passphrase ==="
-  echo "${passphrase}"
+  if [[ "${copy_to_clipboard}" == true ]]; then
+    printf '%s' "${passphrase}" | pbcopy
+    echo "(copied to clipboard)"
+  else
+    echo "${passphrase}"
+  fi
 }
 
 main "${@}"
