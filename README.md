@@ -1,13 +1,17 @@
 # Passphrase Arcana
 
 A passphrase word list built from the vocabularies of authors known for
-distinctive, unusual language. Standard passphrase lists (EFF, diceware)
+distinctive, unusual language. Standard passphrase lists
+([EFF][eff-dice], [diceware][diceware],
+[Orchard Street][orchard-street])
 prioritize common, everyday words. This list takes the opposite approach:
 words like "sheepfold", "hexapods", and "acridity" are more memorable
 precisely because they stand out.
 
 The list is designed for use with [phraze](https://github.com/sts10/phraze)
-and other passphrase generators.
+and other passphrase generators. For lists built from common words instead,
+see the [Orchard Street wordlists][orchard-street] (by the same author
+as phraze), or the [EFF dice lists][eff-dice].
 
 ## The word list
 
@@ -54,29 +58,106 @@ Analyzed with [wla](https://github.com/sts10/wla):
 A 4-word passphrase provides ~60 bits of entropy. A 6-word passphrase
 provides ~90 bits.
 
+## Typing ease
+
+Every word is scored for QWERTY touch-typing effort using a
+[Carpalx][carpalx]-inspired model (see
+[Step 4](#step-4-score-typing-difficulty)). Words above the configured
+threshold are filtered out. The scores for the 31,210 words in the final
+list:
+
+| Statistic       | Effort per character |
+| --------------- | -------------------- |
+| Minimum         | 1.25                 |
+| 10th percentile | 1.63                 |
+| 25th percentile | 1.75                 |
+| Median          | 1.94                 |
+| Mean            | 1.97                 |
+| 75th percentile | 2.19                 |
+| 90th percentile | 2.36                 |
+| Maximum         | 2.50 (threshold)     |
+
+Lower is easier. The scale runs from ~1.0 (home-row keys with hand
+alternation) to 2.5 (the configured cutoff). About 44% of words score
+below 1.8 (easy range), and 64% below 2.0.
+
+Easiest words tend to use home-row and index-finger keys with hand
+alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29).
+Hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger
+bigrams, or pinky stretches: "thwarted", "wharves", "withy".
+
+## Entropy and passphrase length
+
+### How passphrase entropy works
+
+Entropy measures how many guesses an attacker needs to crack a passphrase.
+With a known word list, the calculation is:
+
+```text
+entropy = num_words x log2(list_size)
+```
+
+For this list (31,210 words): **14.93 bits per word**.
+
+| Words | Entropy   | Use case                                    |
+| ----- | --------- | ------------------------------------------- |
+| 4     | ~60 bits  | Low-value accounts                          |
+| 5     | ~75 bits  | Most online accounts                        |
+| 6     | ~90 bits  | Important accounts, the `arcana` default    |
+| 7     | ~105 bits | High-security accounts, encryption keys     |
+| 8     | ~119 bits | Exceeds NIST SP 800-63B highest level (112) |
+
+The `arcana` script defaults to 80 bits minimum entropy, which requires
+6 words from this list (6 x 14.93 = 89.6 bits).
+
+### Why phraze and keepassxc-cli report different entropy
+
+Both tools are correct, but they model different attacks:
+
+**phraze** uses word-level entropy: `log2(list_size) x num_words`. This
+assumes the attacker knows you are using this specific word list and is
+guessing word by word. This is the conservative estimate and the right
+threat model for passphrases ([Kerckhoffs's principle][kerckhoffs]:
+assume the attacker knows everything about your system except the
+passphrase itself).
+
+**keepassxc-cli** uses character-level analysis. It examines the
+passphrase as a string of characters, recognizes patterns (dictionary
+words, sequences, repeated characters), and estimates entropy from that.
+It does not know which word list generated the passphrase, so it applies
+a general-purpose model. This often produces a higher number because
+character-level brute force against a long passphrase is harder than
+word-level guessing against a known list.
+
+**Which to trust:** Use phraze's estimate (the word-level one). It
+represents the realistic attack: an adversary who knows you use
+passphrase-arcana.txt and is enumerating word combinations. The
+keepassxc-cli number is useful as a sanity check, but it overstates
+security against a targeted attack.
+
 ## Sources
 
 Words are drawn from authors with rich, unusual vocabularies. Most are
-sourced from Project Gutenberg (public domain texts). Two use concordances
-(word frequency data extracted from copyrighted works, which is
-non-copyrightable factual data):
+sourced from [Project Gutenberg][gutenberg] (public domain texts). Two
+use concordances (word frequency data extracted from copyrighted works,
+which is non-copyrightable factual data):
 
-| Author              | Works | Source      | Vocabulary              |
-| ------------------- | ----- | ----------- | ----------------------- |
-| Herman Melville     | 14    | Gutenberg   | Nautical, philosophical |
-| H.P. Lovecraft      | 18    | Gutenberg   | Cosmic, eldritch        |
-| Joseph Conrad       | 14    | Gutenberg   | Maritime, colonial      |
-| James Joyce         | 5     | Gutenberg   | Experimental            |
-| Nathaniel Hawthorne | 8     | Gutenberg   | Archaic, allegorical    |
-| Mark Twain          | 12    | Gutenberg   | Vernacular, satirical   |
-| Lewis Carroll       | 7     | Gutenberg   | Nonsense, mathematical  |
-| Oscar Wilde         | 12    | Gutenberg   | Aesthetic, theatrical   |
-| William Shakespeare | 1     | Gutenberg   | Early Modern English    |
-| Cormac McCarthy     | 16    | Concordance | Archaic, Southwestern   |
-| Vladimir Nabokov    | 11    | Concordance | Ornate, precise         |
+| Author                                | Works | Source            | Vocabulary              |
+| ------------------------------------- | ----- | ----------------- | ----------------------- |
+| [Herman Melville][pg-melville]        | 14    | Project Gutenberg | Nautical, philosophical |
+| [H.P. Lovecraft][pg-lovecraft]        | 18    | Project Gutenberg | Cosmic, eldritch        |
+| [Joseph Conrad][pg-conrad]            | 14    | Project Gutenberg | Maritime, colonial      |
+| [James Joyce][pg-joyce]               | 5     | Project Gutenberg | Experimental            |
+| [Nathaniel Hawthorne][pg-hawthorne]   | 8     | Project Gutenberg | Archaic, allegorical    |
+| [Mark Twain][pg-twain]                | 12    | Project Gutenberg | Vernacular, satirical   |
+| [Lewis Carroll][pg-carroll]           | 7     | Project Gutenberg | Nonsense, mathematical  |
+| [Oscar Wilde][pg-wilde]               | 12    | Project Gutenberg | Aesthetic, theatrical   |
+| [William Shakespeare][pg-shakespeare] | 1     | Project Gutenberg | Early Modern English    |
+| Cormac McCarthy                       | 16    | Concordance       | Archaic, Southwestern   |
+| Vladimir Nabokov                      | 11    | Concordance       | Ornate, precise         |
 
-The Gutenberg texts are in `data/raw/en/`. The McCarthy concordance is
-parsed from John Sepich's
+The Project Gutenberg texts are in `data/raw/en/`. The McCarthy
+concordance is parsed from John Sepich's
 [academic word list](http://johnsepich.com/). The Nabokov concordance is
 built at fetch time from
 [bukvik-workshop-corpora](https://github.com/Cha-OS/bukvik-workshop-corpora)
@@ -95,7 +176,7 @@ fetch_texts + fetch_external ->
 ### Step 1: Fetch texts
 
 `fetch_texts.py` downloads texts from Project Gutenberg, strips headers
-and footers. `fetch_external.py` handles non-Gutenberg sources: it parses
+and footers. `fetch_external.py` handles non-Project Gutenberg sources: it parses
 the McCarthy concordance PDF and builds the Nabokov concordance from
 streamed GitHub texts. Ebook IDs and external source URLs are configured
 in `config.toml`. Rate-limited and idempotent.
@@ -261,10 +342,59 @@ All parameters are in `config.toml`:
 - `general.min_word_length` / `max_word_length`: character length bounds
   (default 4-9)
 - `typing.max_effort_per_char`: typing difficulty threshold (default 2.5)
-- `languages.en.sources`: mapping of author name to Gutenberg ebook IDs
-- `languages.en.external`: non-Gutenberg sources (concordance PDFs, GitHub
+- `languages.en.sources`: mapping of author name to Project Gutenberg ebook IDs
+- `languages.en.external`: non-Project Gutenberg sources (concordance PDFs, GitHub
   corpora)
+
+## Other wordlists
+
+This list prioritizes distinctive vocabulary over everyday words. If you
+want common, easy-to-spell words instead, these are good alternatives:
+
+| List                                   |  Words | Bits/word | Description                                     |
+| -------------------------------------- | -----: | --------: | ----------------------------------------------- |
+| **Passphrase Arcana**                  | 31,210 |     14.93 | Literary vocabulary, distinctive words          |
+| [Orchard Street Long][os-long]         | 17,576 |     14.10 | Common English from Wikipedia and Google Books  |
+| [Orchard Street Medium][os-medium]     |  8,192 |     13.00 | Common English, power-of-2 optimized for phraze |
+| [EFF Long][eff-long]                   |  7,776 |     12.93 | Common English, designed for easy spelling      |
+| [Orchard Street Diceware][os-diceware] |  7,776 |     12.93 | Common English, diceware-compatible (6^5 words) |
+| [Orchard Street QWERTY][os-qwerty]     |  1,296 |     10.34 | Optimized for QWERTY typing ease                |
+| [Orchard Street Alpha][os-alpha]       |  1,296 |     10.34 | Alphabetically distinct, for reading aloud      |
+| [EFF Short 1][eff-short]               |  1,296 |     10.34 | Short common words                              |
+
+Larger lists need fewer words per passphrase to reach the same entropy.
+A 6-word passphrase from the EFF Long list (~78 bits) is roughly
+equivalent to a 5-word passphrase from this list (~75 bits).
+
+The [Orchard Street wordlists][orchard-street] are maintained by
+[Sam Schlinkert](https://github.com/sts10), who also created
+[phraze](https://github.com/sts10/phraze).
 
 ## License
 
 MIT
+
+<!-- Reference links -->
+
+[eff-dice]: https://www.eff.org/dice
+[eff-long]: https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
+[eff-short]: https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
+[diceware]: https://theworld.com/~reinhold/diceware.html
+[orchard-street]: https://github.com/sts10/orchard-street-wordlists
+[os-long]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-long.txt
+[os-medium]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-medium.txt
+[os-diceware]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-diceware.txt
+[os-qwerty]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-qwerty.txt
+[os-alpha]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-alpha.txt
+[gutenberg]: https://www.gutenberg.org/
+[pg-melville]: https://www.gutenberg.org/ebooks/author/9
+[pg-lovecraft]: https://www.gutenberg.org/ebooks/author/34724
+[pg-conrad]: https://www.gutenberg.org/ebooks/author/125
+[pg-joyce]: https://www.gutenberg.org/ebooks/author/1039
+[pg-hawthorne]: https://www.gutenberg.org/ebooks/author/28
+[pg-twain]: https://www.gutenberg.org/ebooks/author/53
+[pg-carroll]: https://www.gutenberg.org/ebooks/author/7
+[pg-wilde]: https://www.gutenberg.org/ebooks/author/111
+[pg-shakespeare]: https://www.gutenberg.org/ebooks/author/65
+[carpalx]: https://mk.bcgsc.ca/carpalx/?typing_effort
+[kerckhoffs]: https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle
