@@ -2,14 +2,17 @@
 
 Handles:
 - McCarthy concordance PDF (academic word list from johnsepich.com)
-- Nabokov texts from GitHub (bukvik-workshop-corpora, for local processing only)
+- Nabokov concordance built from bukvik-workshop-corpora GitHub texts
+  (full texts are downloaded temporarily, only the concordance is kept)
 """
 
 from __future__ import annotations
 
 import re
 import sys
+import tempfile
 import tomllib
+from collections import Counter
 from pathlib import Path
 
 import httpx
@@ -70,28 +73,45 @@ def fetch_mccarthy_concordance(url: str, dest: Path) -> None:
     print(f"  [McCarthy] {unique} unique words extracted from concordance")
 
 
-def fetch_nabokov_texts(repo: str, files: list[str], dest_dir: Path) -> None:
-    """Download Nabokov text files from the bukvik-workshop-corpora GitHub repo."""
-    dest_dir.mkdir(parents=True, exist_ok=True)
+def build_nabokov_concordance(repo: str, files: list[str], dest: Path) -> None:
+    """Download Nabokov texts temporarily, build a concordance, discard the texts.
+
+    The full copyrighted texts are never stored on disk permanently. Only the
+    resulting word frequency concordance is saved, which is non-copyrightable
+    factual data (which words appear and how often).
+    """
+    if dest.exists() and dest.stat().st_size > 0:
+        print("  [Nabokov] concordance (cached)")
+        return
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    word_counts: Counter[str] = Counter()
+    fetched = 0
 
     with httpx.Client(follow_redirects=True, timeout=30.0) as client:
         for filename in files:
-            # Derive a clean dest filename
-            slug = filename.split(" - ")[0].lower().replace("-", "_")
-            dest = dest_dir / f"nabokov_{slug}.txt"
-
-            if dest.exists() and dest.stat().st_size > 0:
-                print(f"  [Nabokov] {slug} (cached)")
-                continue
-
+            slug = filename.split(" - ")[0]
             url = GITHUB_RAW.format(repo=repo, file=filename.replace(" ", "%20"))
             try:
                 resp = client.get(url)
                 resp.raise_for_status()
-                dest.write_text(resp.text, encoding="utf-8")
-                print(f"  [Nabokov] {slug} -> {dest.name}")
+                # Extract words directly from response text, never saving the full text
+                text_lower = resp.text.lower()
+                words = re.findall(r"[a-z]+", text_lower)
+                word_counts.update(words)
+                fetched += 1
+                print(f"  [Nabokov] {slug} processed")
             except Exception as exc:
                 print(f"  [Nabokov] {slug} ERROR: {exc}", file=sys.stderr)
+
+    # Write concordance: repeat each word by frequency so extract_words
+    # sees realistic counts (same format as McCarthy concordance)
+    all_words: list[str] = []
+    for word, count in word_counts.items():
+        all_words.extend([word] * count)
+
+    dest.write_text(" ".join(all_words), encoding="utf-8")
+    print(f"  [Nabokov] {len(word_counts)} unique words from {fetched} texts")
 
 
 def main() -> None:
@@ -104,7 +124,7 @@ def main() -> None:
 
     if "nabokov" in external:
         cfg = external["nabokov"]
-        fetch_nabokov_texts(cfg["repo"], cfg["files"], DATA_RAW / "en")
+        build_nabokov_concordance(cfg["repo"], cfg["files"], DATA_RAW / "en" / "nabokov_concordance.txt")
 
 
 if __name__ == "__main__":

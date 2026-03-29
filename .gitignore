@@ -6,6 +6,3 @@ dist/
 build/
 .ruff_cache/
 .pytest_cache/
-
-# Copyrighted texts fetched for processing (not committed)
-data/raw/en/nabokov_*.txt
