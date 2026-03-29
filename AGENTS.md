@@ -12,8 +12,9 @@ passphrase-arcana/
 ├── src/                    # Python pipeline scripts
 │   ├── fetch_texts.py      # Download texts from Project Gutenberg
 │   ├── fetch_external.py   # Parse PDFs and fetch concordances
-│   ├── extract_words.py    # Tokenize and filter words by length
-│   ├── validate_words.py   # Multi-tier dictionary validation
+│   ├── extract_words.py         # Tokenize and filter words by length
+│   ├── filter_proper_nouns.py   # Remove likely proper nouns via capitalization
+│   ├── validate_words.py        # Multi-tier dictionary validation
 │   ├── score_typing.py     # QWERTY typing difficulty scoring
 │   ├── build_list.py       # Final assembly and blocklist filtering
 │   └── typing_model.py     # Carpalx-inspired typing effort model

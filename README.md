@@ -27,7 +27,7 @@ as phraze), or the [EFF dice lists][eff-dice].
 
 ## The word list
 
-**`passphrase-arcana.txt`** contains 31,210 lowercase ASCII words, one per
+**`passphrase-arcana.txt`** contains 27,445 lowercase ASCII words, one per
 line, ready for use with phraze or any passphrase generator:
 
 ```bash
@@ -126,7 +126,7 @@ Analyzed with [wla](https://github.com/sts10/wla):
 
 | Attribute                 | Value           |
 | ------------------------- | --------------- |
-| Unique words              | 31,210          |
+| Unique words              | 27,445          |
 | Free of exact duplicates  | yes             |
 | Free of fuzzy duplicates  | yes             |
 | No non-ASCII characters   | yes             |
@@ -137,9 +137,9 @@ Analyzed with [wla](https://github.com/sts10/wla):
 | Above brute force line    | yes             |
 | Shortest word             | 4 characters    |
 | Longest word              | 9 characters    |
-| Mean word length          | 7.36 characters |
-| Entropy per word          | 14.930 bits     |
-| Efficiency per character  | 2.028 bits      |
+| Mean word length          | 7.40 characters |
+| Entropy per word          | 14.744 bits     |
+| Efficiency per character  | 1.993 bits      |
 | Shortest edit distance    | 1               |
 | Mean edit distance        | 7.018           |
 | Unique character prefix   | 9               |
@@ -152,8 +152,8 @@ provides ~90 bits.
 
 Every word is scored for QWERTY touch-typing effort using a
 [Carpalx][carpalx]-inspired model (see
-[Step 4](#step-4-score-typing-difficulty)). Words above the configured
-threshold are filtered out. The scores for the 31,210 words in the final
+[Step 5](#step-5-score-typing-difficulty)). Words above the configured
+threshold are filtered out. The scores for the 27,445 words in the final
 list:
 
 | Statistic       | Effort per character |
@@ -168,8 +168,8 @@ list:
 | Maximum         | 2.50 (threshold)     |
 
 Lower is easier. The scale runs from ~1.0 (home-row keys with hand
-alternation) to 2.5 (the configured cutoff). About 44% of words score
-below 1.8 (easy range), and 64% below 2.0.
+alternation) to 2.5 (the configured cutoff). About 33% of words score
+below 1.8 (easy range), and 56% below 2.0.
 
 Easiest words tend to use home-row and index-finger keys with hand
 alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29).
@@ -187,18 +187,18 @@ With a known word list, the calculation is:
 entropy = num_words x log2(list_size)
 ```
 
-For this list (31,210 words): **14.93 bits per word**.
+For this list (27,445 words): **14.74 bits per word**.
 
 | Words | Entropy   | Use case                                    |
 | ----- | --------- | ------------------------------------------- |
-| 4     | ~60 bits  | Low-value accounts                          |
-| 5     | ~75 bits  | Most online accounts                        |
-| 6     | ~90 bits  | Important accounts, the `arcana` default    |
-| 7     | ~105 bits | High-security accounts, encryption keys     |
-| 8     | ~119 bits | Exceeds NIST SP 800-63B highest level (112) |
+| 4     | ~59 bits  | Low-value accounts                          |
+| 5     | ~74 bits  | Most online accounts                        |
+| 6     | ~88 bits  | Important accounts, the `arcana` default    |
+| 7     | ~103 bits | High-security accounts, encryption keys     |
+| 8     | ~118 bits | Exceeds NIST SP 800-63B highest level (112) |
 
 The `arcana` script defaults to 80 bits minimum entropy, which requires
-6 words from this list (6 x 14.93 = 89.6 bits).
+6 words from this list (6 x 14.74 = 88.4 bits).
 
 ### Kerckhoffs's principle
 
@@ -313,7 +313,7 @@ Makefile and run with `uv`:
 
 ```text
 fetch_texts + fetch_external ->
-  extract_words -> validate_words -> score_typing -> build_list
+  extract_words -> filter_proper_nouns -> validate_words -> score_typing -> build_list
 ```
 
 ### Step 1: Fetch texts
@@ -335,7 +335,19 @@ Lowercases text, tokenizes with a regex (`[a-z]+`), and filters by length
 (4 to 9 characters). Tracks word frequency and the number of distinct source
 authors per word.
 
-### Step 3: Validate words
+### Step 3: Filter proper nouns
+
+Best-effort removal of likely proper nouns. Scans the raw text files
+(which preserve original capitalization) for words that never appear in
+lowercase form. Words like "whale" appear lowercase thousands of times
+and are kept; words like "Ahab" that only appear capitalized are removed.
+
+Concordance-sourced words (McCarthy, Nabokov) are already entirely
+lowercase in the raw files, so they pass the filter automatically. The
+filter writes removed words to `data/words/{lang}/proper_nouns_removed.txt`
+for manual inspection.
+
+### Step 4: Validate words
 
 Multi-tier dictionary validation. A word passes if it clears any tier:
 
@@ -345,7 +357,7 @@ Multi-tier dictionary validation. A word passes if it clears any tier:
    archaic and specialized vocabulary that mainstream dictionaries miss,
    which is the point of this list)
 
-### Step 4: Score typing difficulty
+### Step 5: Score typing difficulty
 
 A simplified [Carpalx](https://mk.bcgsc.ca/carpalx/?typing_effort)-inspired
 model scores each word for QWERTY touch-typing effort. The model combines:
@@ -360,7 +372,7 @@ The score is normalized per character. Words above the configured threshold
 [Typability Index](https://pmc.ncbi.nlm.nih.gov/articles/PMC12901113/)
 regression trained on 136 million keystrokes.
 
-### Step 5: Build list
+### Step 6: Build list
 
 1. Filters out offensive words using `blocklist.txt`
 2. Removes prefix words (shorter word dropped when it prefixes a longer one)
@@ -378,7 +390,7 @@ lists:
   (MIT)
 - [dsojevic/profanity-list](https://github.com/dsojevic/profanity-list) (MIT)
 
-1,429 terms total. 174 matched and were removed from the word list.
+1,429 terms total. 167 matched and were removed from the word list.
 
 ## Running the pipeline
 
@@ -392,9 +404,10 @@ make all
 Individual steps:
 
 ```bash
-make fetch      # download texts (slow first run, cached after)
-make extract    # tokenize and filter
-make validate   # dictionary verification
+make fetch         # download texts (slow first run, cached after)
+make extract       # tokenize and filter
+make filter-nouns  # remove likely proper nouns
+make validate      # dictionary verification
 make score      # typing difficulty
 make build      # final assembly
 ```
@@ -423,7 +436,7 @@ want common, easy-to-spell words instead, these are good alternatives:
 
 | List                                   |  Words | Bits/word | Description                                     |
 | -------------------------------------- | -----: | --------: | ----------------------------------------------- |
-| **Passphrase Arcana**                  | 31,210 |     14.93 | Literary vocabulary, distinctive words          |
+| **Passphrase Arcana**                  | 27,445 |     14.74 | Literary vocabulary, distinctive words          |
 | [Orchard Street Long][os-long]         | 17,576 |     14.10 | Common English from Wikipedia and Google Books  |
 | [Orchard Street Medium][os-medium]     |  8,192 |     13.00 | Common English, power-of-2 optimized for phraze |
 | [EFF Long][eff-long]                   |  7,776 |     12.93 | Common English, designed for easy spelling      |
@@ -434,7 +447,7 @@ want common, easy-to-spell words instead, these are good alternatives:
 
 Larger lists need fewer words per passphrase to reach the same entropy.
 A 6-word passphrase from the EFF Long list (~78 bits) is roughly
-equivalent to a 5-word passphrase from this list (~75 bits).
+equivalent to a 5-word passphrase from this list (~74 bits).
 
 The [Orchard Street wordlists][orchard-street] are maintained by
 [Sam Schlinkert](https://github.com/sts10), who also created
