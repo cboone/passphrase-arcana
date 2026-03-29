@@ -1,0 +1,43 @@
+# passphrase-arcana
+
+## Overview
+
+A passphrase word list built from the vocabularies of authors known for distinctive, unusual language, plus a CLI tool for generating passphrases from it.
+
+## Structure
+
+```text
+passphrase-arcana/
+├── bin/arcana              # Bash CLI for generating passphrases (wraps phraze)
+├── src/                    # Python pipeline scripts
+│   ├── fetch_texts.py      # Download texts from Project Gutenberg
+│   ├── fetch_external.py   # Parse PDFs and fetch concordances
+│   ├── extract_words.py    # Tokenize and filter words by length
+│   ├── validate_words.py   # Multi-tier dictionary validation
+│   ├── score_typing.py     # QWERTY typing difficulty scoring
+│   ├── build_list.py       # Final assembly and blocklist filtering
+│   └── typing_model.py     # Carpalx-inspired typing effort model
+├── tests/                  # pytest test suite
+├── data/                   # Pipeline input/output data
+├── config.toml             # Pipeline configuration
+├── pyproject.toml          # Python project metadata and dependencies
+├── Makefile                # Build orchestration
+└── passphrase-arcana.txt   # Generated word list
+```
+
+## Development
+
+```bash
+make            # Run the full pipeline (fetch, extract, validate, score, build)
+make test       # Run pytest
+make install    # Symlink bin/arcana to ~/.local/bin/
+make clean      # Remove intermediate pipeline outputs
+```
+
+Dependencies are managed with `uv`. Linting uses `ruff` (configured in `pyproject.toml`).
+
+## Conventions
+
+- Conventional commits with scopes: `feat(wordlist):`, `fix(cli):`, `refactor(pipeline):`
+- Single version number for the whole repo (word list + CLI ship together)
+- Python formatting and linting via ruff

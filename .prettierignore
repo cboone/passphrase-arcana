@@ -1,0 +1,12 @@
+# Python
+.venv/
+__pycache__/
+*.egg-info/
+
+# Build output
+dist/
+build/
+
+# Generated files
+passphrase-arcana.txt
+uv.lock

@@ -1,0 +1,9 @@
+[extend]
+# Use the default gitleaks rules as a base.
+useDefault = true
+
+[allowlist]
+# Paths to exclude from scanning.
+paths = [
+  '''uv\.lock''',
+]

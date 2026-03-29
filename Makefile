@@ -1,6 +1,6 @@
 PREFIX ?= $(HOME)/.local
 
-.PHONY: all clean fetch extract validate score build install uninstall
+.PHONY: all clean fetch extract validate score build install uninstall test lint fmt format format-check lint-md help
 
 all: build
 
@@ -34,3 +34,21 @@ clean:
 
 test:
 	uv run pytest tests/ -v
+
+lint:
+	uvx ruff check .
+
+fmt:
+	uvx ruff format --check .
+
+format:
+	npx prettier --write .
+
+format-check:
+	npx prettier --check .
+
+lint-md:
+	npx markdownlint-cli2 "**/*.md"
+
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
