@@ -1,4 +1,4 @@
-"""Step 5: Build the final word list: deduplicate, remove prefix words, output."""
+"""Step 5: Build the final word list: deduplicate, remove prefix and suffix words, output."""
 
 from __future__ import annotations
 
@@ -47,6 +47,29 @@ def remove_prefix_words(words: list[str]) -> list[str]:
     return sorted(word_set - prefixes_to_remove)
 
 
+def remove_suffix_words(words: list[str]) -> list[str]:
+    """Remove words that are suffixes of other words in the list.
+
+    When a conflict is found, the shorter (suffix) word is removed,
+    keeping the longer, more distinctive word.
+    """
+    word_set = set(words)
+    suffixes_to_remove: set[str] = set()
+
+    sorted_by_len = sorted(word_set, key=len)
+
+    for i, candidate in enumerate(sorted_by_len):
+        if candidate in suffixes_to_remove:
+            continue
+        for j in range(i + 1, len(sorted_by_len)):
+            longer = sorted_by_len[j]
+            if longer.endswith(candidate):
+                suffixes_to_remove.add(candidate)
+                break
+
+    return sorted(word_set - suffixes_to_remove)
+
+
 def main() -> None:
     config = tomllib.loads(CONFIG.read_text())
     languages = config["languages"]
@@ -62,11 +85,13 @@ def main() -> None:
         lang_name = languages[lang]["name"]
         print(f"[{lang_name}] {len(new_words)} unique words added ({len(lang_words)} before dedup)")
 
-    # Remove prefix words
+    # Remove prefix and suffix words
     word_list = sorted(all_words)
-    pre_prefix_count = len(word_list)
+    initial_count = len(word_list)
     word_list = remove_prefix_words(word_list)
-    prefix_removed = pre_prefix_count - len(word_list)
+    prefix_removed = initial_count - len(word_list)
+    word_list = remove_suffix_words(word_list)
+    suffix_removed = initial_count - prefix_removed - len(word_list)
 
     # Write output
     OUTPUT.mkdir(parents=True, exist_ok=True)
@@ -84,6 +109,7 @@ def main() -> None:
     print(f"  Entropy per word: {entropy:.2f} bits")
     print(f"  Mean word length: {mean_len:.1f} characters")
     print(f"  Prefix words removed: {prefix_removed}")
+    print(f"  Suffix words removed: {suffix_removed}")
 
 
 if __name__ == "__main__":
