@@ -1,0 +1,212 @@
+#!/usr/bin/env bash
+# generate-passphrase -- Generate a passphrase and validate its strength
+# Author: Christopher Boone
+# Date: 2026-03-29
+
+# Security model:
+#   - Passphrase lives only in a shell variable (not exported, not in env)
+#   - printf is a shell builtin: piping it never exposes the value in ps/proc
+#   - Pwned Passwords API uses k-anonymity: only the first 5 chars of the
+#     SHA-1 hash leave the machine
+#   - No temp files are created
+#   - The passphrase is displayed once at the end for the user to copy
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+readonly PROJECT_DIR
+readonly WORD_LIST="${PROJECT_DIR}/output/word-list.txt"
+readonly DEFAULT_MINIMUM_ENTROPY=80
+
+readonly E_SUCCESS=0
+readonly E_MISSING_TOOL=2
+readonly E_MISSING_WORD_LIST=3
+
+# Print usage information.
+# Outputs:
+#   Writes usage text to stderr
+function usage() {
+  cat >&2 <<'USAGE_TEXT'
+Usage: generate-passphrase [minimum-entropy]
+
+Generate a passphrase and validate its strength using multiple tools.
+
+Arguments:
+  minimum-entropy  Minimum entropy in bits (default: 80)
+
+Tools used:
+  phraze           Generate the passphrase
+  keepassxc-cli    Independent entropy estimate
+  zxcvbn           Password strength scoring (via Python, stdin)
+  Pwned Passwords  Breach database check (k-anonymity, safe)
+USAGE_TEXT
+}
+
+# Check that a required command is available.
+# Arguments:
+#   $1 - Command name
+#   $2 - Install hint (optional)
+# Returns:
+#   0 if found, exits with E_MISSING_TOOL if not
+function require_command() {
+  local cmd="${1}"
+  local hint="${2:-}"
+
+  if ! command -v "${cmd}" > /dev/null 2>&1; then
+    echo "Error: ${cmd} is not installed." >&2
+    [[ -n "${hint}" ]] && echo "  Install: ${hint}" >&2
+    exit "${E_MISSING_TOOL}"
+  fi
+}
+
+# Generate a passphrase using phraze.
+# Arguments:
+#   $1 - Minimum entropy in bits
+# Outputs:
+#   Writes the phraze verbose output (entropy line + passphrase) to stdout
+function generate_passphrase() {
+  local -i minimum_entropy="${1}"
+
+  phraze \
+    --verbose \
+    --sep " " \
+    --custom-list "${WORD_LIST}" \
+    --minimum-entropy "${minimum_entropy}"
+}
+
+# Check the passphrase against the Pwned Passwords API using k-anonymity.
+# Only the first 5 characters of the SHA-1 hash are sent over the network.
+# Arguments:
+#   $1 - Passphrase to check
+# Outputs:
+#   Writes result to stdout
+# Returns:
+#   0 on success (whether or not the passphrase was found)
+function check_pwned_passwords() {
+  local passphrase="${1}"
+  local sha1
+  sha1="$(printf '%s' "${passphrase}" | shasum -a 1 | awk '{print toupper($1)}')"
+
+  local prefix="${sha1:0:5}"
+  local suffix="${sha1:5}"
+
+  local response
+  response="$(curl --silent --fail "https://api.pwnedpasswords.com/range/${prefix}")"
+
+  if printf '%s' "${response}" | grep -qi "^${suffix}:"; then
+    local count
+    count="$(printf '%s' "${response}" | grep -i "^${suffix}:" | cut -d: -f2 | tr -d '\r')"
+    echo "FOUND in ${count} breaches"
+    return 0
+  fi
+
+  echo "Not found in any known breaches"
+}
+
+# Run zxcvbn password strength analysis via Python (reads from stdin).
+# Arguments:
+#   $1 - Passphrase to check
+# Outputs:
+#   Writes zxcvbn results to stdout
+function check_zxcvbn() {
+  local passphrase="${1}"
+
+  printf '%s' "${passphrase}" | uv run python3 -c "
+import sys
+from zxcvbn import zxcvbn
+r = zxcvbn(sys.stdin.read())
+times = r['crack_times_display']
+secs = r['crack_times_seconds']
+print(f\"Score: {r['score']}/4\")
+print(f\"Guesses: {r['guesses']:.2e} (log10: {r['guesses_log10']:.1f})\")
+print(f\"Online (throttled):  {times['online_throttling_100_per_hour']:>10s} ({float(secs['online_throttling_100_per_hour']):.2e}s)\")
+print(f\"Online (unthrottled): {times['online_no_throttling_10_per_second']:>9s} ({float(secs['online_no_throttling_10_per_second']):.2e}s)\")
+print(f\"Offline (slow hash): {times['offline_slow_hashing_1e4_per_second']:>10s} ({float(secs['offline_slow_hashing_1e4_per_second']):.2e}s)\")
+print(f\"Offline (fast hash): {times['offline_fast_hashing_1e10_per_second']:>10s} ({float(secs['offline_fast_hashing_1e10_per_second']):.2e}s)\")
+if r['feedback']['warning']:
+    print(f\"Warning: {r['feedback']['warning']}\")
+for s in r['feedback']['suggestions']:
+    print(f\"Suggestion: {s}\")
+print()
+print('Sequence:')
+for s in r['sequence']:
+    pattern = s['pattern']
+    token = s['token']
+    log10 = s['guesses_log10']
+    detail = ''
+    if pattern == 'dictionary':
+        detail = f\" ({s['dictionary_name']}: {s['matched_word']}#{s['rank']})\"
+        if s.get('l33t'):
+            detail += ' [l33t]'
+        if s.get('reversed'):
+            detail += ' [reversed]'
+    print(f\"  {token!r:20s} {pattern:12s} log10: {log10:5.1f}{detail}\")
+"
+}
+
+# Run keepassxc-cli entropy estimate (reads from stdin).
+# Arguments:
+#   $1 - Passphrase to check
+# Outputs:
+#   Writes keepassxc-cli output to stdout
+function check_keepassxc() {
+  local passphrase="${1}"
+
+  printf '%s' "${passphrase}" | keepassxc-cli estimate --advanced
+}
+
+function main() {
+  if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    usage
+    exit "${E_SUCCESS}"
+  fi
+
+  local -i minimum_entropy="${1:-${DEFAULT_MINIMUM_ENTROPY}}"
+
+  require_command "phraze" "cargo install phraze"
+  require_command "keepassxc-cli" "brew install keepassxc"
+  require_command "uv" "brew install uv"
+  require_command "curl"
+  require_command "shasum"
+
+  if [[ ! -f "${WORD_LIST}" ]]; then
+    echo "Error: word list not found at ${WORD_LIST}" >&2
+    echo "  Run 'make build' to generate it." >&2
+    exit "${E_MISSING_WORD_LIST}"
+  fi
+
+  # Generate the passphrase
+  # phraze writes the entropy line to stderr and the passphrase to stdout.
+  # Merge both into a single capture, then split with parameter expansion
+  # (pure bash, no temp files, no subshells).
+  local phraze_output
+  phraze_output="$(generate_passphrase "${minimum_entropy}" 2>&1)"
+
+  # Line 1 = entropy info, line 2 = passphrase
+  local entropy_line="${phraze_output%%$'\n'*}"
+  local passphrase="${phraze_output##*$'\n'}"
+
+  # Validate with multiple tools, passphrase last for easy copying
+  echo "=== phraze ==="
+  echo "${entropy_line}"
+
+  echo ""
+  echo "=== zxcvbn ==="
+  check_zxcvbn "${passphrase}"
+
+  echo ""
+  echo "=== keepassxc-cli ==="
+  check_keepassxc "${passphrase}"
+
+  echo ""
+  echo "=== Pwned Passwords (k-anonymity) ==="
+  check_pwned_passwords "${passphrase}"
+
+  echo ""
+  echo "=== Passphrase ==="
+  echo "${passphrase}"
+}
+
+main "${@}"

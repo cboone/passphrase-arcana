@@ -137,6 +137,35 @@ lists:
 
 1,429 terms total. 113 matched and were removed from the word list.
 
+## Generating passphrases
+
+`bin/generate-passphrase` generates a passphrase and validates its strength
+using multiple tools:
+
+```bash
+bin/generate-passphrase        # default: 80 bits minimum entropy
+bin/generate-passphrase 100    # 100 bits minimum entropy
+```
+
+It runs [phraze](https://github.com/sts10/phraze) to generate the passphrase,
+then checks it against:
+
+- [zxcvbn](https://github.com/dropbox/zxcvbn) for pattern-based strength
+  scoring and crack time estimates
+- [KeePassXC](https://keepassxc.org/) (`keepassxc-cli estimate --advanced`)
+  for an independent entropy estimate with per-segment breakdown
+- [Pwned Passwords](https://haveibeenpwned.com/Passwords) to confirm the
+  passphrase has not appeared in known breaches
+
+The passphrase never leaks outside the script: it is passed to each tool via
+stdin (using `printf`, a shell builtin, so it never appears in process
+listings), and the Pwned Passwords check uses
+[k-anonymity](https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420)
+(only the first 5 characters of the SHA-1 hash leave the machine).
+
+Requires `phraze`, `keepassxc-cli`, and `uv` (which provides `zxcvbn-python`
+from the project's dev dependencies).
+
 ## Running the pipeline
 
 Requires [uv](https://docs.astral.sh/uv/):

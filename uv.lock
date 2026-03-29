@@ -401,6 +401,7 @@ dependencies = [
 dev = [
     { name = "pytest" },
     { name = "ruff" },
+    { name = "zxcvbn-python" },
 ]
 
 [package.metadata]
@@ -411,6 +412,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4" },
     { name = "wordfreq", specifier = ">=3.0" },
+    { name = "zxcvbn-python", marker = "extra == 'dev'", specifier = ">=4.4" },
 ]
 provides-extras = ["dev"]
 
@@ -429,3 +431,9 @@ sdist = { url = "https://files.pythonhosted.org/packages/4c/cd/9581ff0ea2c581012
 wheels = [
     { url = "https://files.pythonhosted.org/packages/24/61/62835c475d69872d30689f284497853fe33fe1d6dd18f57346d13305861d/wordfreq-3.1.1-py3-none-any.whl", hash = "sha256:4b1c6ecffc6198be3396d5cf871c4423ca71c907c231348d352dd54d62b97473", size = 56834549, upload-time = "2023-11-21T23:09:07.183Z" },
 ]
+
+[[package]]
+name = "zxcvbn-python"
+version = "4.4.24"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/63/9c/c3f90da63d6bd0e04948386bdf426212f1f8271d544615a5c8d0d03267ef/zxcvbn-python-4.4.24.tar.gz", hash = "sha256:900b28cc5e96be4091d8778f19f222832890264e338765a1c1c09fca2db64b2d", size = 408001, upload-time = "2018-04-11T13:39:22.82Z" }
