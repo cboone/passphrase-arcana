@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "config.toml"
+BLOCKLIST = ROOT / "blocklist.txt"
 DATA_SCORED = ROOT / "data" / "scored"
 OUTPUT = ROOT / "output"
 
@@ -70,6 +71,25 @@ def remove_suffix_words(words: list[str]) -> list[str]:
     return sorted(word_set - suffixes_to_remove)
 
 
+def load_blocklist() -> set[str]:
+    """Load the offensive word blocklist."""
+    if not BLOCKLIST.exists():
+        return set()
+    return set(BLOCKLIST.read_text().strip().splitlines())
+
+
+def remove_blocked_words(words: list[str], blocklist: set[str]) -> tuple[list[str], int]:
+    """Remove words that appear in the blocklist or contain a blocked word."""
+    kept = []
+    removed = 0
+    for word in words:
+        if word in blocklist:
+            removed += 1
+        else:
+            kept.append(word)
+    return kept, removed
+
+
 def main() -> None:
     config = tomllib.loads(CONFIG.read_text())
     languages = config["languages"]
@@ -85,8 +105,12 @@ def main() -> None:
         lang_name = languages[lang]["name"]
         print(f"[{lang_name}] {len(new_words)} unique words added ({len(lang_words)} before dedup)")
 
-    # Remove prefix and suffix words
+    # Remove blocked (offensive) words
+    blocklist = load_blocklist()
     word_list = sorted(all_words)
+    word_list, blocked_removed = remove_blocked_words(word_list, blocklist)
+
+    # Remove prefix and suffix words
     initial_count = len(word_list)
     word_list = remove_prefix_words(word_list)
     prefix_removed = initial_count - len(word_list)
@@ -108,6 +132,7 @@ def main() -> None:
     print(f"  Words: {count}")
     print(f"  Entropy per word: {entropy:.2f} bits")
     print(f"  Mean word length: {mean_len:.1f} characters")
+    print(f"  Blocked words removed: {blocked_removed}")
     print(f"  Prefix words removed: {prefix_removed}")
     print(f"  Suffix words removed: {suffix_removed}")
 
