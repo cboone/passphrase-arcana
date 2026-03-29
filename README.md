@@ -15,10 +15,11 @@ The list is designed for use with [phraze](https://github.com/sts10/phraze) and 
 [Running the pipeline](#running-the-pipeline)
 [Configuration](#configuration)
 [Other wordlists](#other-wordlists)
+[Appendix: word list metrics](#appendix-word-list-metrics)
 
 ## The word list
 
-**`passphrase-arcana.txt`** contains 27,445 lowercase ASCII words, one per line, ready for use with phraze or any passphrase generator:
+**`passphrase-arcana.txt`** contains 24,880 lowercase ASCII words, one per line, ready for use with phraze or any passphrase generator:
 
 ```bash
 phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 80
@@ -27,10 +28,20 @@ phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy
 Sample passphrases:
 
 ```text
-nocturnes wornout lamenting jars morels prominent
-artlessly luckier pursed chimiques movers childbed
-makeup withdraws beseems seraglios federals waxen
+sprouting ascendant lifters asbestos kudzu bleaching
+profiled beeline tost eggcups coursers gutters
+arose speaketh mindless furlongs briskly alguacil
 ```
+
+### Checksum
+
+A SHA-256 checksum is generated alongside the word list at `passphrase-arcana.txt.sha256`. To verify the word list has not been modified:
+
+```bash
+shasum -a 256 -c passphrase-arcana.txt.sha256
+```
+
+The checksum is regenerated each time `make build` runs.
 
 ## Generating passphrases
 
@@ -100,39 +111,39 @@ The passphrase never leaks outside the script:
 
 ## Word list attributes
 
-Analyzed with [wla](https://github.com/sts10/wla):
+Analyzed with [wla](https://github.com/sts10/wla). See the [appendix](#appendix-word-list-metrics) for explanations of each metric.
 
-| Attribute                 | Value           |
-| ------------------------- | --------------- |
-| Unique words              | 27,445          |
-| Free of exact duplicates  | yes             |
-| Free of fuzzy duplicates  | yes             |
-| No non-ASCII characters   | yes             |
-| Unicode normalized        | yes             |
-| Free of prefix words      | yes             |
-| Free of suffix words      | yes             |
-| Uniquely decodable        | yes             |
-| Above brute force line    | yes             |
-| Shortest word             | 4 characters    |
-| Longest word              | 9 characters    |
-| Mean word length          | 7.40 characters |
-| Entropy per word          | 14.744 bits     |
-| Efficiency per character  | 1.993 bits      |
-| Shortest edit distance    | 1               |
-| Mean edit distance        | 7.018           |
-| Unique character prefix   | 9               |
-| Kraft-McMillan inequality | satisfied       |
+| Attribute                                               | Value           |
+| ------------------------------------------------------- | --------------- |
+| Unique words                                            | 24,880          |
+| Free of exact duplicates                                | yes             |
+| Free of [fuzzy duplicates](#fuzzy-duplicates)           | yes             |
+| No non-ASCII characters                                 | yes             |
+| Unicode normalized                                      | yes             |
+| Free of [prefix words](#prefix-and-suffix-words)        | yes             |
+| Free of [suffix words](#prefix-and-suffix-words)        | yes             |
+| [Uniquely decodable](#uniquely-decodable)               | yes             |
+| [Above brute force line](#above-brute-force-line)       | yes             |
+| Shortest word                                           | 4 characters    |
+| Longest word                                            | 9 characters    |
+| Mean word length                                        | 7.45 characters |
+| [Entropy per word](#how-passphrase-entropy-works)       | 14.603 bits     |
+| [Efficiency per character](#efficiency-per-character)   | 1.960 bits      |
+| [Shortest edit distance](#edit-distance)                | 1               |
+| [Mean edit distance](#edit-distance)                    | 7.018           |
+| [Unique character prefix](#unique-character-prefix)     | 9               |
+| [Kraft-McMillan inequality](#kraft-mcmillan-inequality) | satisfied       |
 
-A 4-word passphrase provides ~59 bits of entropy. A 6-word passphrase provides ~88 bits.
+A 4-word passphrase provides ~58 bits of entropy. A 6-word passphrase provides ~88 bits.
 
 ## Typing ease
 
-Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out. The scores for the 27,445 words in the final list:
+Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out. The scores for the 24,880 words in the final list:
 
 | Statistic       | Effort per character |
 | --------------- | -------------------- |
 | Minimum         | 1.25                 |
-| 10th percentile | 1.63                 |
+| 10th percentile | 1.64                 |
 | 25th percentile | 1.75                 |
 | Median          | 1.94                 |
 | Mean            | 1.97                 |
@@ -140,7 +151,7 @@ Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-i
 | 90th percentile | 2.36                 |
 | Maximum         | 2.50 (threshold)     |
 
-Lower is easier. The scale runs from ~1.0 (home-row keys with hand alternation) to 2.5 (the configured cutoff). About 33% of words score below 1.8 (easy range), and 56% below 2.0.
+Lower is easier. The scale runs from ~1.0 (home-row keys with hand alternation) to 2.5 (the configured cutoff). About 32% of words score below 1.8 (easy range), and 55% below 2.0.
 
 Easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). Hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
 
@@ -154,19 +165,19 @@ Entropy measures how many guesses an attacker needs to crack a passphrase. With 
 entropy = num_words x log2(list_size)
 ```
 
-For this list (27,445 words): **14.74 bits per word**.
+For this list (24,880 words): **14.60 bits per word**.
 
 | Words | Entropy   | Length | Use case                                    |
 | ----- | --------- | ------ | ------------------------------------------- |
-| 4     | ~59 bits  | ~33 ch | Low-value accounts                          |
-| 5     | ~74 bits  | ~41 ch | Most online accounts                        |
-| 6     | ~88 bits  | ~49 ch | Important accounts, the `arcana` default    |
-| 7     | ~103 bits | ~58 ch | High-security accounts, encryption keys     |
-| 8     | ~118 bits | ~66 ch | Exceeds NIST SP 800-63B highest level (112) |
+| 4     | ~58 bits  | ~33 ch | Low-value accounts                          |
+| 5     | ~73 bits  | ~42 ch | Most online accounts                        |
+| 6     | ~88 bits  | ~50 ch | Important accounts, the `arcana` default    |
+| 7     | ~102 bits | ~58 ch | High-security accounts, encryption keys     |
+| 8     | ~117 bits | ~67 ch | Exceeds NIST SP 800-63B highest level (112) |
 
-Length assumes space separators and the list's mean word length of 7.4 characters.
+Length assumes space separators and the list's mean word length of 7.45 characters.
 
-The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list (6 x 14.74 = 88.4 bits).
+The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list (6 x 14.60 = 87.6 bits).
 
 ### Kerckhoffs's principle
 
@@ -243,15 +254,17 @@ fetch_texts + fetch_external ->
 
 Both scripts are idempotent: they check whether each file already exists and skip the download if so. Running `make fetch` (or `make all`) on a populated `data/raw/` directory completes instantly. Only `make clean` removes the cached files, triggering fresh downloads on the next run.
 
+The Nabokov concordance build filters likely proper nouns during generation by scanning the original mixed-case text for words that never appear in lowercase form. An unfiltered version is preserved in `data/reference/` for inspection.
+
 ### Step 2: Extract words
 
 Lowercases text, tokenizes with a regex (`[a-z]+`), and filters by length (4 to 9 characters). Tracks word frequency and the number of distinct source authors per word.
 
 ### Step 3: Filter proper nouns
 
-Best-effort removal of likely proper nouns. Scans the raw text files (which preserve original capitalization) for words that never appear in lowercase form. Words like "whale" appear lowercase thousands of times and are kept; words like "Ahab" that only appear capitalized are removed.
+Best-effort removal of likely proper nouns from Project Gutenberg sources. Scans the raw text files (which preserve original capitalization) for words that never appear in lowercase form. Words like "whale" appear lowercase thousands of times and are kept; words like "Ahab" that only appear capitalized are removed.
 
-Concordance-sourced words (McCarthy, Nabokov) are already entirely lowercase in the raw files, so they pass the filter automatically. The filter writes removed words to `data/words/{lang}/proper_nouns_removed.txt` for manual inspection.
+Concordance-sourced words are already filtered during generation (Step 1 for Nabokov) or are naturally lowercase (McCarthy PDF extraction). The filter writes removed words to `data/words/{lang}/proper_nouns_removed.txt` for manual inspection.
 
 ### Step 4: Validate words
 
@@ -276,6 +289,7 @@ The score is normalized per character. Words above the configured threshold (def
 2. Removes prefix words (shorter word dropped when it prefixes a longer one)
 3. Removes suffix words (same logic, reversed)
 4. Outputs the final sorted list to `passphrase-arcana.txt`
+5. Writes a SHA-256 checksum to `passphrase-arcana.txt.sha256`
 
 ## Blocklist
 
@@ -285,7 +299,7 @@ The score is normalized per character. Words above the configured threshold (def
 - [Google Profanity Words](https://github.com/coffee-and-fun/google-profanity-words) (MIT)
 - [dsojevic/profanity-list](https://github.com/dsojevic/profanity-list) (MIT)
 
-1,429 terms total. 167 matched and were removed from the word list.
+1,429 terms total. 166 matched and were removed from the word list.
 
 ## Running the pipeline
 
@@ -304,7 +318,7 @@ make extract              # tokenize and filter
 make filter-proper-nouns  # remove likely proper nouns
 make validate             # dictionary verification
 make score                # typing difficulty
-make build                # final assembly
+make build                # final assembly + checksum
 ```
 
 Run tests:
@@ -328,7 +342,7 @@ This list prioritizes distinctive vocabulary over everyday words. If you want co
 
 | List                                   |  Words | Bits/word | Description                                     |
 | -------------------------------------- | -----: | --------: | ----------------------------------------------- |
-| **Passphrase Arcana**                  | 27,445 |     14.74 | Literary vocabulary, distinctive words          |
+| **Passphrase Arcana**                  | 24,880 |     14.60 | Literary vocabulary, distinctive words          |
 | [Orchard Street Long][os-long]         | 17,576 |     14.10 | Common English from Wikipedia and Google Books  |
 | [Orchard Street Medium][os-medium]     |  8,192 |     13.00 | Common English, power-of-2 optimized for phraze |
 | [EFF Long][eff-long]                   |  7,776 |     12.93 | Common English, designed for easy spelling      |
@@ -337,9 +351,45 @@ This list prioritizes distinctive vocabulary over everyday words. If you want co
 | [Orchard Street Alpha][os-alpha]       |  1,296 |     10.34 | Alphabetically distinct, for reading aloud      |
 | [EFF Short 1][eff-short]               |  1,296 |     10.34 | Short common words                              |
 
-Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (~78 bits) is roughly equivalent to a 5-word passphrase from this list (~74 bits).
+Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (~78 bits) is roughly equivalent to a 5-word passphrase from this list (~73 bits).
 
 The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert](https://github.com/sts10), who also created [phraze](https://github.com/sts10/phraze).
+
+## Appendix: word list metrics
+
+Definitions for the metrics in the [word list attributes](#word-list-attributes) table. All are computed by [wla](https://github.com/sts10/wla).
+
+### Fuzzy duplicates
+
+Words that are identical except for minor typographical differences. For example, "theater" and "theatre", or "color" and "colour". A list free of fuzzy duplicates avoids ambiguity when a user hears or reads a passphrase word.
+
+### Prefix and suffix words
+
+A prefix word is a word that is the beginning of another word in the list. For example, if both "cat" and "catalog" are in the list, "cat" is a prefix word. Suffix words are the reverse: "log" would be a suffix of "catalog". Removing these ensures the list is safe to use without separators between words, since the decoder can always determine where one word ends and the next begins.
+
+### Uniquely decodable
+
+A list is uniquely decodable if, when you concatenate words from it without separators, there is exactly one way to split the result back into the original words. This is a stronger property than being free of prefix words: it guarantees unambiguous decoding even in edge cases where prefix-freeness alone would not. In practice, a list that is both prefix-free and suffix-free is always uniquely decodable.
+
+### Above brute force line
+
+The list has enough words that randomly selecting from it provides more entropy per character than brute-forcing a random password of the same length. This is the minimum bar for a passphrase word list to be worthwhile compared to a random character password.
+
+### Efficiency per character
+
+Entropy per word divided by mean word length. Higher values mean more entropy per keystroke. This list's efficiency of 1.96 bits/character means a 50-character passphrase (about 6 words with spaces) provides ~88 bits of entropy, compared to ~50 bits from a random string of 50 lowercase letters (which has ~4.7 bits per character but is much harder to remember).
+
+### Edit distance
+
+The [Levenshtein edit distance](https://en.wikipedia.org/wiki/Levenshtein_distance) between two words is the minimum number of single-character insertions, deletions, or substitutions needed to transform one into the other. The shortest edit distance in the list is the distance between the two most similar words. A higher value means the list is more resistant to typos causing one valid word to be mistaken for another. A shortest edit distance of 1 means there exists at least one pair of words differing by a single character (e.g., "word" and "cord").
+
+### Unique character prefix
+
+The minimum number of leading characters needed to uniquely identify every word in the list. With a value of 9 (equal to the maximum word length), some words require their full length to be distinguished. This matters for autocomplete systems: a lower value means fewer characters are needed to disambiguate.
+
+### Kraft-McMillan inequality
+
+A mathematical condition from [information theory](https://en.wikipedia.org/wiki/Kraft%27s_inequality) that must hold for a set of codewords to be uniquely decodable. If the inequality is satisfied, it is theoretically possible to construct a prefix code with the given codeword lengths. For passphrase word lists, satisfying this inequality confirms the list's structure supports unambiguous concatenation.
 
 ## License
 

@@ -33,7 +33,7 @@ uninstall:
 	@echo "Removed: $(PREFIX)/bin/arcana"
 
 clean:
-	rm -rf data/raw data/words data/validated data/scored
+	rm -rf data/raw data/words data/validated data/scored data/reference
 
 test:
 	uv run pytest tests/ -v
