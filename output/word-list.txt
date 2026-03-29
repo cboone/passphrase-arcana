@@ -1598,7 +1598,6 @@ barbering
 barclay
 bardic
 bardolph
-bareback
 barebones
 barefoot
 barely
@@ -1698,7 +1697,6 @@ bastards
 basted
 bastile
 bastille
-bastinado
 bastings
 bastioned
 bastions
@@ -2202,7 +2200,6 @@ bismillah
 bismuth
 bisons
 bitched
-bitches
 bites
 bitingly
 bitten
@@ -2462,7 +2459,6 @@ bonamici
 bonaparte
 bonar
 bonbons
-bondage
 bondi
 bondman
 bondmen
@@ -3738,8 +3734,6 @@ chimes
 chiming
 chimiques
 chimneys
-chinaman
-chinamen
 chinatown
 chinaware
 chincha
@@ -3747,7 +3741,6 @@ chinchin
 chinee
 chinese
 chinked
-chinks
 chinless
 chinstrap
 chintz
@@ -3873,7 +3866,7 @@ circulars
 circulate
 circuses
 cirque
-cissy
+ciss
 cisterns
 citadels
 citations
@@ -4248,7 +4241,6 @@ colgan
 colicky
 colics
 collapses
-collaring
 colleague
 colleges
 collegian
@@ -5306,14 +5298,12 @@ darkening
 darkens
 darker
 darkest
-darkies
 darkish
 darkling
 darkly
 darkman
 darkness
 darksome
-darky
 darlings
 darned
 darnell
@@ -6069,7 +6059,6 @@ doggedly
 doggerel
 doggery
 doggie
-dogging
 doggoned
 doggy
 doglike
@@ -6187,7 +6176,6 @@ doubly
 doubters
 doubting
 doubtless
-douche
 doughty
 doughy
 douglass
@@ -6629,7 +6617,6 @@ eightieth
 eileen
 einstein
 eireann
-ejaculate
 ejectment
 elaborate
 elaine
@@ -7456,8 +7443,6 @@ faery
 fagan
 fagged
 faggots
-fagots
-fags
 failed
 faileth
 failings
@@ -7587,7 +7572,6 @@ farseeing
 farther
 farthest
 farthings
-farting
 farts
 fascinate
 fashioned
@@ -7912,8 +7896,6 @@ finesses
 finessing
 finest
 fingall
-fingered
-fingering
 fingers
 fingertip
 finglas
@@ -7983,7 +7965,6 @@ fishy
 fission
 fissured
 fissures
-fisted
 fistful
 fistic
 fists
@@ -8035,7 +8016,6 @@ flamingos
 flanagan
 flanders
 flaneur
-flange
 flanked
 flankers
 flanking
@@ -8611,9 +8591,6 @@ frye
 fryingpan
 fuad
 fubsy
-fucked
-fucker
-fucking
 fuddled
 fudge
 fuego
@@ -8964,7 +8941,7 @@ genially
 genies
 genii
 genin
-genitals
+genital
 genitive
 geniuses
 gennaro
@@ -9263,7 +9240,6 @@ gobierno
 goblets
 goblins
 goby
-goddamned
 goddesses
 godey
 godfather
@@ -9301,7 +9277,6 @@ golgotha
 goliah
 goliath
 golightly
-golliwog
 gombo
 gomes
 gomez
@@ -10434,7 +10409,6 @@ homily
 hominem
 hominess
 hommes
-homo
 hondurans
 honduras
 honester
@@ -10468,7 +10442,6 @@ hoogly
 hooh
 hooing
 hookah
-hooker
 hookey
 hooky
 hooligans
@@ -11500,7 +11473,6 @@ jesters
 jestingly
 jests
 jesuits
-jesus
 jeter
 jetsam
 jetties
@@ -11860,7 +11832,6 @@ kingsmill
 kingsport
 kingstown
 kinks
-kinky
 kinross
 kinsale
 kinsella
@@ -11934,7 +11905,6 @@ knuckles
 knucks
 kobold
 koch
-kock
 kodak
 koehler
 kohala
@@ -14479,10 +14449,8 @@ nicoya
 nidre
 nietzsche
 niger
-niggah
 niggardly
 niggards
-niggers
 niggurath
 nigher
 nighest
@@ -14520,7 +14488,6 @@ niobe
 nipas
 nippers
 nipping
-nipples
 nipt
 nisi
 nisus
@@ -14940,7 +14907,6 @@ organiser
 organisms
 organist
 organs
-orgasms
 orgiastic
 orgies
 oriels
@@ -15303,7 +15269,6 @@ panoramas
 panoramic
 pansa
 pansies
-pansy
 pantai
 pantalets
 pantalon
@@ -15594,7 +15559,6 @@ peering
 peerless
 peevishly
 pegasus
-pegging
 peggy
 pegs
 pegu
@@ -15649,7 +15613,6 @@ penetrate
 peneus
 penguins
 peninsula
-penis
 penitents
 penknife
 penknives
@@ -16000,9 +15963,6 @@ pisgah
 pishogue
 pismires
 pison
-pisser
-pisses
-pissing
 pistachio
 pistoia
 pistoles
@@ -16538,7 +16498,6 @@ pricket
 pricking
 prickles
 prickly
-pricks
 prides
 priding
 pried
@@ -16888,7 +16847,7 @@ pushed
 pusher
 pushes
 pushing
-pussy
+puss
 pustules
 puteoli
 putih
@@ -18295,7 +18254,7 @@ saddled
 saddlery
 saddles
 saddling
-sadist
+sadi
 sadler
 sadly
 sadnesses
@@ -18741,7 +18700,6 @@ screams
 screeners
 screening
 screens
-screwing
 scribbler
 scrimmage
 scrimping
@@ -19045,7 +19003,6 @@ sexless
 sextants
 sextons
 sextuple
-sexual
 sexus
 seychelle
 shabbier
@@ -19264,15 +19221,12 @@ shirr
 shirtless
 shirts
 shis
-shite
-shithouse
 shivaree
 shivered
 shiverer
 shivering
 shivers
 shivery
-shiz
 shoaled
 shoaling
 shoals
@@ -19610,7 +19564,6 @@ skated
 skaters
 skates
 skating
-skeet
 skeins
 skeletal
 skeletons
@@ -19795,7 +19748,6 @@ slurred
 slurring
 slurs
 slushy
-sluts
 sluttish
 slyly
 smacked
@@ -20229,7 +20181,6 @@ sphincter
 sphinxes
 spiciest
 spicily
-spick
 spicy
 spiders
 spidery
@@ -20956,7 +20907,6 @@ suckings
 suckled
 suckles
 sucklings
-sucks
 suction
 suddenly
 sudras
@@ -21176,7 +21126,7 @@ swindles
 swindling
 swineherd
 swines
-swinger
+swinge
 swinging
 swings
 swinish
@@ -21938,7 +21888,6 @@ titlepage
 tittered
 tittering
 titters
-titties
 tittle
 titular
 titus
@@ -22763,7 +22712,6 @@ vacuous
 vagabonds
 vagaries
 vagary
-vagina
 vagrancy
 vagrants
 vaguely
@@ -23217,7 +23165,6 @@ vulgarize
 vulgarly
 vultures
 vulturine
-vulva
 wabasha
 wabe
 wadding
@@ -23785,7 +23732,6 @@ willingly
 willis
 willpower
 wills
-willy
 wilmarth
 wilmer
 wilmot
