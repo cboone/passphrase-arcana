@@ -4,6 +4,7 @@ all: build
 
 fetch:
 	uv run src/fetch_texts.py
+	uv run src/fetch_external.py
 
 extract: fetch
 	uv run src/extract_words.py

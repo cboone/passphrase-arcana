@@ -19,3 +19,9 @@ hawthorne = [33, 77, 2081, 512, 13707, 2181, 1916, 8090]
 twain = [76, 74, 1837, 245, 3176, 86, 3177, 2895, 3178, 3186, 3189, 70]
 carroll = [11, 12, 13, 620, 651, 28696, 29042]
 wilde = [174, 844, 885, 790, 854, 921, 902, 14522, 773, 1057, 887, 14062]
+shakespeare = [100]
+
+# External sources (not from Gutenberg, fetched by fetch_external.py)
+[languages.en.external]
+mccarthy = { type = "concordance_pdf", url = "http://www.johnsepich.com/documents/words_cormac_mccarthy_uses_in_his_novels.pdf" }
+nabokov = { type = "github_texts", repo = "Cha-OS/bukvik-workshop-corpora", files = ["corpus-en - document.txt", "sinister-en - document.txt", "lolita-en - document.txt", "pnin-en - document.txt", "harlequins-en - document.txt", "invite-en - document.txt", "gift-en - document.txt", "defense-en - document.txt", "knave-en - document.txt", "speak-en - document.txt", "knight-en - document.txt"] }

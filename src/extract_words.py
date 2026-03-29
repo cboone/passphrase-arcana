@@ -79,11 +79,10 @@ def main() -> None:
         # word -> {total_count, set_of_authors, set_of_original_forms}
         word_data: dict[str, dict] = {}
 
-        for author, ebook_ids in sources.items():
-            # Collect words from all of this author's texts
+        def process_author(author: str, paths: list[Path]) -> None:
+            """Process all text files for a single author."""
             author_words: set[str] = set()
-            for ebook_id in ebook_ids:
-                path = DATA_RAW / lang / f"{author}_{ebook_id}.txt"
+            for path in paths:
                 if not path.exists():
                     continue
                 file_words = extract_from_file(path, min_len, max_len, needs_strip)
@@ -97,9 +96,20 @@ def main() -> None:
                     word_data[word]["count"] += count
                     word_data[word]["originals"].update(originals)
                     author_words.add(word)
-
             for w in author_words:
                 word_data[w]["authors"].add(author)
+
+        # Gutenberg sources
+        for author, ebook_ids in sources.items():
+            paths = [DATA_RAW / lang / f"{author}_{ebook_id}.txt" for ebook_id in ebook_ids]
+            process_author(author, paths)
+
+        # External sources (concordances, GitHub corpora, etc.)
+        external = lang_cfg.get("external", {})
+        for author in external:
+            # Find all files matching {author}_*.txt in the raw directory
+            paths = sorted((DATA_RAW / lang).glob(f"{author}_*.txt"))
+            process_author(author, paths)
 
         # Write outputs
         out_dir = DATA_WORDS / lang
