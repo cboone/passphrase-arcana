@@ -11,7 +11,7 @@ and other passphrase generators.
 
 ## The word list
 
-**`output/word-list.txt`** contains 24,168 lowercase ASCII words, one per
+**`output/word-list.txt`** contains 31,210 lowercase ASCII words, one per
 line, ready for use:
 
 ```bash
@@ -21,9 +21,9 @@ phraze -c output/word-list.txt -w 5 -s -
 Sample passphrases:
 
 ```text
-premisses-morocco-textured-impotent-saratoga
-sheepfold-hexapods-thrifty-ibsen-resulted
-palette-availing-acridity-nilus-keenest
+dampish-mclendon-fatalism-pianists-alpacas
+jacobs-discovers-relishing-privily-germans
+danaher-drawls-fabrics-skis-obduracy
 ```
 
 ## Word list attributes
@@ -32,7 +32,7 @@ Analyzed with [wla](https://github.com/sts10/wla):
 
 | Attribute                 | Value           |
 | ------------------------- | --------------- |
-| Unique words              | 24,168          |
+| Unique words              | 31,210          |
 | Free of exact duplicates  | yes             |
 | Free of fuzzy duplicates  | yes             |
 | No non-ASCII characters   | yes             |
@@ -44,47 +44,61 @@ Analyzed with [wla](https://github.com/sts10/wla):
 | Shortest word             | 4 characters    |
 | Longest word              | 9 characters    |
 | Mean word length          | 7.36 characters |
-| Entropy per word          | 14.561 bits     |
-| Efficiency per character  | 1.979 bits      |
+| Entropy per word          | 14.930 bits     |
+| Efficiency per character  | 2.028 bits      |
 | Shortest edit distance    | 1               |
-| Mean edit distance        | 7.001           |
+| Mean edit distance        | 7.018           |
 | Unique character prefix   | 9               |
 | Kraft-McMillan inequality | satisfied       |
 
-A 4-word passphrase provides ~58 bits of entropy. A 6-word passphrase
-provides ~87 bits.
+A 4-word passphrase provides ~60 bits of entropy. A 6-word passphrase
+provides ~90 bits.
 
 ## Sources
 
-Words are extracted from Project Gutenberg texts by authors with rich,
-unusual vocabularies:
+Words are drawn from authors with rich, unusual vocabularies. Most are
+sourced from Project Gutenberg (public domain texts). Two use concordances
+(word frequency data extracted from copyrighted works, which is
+non-copyrightable factual data):
 
-| Author              | Works | Notable vocabulary                     |
-| ------------------- | ----- | -------------------------------------- |
-| Herman Melville     | 14    | Nautical, archaic, philosophical       |
-| H.P. Lovecraft      | 18    | Cosmic horror, pseudo-scientific       |
-| Joseph Conrad       | 14    | Maritime, colonial, psychological      |
-| James Joyce         | 5     | Experimental, multilingual, neologisms |
-| Nathaniel Hawthorne | 8     | Archaic New England, allegorical       |
-| Mark Twain          | 12    | Vernacular, satirical, regional        |
-| Lewis Carroll       | 7     | Nonsense, mathematical, invented       |
-| Oscar Wilde         | 12    | Aesthetic, epigrammatic, theatrical    |
+| Author              | Works | Source      | Vocabulary              |
+| ------------------- | ----- | ----------- | ----------------------- |
+| Herman Melville     | 14    | Gutenberg   | Nautical, philosophical |
+| H.P. Lovecraft      | 18    | Gutenberg   | Cosmic, eldritch        |
+| Joseph Conrad       | 14    | Gutenberg   | Maritime, colonial      |
+| James Joyce         | 5     | Gutenberg   | Experimental            |
+| Nathaniel Hawthorne | 8     | Gutenberg   | Archaic, allegorical    |
+| Mark Twain          | 12    | Gutenberg   | Vernacular, satirical   |
+| Lewis Carroll       | 7     | Gutenberg   | Nonsense, mathematical  |
+| Oscar Wilde         | 12    | Gutenberg   | Aesthetic, theatrical   |
+| William Shakespeare | 1     | Gutenberg   | Early Modern English    |
+| Cormac McCarthy     | 16    | Concordance | Archaic, Southwestern   |
+| Vladimir Nabokov    | 11    | Concordance | Ornate, precise         |
 
-90 texts total. The raw texts are included in `data/raw/en/`.
+The Gutenberg texts are in `data/raw/en/`. The McCarthy concordance is
+parsed from John Sepich's
+[academic word list](http://johnsepich.com/). The Nabokov concordance is
+built at fetch time from
+[bukvik-workshop-corpora](https://github.com/Cha-OS/bukvik-workshop-corpora)
+(texts are streamed and discarded; only word frequencies are kept).
 
 ## Processing pipeline
 
-Five Python scripts, each reading the previous step's output, orchestrated
-by a Makefile and run with `uv`:
+Python scripts, each reading the previous step's output, orchestrated by a
+Makefile and run with `uv`:
 
 ```text
-fetch_texts -> extract_words -> validate_words -> score_typing -> build_list
+fetch_texts + fetch_external ->
+  extract_words -> validate_words -> score_typing -> build_list
 ```
 
 ### Step 1: Fetch texts
 
-Downloads texts from Project Gutenberg, strips headers and footers. Ebook
-IDs are configured in `config.toml`. Rate-limited and idempotent.
+`fetch_texts.py` downloads texts from Project Gutenberg, strips headers
+and footers. `fetch_external.py` handles non-Gutenberg sources: it parses
+the McCarthy concordance PDF and builds the Nabokov concordance from
+streamed GitHub texts. Ebook IDs and external source URLs are configured
+in `config.toml`. Rate-limited and idempotent.
 
 ### Step 2: Extract words
 
@@ -135,7 +149,7 @@ lists:
   (MIT)
 - [dsojevic/profanity-list](https://github.com/dsojevic/profanity-list) (MIT)
 
-1,429 terms total. 113 matched and were removed from the word list.
+1,429 terms total. 174 matched and were removed from the word list.
 
 ## Generating passphrases
 
@@ -199,6 +213,8 @@ All parameters are in `config.toml`:
   (default 4-9)
 - `typing.max_effort_per_char`: typing difficulty threshold (default 2.5)
 - `languages.en.sources`: mapping of author name to Gutenberg ebook IDs
+- `languages.en.external`: non-Gutenberg sources (concordance PDFs, GitHub
+  corpora)
 
 ## License
 
