@@ -10,7 +10,6 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "config.toml"
 BLOCKLIST = ROOT / "blocklist.txt"
 DATA_SCORED = ROOT / "data" / "scored"
-OUTPUT = ROOT / "output"
 
 
 def load_scored_words(lang: str) -> list[str]:
@@ -118,8 +117,7 @@ def main() -> None:
     suffix_removed = initial_count - prefix_removed - len(word_list)
 
     # Write output
-    OUTPUT.mkdir(parents=True, exist_ok=True)
-    out_path = OUTPUT / "word-list.txt"
+    out_path = ROOT / "word-list.txt"
     out_path.write_text("\n".join(word_list) + "\n")
 
     # Statistics

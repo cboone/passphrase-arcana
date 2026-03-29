@@ -9,7 +9,12 @@
 #   - Pwned Passwords API uses k-anonymity: only the first 5 chars of the
 #     SHA-1 hash leave the machine
 #   - No temp files are created
-#   - The passphrase is displayed once at the end for the user to copy
+
+# Exit codes:
+#   0 - Success
+#   1 - Passphrase found in breach database
+#   2 - Missing required tool
+#   3 - Word list not found
 
 set -euo pipefail
 
@@ -17,10 +22,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 readonly PROJECT_DIR
-readonly WORD_LIST="${PROJECT_DIR}/output/word-list.txt"
+readonly WORD_LIST="${PROJECT_DIR}/word-list.txt"
 readonly DEFAULT_MINIMUM_ENTROPY=80
 
 readonly E_SUCCESS=0
+readonly E_PWNED=1
 readonly E_MISSING_TOOL=2
 readonly E_MISSING_WORD_LIST=3
 
@@ -32,13 +38,28 @@ function usage() {
 Usage: generate-passphrase [options] [minimum-entropy]
 
 Generate a passphrase and validate its strength using multiple tools.
+Diagnostics go to stderr; the passphrase goes to stdout.
 
 Options:
   -c, --copy       Copy the passphrase to the clipboard via pbcopy
+                   (suppresses stdout)
+  -q, --quiet      Suppress diagnostics (stderr)
   -h, --help       Show this help message
 
 Arguments:
   minimum-entropy  Minimum entropy in bits (default: 80)
+
+Exit codes:
+  0  Passphrase is clean
+  1  Passphrase found in breach database
+
+Examples:
+  generate-passphrase                  # show diagnostics + passphrase
+  generate-passphrase -c               # diagnostics on screen, passphrase to clipboard
+  generate-passphrase -q               # just the passphrase
+  generate-passphrase -qc              # silently copy to clipboard
+  generate-passphrase | pbcopy         # pipe passphrase, diagnostics still visible
+  generate-passphrase 100              # 100 bits minimum entropy
 
 Tools used:
   phraze           Generate the passphrase
@@ -48,7 +69,7 @@ Tools used:
 USAGE_TEXT
 }
 
-# Check that a required command is available.
+# Check that a required command is available. Exits on failure.
 # Arguments:
 #   $1 - Command name
 #   $2 - Install hint (optional)
@@ -63,6 +84,15 @@ function require_command() {
     [[ -n "${hint}" ]] && echo "  Install: ${hint}" >&2
     exit "${E_MISSING_TOOL}"
   fi
+}
+
+# Check whether an optional command is available.
+# Arguments:
+#   $1 - Command name
+# Returns:
+#   0 if found, 1 if not
+function has_command() {
+  command -v "${1}" > /dev/null 2>&1
 }
 
 # Generate a passphrase using phraze.
@@ -85,9 +115,9 @@ function generate_passphrase() {
 # Arguments:
 #   $1 - Passphrase to check
 # Outputs:
-#   Writes result to stdout
+#   Writes result to stderr
 # Returns:
-#   0 on success (whether or not the passphrase was found)
+#   0 if not found, 1 if found in breaches
 function check_pwned_passwords() {
   local passphrase="${1}"
   local sha1
@@ -102,18 +132,18 @@ function check_pwned_passwords() {
   if printf '%s' "${response}" | grep -qi "^${suffix}:"; then
     local count
     count="$(printf '%s' "${response}" | grep -i "^${suffix}:" | cut -d: -f2 | tr -d '\r')"
-    echo "FOUND in ${count} breaches"
-    return 0
+    echo "FOUND in ${count} breaches" >&2
+    return 1
   fi
 
-  echo "Not found in any known breaches"
+  echo "Not found in any known breaches" >&2
 }
 
 # Run zxcvbn password strength analysis via Python (reads from stdin).
 # Arguments:
 #   $1 - Passphrase to check
 # Outputs:
-#   Writes zxcvbn results to stdout
+#   Writes zxcvbn results to stderr
 function check_zxcvbn() {
   local passphrase="${1}"
 
@@ -147,22 +177,23 @@ for s in r['sequence']:
         if s.get('reversed'):
             detail += ' [reversed]'
     print(f\"  {token!r:20s} {pattern:12s} log10: {log10:5.1f}{detail}\")
-"
+" >&2
 }
 
 # Run keepassxc-cli entropy estimate (reads from stdin).
 # Arguments:
 #   $1 - Passphrase to check
 # Outputs:
-#   Writes keepassxc-cli output to stdout
+#   Writes keepassxc-cli output to stderr
 function check_keepassxc() {
   local passphrase="${1}"
 
-  printf '%s' "${passphrase}" | keepassxc-cli estimate --advanced
+  printf '%s' "${passphrase}" | keepassxc-cli estimate --advanced >&2
 }
 
 function main() {
   local copy_to_clipboard=false
+  local quiet=false
 
   while [[ "${1:-}" == -* ]]; do
     case "${1}" in
@@ -170,9 +201,26 @@ function main() {
         copy_to_clipboard=true
         shift
         ;;
+      -q | --quiet)
+        quiet=true
+        shift
+        ;;
       -h | --help)
         usage
         exit "${E_SUCCESS}"
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -[!-]?*)
+        # Expand combined short flags (-qc -> -q -c)
+        local combined="${1}"
+        shift
+        local -i i
+        for ((i = 1; i < ${#combined}; i++)); do
+          set -- "-${combined:i:1}" "${@}"
+        done
         ;;
       *)
         echo "Unknown option: ${1}" >&2
@@ -184,17 +232,39 @@ function main() {
 
   local -i minimum_entropy="${1:-${DEFAULT_MINIMUM_ENTROPY}}"
 
+  # phraze is the only hard requirement
   require_command "phraze" "cargo install phraze"
-  require_command "keepassxc-cli" "brew install keepassxc"
-  require_command "uv" "brew install uv"
-  require_command "curl"
-  require_command "shasum"
-  [[ "${copy_to_clipboard}" == true ]] && require_command "pbcopy"
+
+  # Detect optional tools
+  local has_zxcvbn=false
+  local has_keepassxc=false
+  local has_pwned=false
+
+  if has_command "uv"; then
+    has_zxcvbn=true
+  fi
+
+  if has_command "keepassxc-cli"; then
+    has_keepassxc=true
+  fi
+
+  if has_command "curl" && has_command "shasum"; then
+    has_pwned=true
+  fi
+
+  if [[ "${copy_to_clipboard}" == true ]]; then
+    require_command "pbcopy"
+  fi
 
   if [[ ! -f "${WORD_LIST}" ]]; then
     echo "Error: word list not found at ${WORD_LIST}" >&2
     echo "  Run 'make build' to generate it." >&2
     exit "${E_MISSING_WORD_LIST}"
+  fi
+
+  # Suppress diagnostics in quiet mode
+  if [[ "${quiet}" == true ]]; then
+    exec 2>/dev/null
   fi
 
   # Generate the passphrase
@@ -208,27 +278,52 @@ function main() {
   local entropy_line="${phraze_output%%$'\n'*}"
   local passphrase="${phraze_output##*$'\n'}"
 
-  # Validate with multiple tools, passphrase last for easy copying
-  echo "=== phraze ==="
-  echo "${entropy_line}"
+  # Diagnostics to stderr
+  echo "=== phraze ===" >&2
+  echo "${entropy_line}" >&2
 
-  echo ""
-  echo "=== zxcvbn ==="
-  check_zxcvbn "${passphrase}"
+  echo "" >&2
+  echo "=== zxcvbn ===" >&2
+  if [[ "${has_zxcvbn}" == true ]]; then
+    check_zxcvbn "${passphrase}"
+  else
+    echo "(skipped: uv not installed)" >&2
+  fi
 
-  echo ""
-  echo "=== keepassxc-cli ==="
-  check_keepassxc "${passphrase}"
+  echo "" >&2
+  echo "=== keepassxc-cli ===" >&2
+  if [[ "${has_keepassxc}" == true ]]; then
+    check_keepassxc "${passphrase}"
+  else
+    echo "(skipped: keepassxc-cli not installed)" >&2
+  fi
 
-  echo ""
-  echo "=== Pwned Passwords (k-anonymity) ==="
-  check_pwned_passwords "${passphrase}"
+  echo "" >&2
+  echo "=== Pwned Passwords (k-anonymity) ===" >&2
+  local pwned_ok=true
+  if [[ "${has_pwned}" == true ]]; then
+    if ! check_pwned_passwords "${passphrase}"; then
+      pwned_ok=false
+    fi
+  else
+    echo "(skipped: curl or shasum not installed)" >&2
+  fi
 
-  echo ""
-  echo "=== Passphrase ==="
+  # On pwned failure, send passphrase to stderr (visible for debugging,
+  # but not piped downstream or copied to clipboard) and exit non-zero.
+  if [[ "${pwned_ok}" == false ]]; then
+    echo "" >&2
+    echo "=== Passphrase (NOT SAFE) ===" >&2
+    echo "${passphrase}" >&2
+    exit "${E_PWNED}"
+  fi
+
+  # Passphrase to stdout (or clipboard)
   if [[ "${copy_to_clipboard}" == true ]]; then
     printf '%s' "${passphrase}" | pbcopy
-    echo "(copied to clipboard)"
+    echo "" >&2
+    echo "=== Passphrase ===" >&2
+    echo "(copied to clipboard)" >&2
   else
     echo "${passphrase}"
   fi

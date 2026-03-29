@@ -21,8 +21,5 @@ build: score
 clean:
 	rm -rf data/raw data/words data/validated data/scored
 
-clean-output:
-	rm -rf output/*
-
 test:
 	uv run pytest tests/ -v

@@ -11,11 +11,11 @@ and other passphrase generators.
 
 ## The word list
 
-**`output/word-list.txt`** contains 31,210 lowercase ASCII words, one per
+**`word-list.txt`** contains 31,210 lowercase ASCII words, one per
 line, ready for use:
 
 ```bash
-phraze -c output/word-list.txt -w 5 -s -
+phraze -c word-list.txt -w 5 -s -
 ```
 
 Sample passphrases:
@@ -136,7 +136,7 @@ regression trained on 136 million keystrokes.
 1. Filters out offensive words using `blocklist.txt`
 2. Removes prefix words (shorter word dropped when it prefixes a longer one)
 3. Removes suffix words (same logic, reversed)
-4. Outputs the final sorted list to `output/word-list.txt`
+4. Outputs the final sorted list to `word-list.txt`
 
 ## Blocklist
 
