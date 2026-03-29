@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# generate-passphrase -- Generate a passphrase and validate its strength
+# arcana -- Generate a passphrase and validate its strength
 # Author: Christopher Boone
 # Date: 2026-03-29
 
@@ -43,7 +43,7 @@ readonly E_MISSING_WORD_LIST=3
 #   Writes usage text to stderr
 function usage() {
   cat >&2 <<'USAGE_TEXT'
-Usage: generate-passphrase [options] [minimum-entropy]
+Usage: arcana [options] [minimum-entropy]
 
 Generate a passphrase and validate its strength using multiple tools.
 Diagnostics go to stderr; the passphrase goes to stdout.
@@ -62,12 +62,12 @@ Exit codes:
   1  Passphrase found in breach database
 
 Examples:
-  generate-passphrase                  # show diagnostics + passphrase
-  generate-passphrase -c               # diagnostics on screen, passphrase to clipboard
-  generate-passphrase -q               # just the passphrase
-  generate-passphrase -qc              # silently copy to clipboard
-  generate-passphrase | pbcopy         # pipe passphrase, diagnostics still visible
-  generate-passphrase 100              # 100 bits minimum entropy
+  arcana                  # show diagnostics + passphrase
+  arcana -c               # diagnostics on screen, passphrase to clipboard
+  arcana -q               # just the passphrase
+  arcana -qc              # silently copy to clipboard
+  arcana | pbcopy         # pipe passphrase, diagnostics still visible
+  arcana 100              # 100 bits minimum entropy
 
 Tools used:
   phraze           Generate the passphrase

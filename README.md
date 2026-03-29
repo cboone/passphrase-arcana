@@ -158,7 +158,7 @@ lists:
 ```bash
 git clone https://github.com/cboone/passphrase-arcana.git
 cd passphrase-arcana
-make install             # symlinks bin/generate-passphrase to ~/.local/bin/
+make install             # symlinks bin/arcana to ~/.local/bin/
 ```
 
 The symlink points back to the repo, so the script always finds the word
@@ -176,16 +176,16 @@ make uninstall
 
 ### Usage
 
-`generate-passphrase` generates a passphrase and validates its strength.
+`arcana` generates a passphrase and validates its strength.
 Diagnostics go to stderr; the passphrase goes to stdout.
 
 ```bash
-generate-passphrase            # default: 80 bits minimum entropy
-generate-passphrase 100        # request 100 bits
-generate-passphrase -c         # copy to clipboard, show diagnostics
-generate-passphrase -q         # just the passphrase, no diagnostics
-generate-passphrase -qc        # silently copy to clipboard
-generate-passphrase | pbcopy   # pipe passphrase, diagnostics visible
+arcana            # default: 80 bits minimum entropy
+arcana 100        # request 100 bits
+arcana -c         # copy to clipboard, show diagnostics
+arcana -q         # just the passphrase, no diagnostics
+arcana -qc        # silently copy to clipboard
+arcana | pbcopy   # pipe passphrase, diagnostics visible
 ```
 
 The script exits 0 on success and 1 if the passphrase is found in the Pwned

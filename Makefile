@@ -22,12 +22,12 @@ build: score
 
 install:
 	@mkdir -p "$(PREFIX)/bin"
-	ln -sf "$(CURDIR)/bin/generate-passphrase" "$(PREFIX)/bin/generate-passphrase"
-	@echo "Installed: $(PREFIX)/bin/generate-passphrase -> $(CURDIR)/bin/generate-passphrase"
+	ln -sf "$(CURDIR)/bin/arcana" "$(PREFIX)/bin/arcana"
+	@echo "Installed: $(PREFIX)/bin/arcana -> $(CURDIR)/bin/arcana"
 
 uninstall:
-	rm -f "$(PREFIX)/bin/generate-passphrase"
-	@echo "Removed: $(PREFIX)/bin/generate-passphrase"
+	rm -f "$(PREFIX)/bin/arcana"
+	@echo "Removed: $(PREFIX)/bin/arcana"
 
 clean:
 	rm -rf data/raw data/words data/validated data/scored
