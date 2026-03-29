@@ -1,6 +1,6 @@
 PREFIX ?= $(HOME)/.local
 
-.PHONY: all clean fetch extract filter-nouns validate score build install uninstall test lint fmt format format-check lint-md help
+.PHONY: all clean fetch extract filter-proper-nouns validate score build install uninstall test lint fmt format format-check lint-md help
 
 all: build
 
@@ -11,10 +11,10 @@ fetch:
 extract: fetch
 	uv run src/extract_words.py
 
-filter-nouns: extract
+filter-proper-nouns: extract
 	uv run src/filter_proper_nouns.py
 
-validate: filter-nouns
+validate: filter-proper-nouns
 	uv run src/validate_words.py
 
 score: validate
