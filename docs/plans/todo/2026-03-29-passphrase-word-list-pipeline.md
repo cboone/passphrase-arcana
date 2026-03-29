@@ -8,7 +8,7 @@ Standard passphrase word lists (EFF, diceware) prioritize common, recognizable w
 
 Five Python scripts, each reading from the previous step's output, orchestrated by a Makefile:
 
-```
+```text
 fetch_texts → extract_words → validate_words → score_typing → build_list
 ```
 
@@ -16,7 +16,7 @@ All scripts invoked via `uv run`. Intermediate data in `data/` (gitignored). Fin
 
 ## Project Structure
 
-```
+```text
 word-lists/
   pyproject.toml
   Makefile
@@ -109,11 +109,13 @@ Uses a simplified Carpalx-inspired model defined in `src/typing_model.py`.
 Informed by the Carpalx triad effort model and the Typability Index regression (PMC12901113), simplified for per-word scoring:
 
 **Per-key base effort** incorporates:
+
 - Row distance from home row (home=0, top=+0.5, bottom=+0.8)
 - Finger strength (index=1.0, middle=1.1, ring=1.3, pinky=1.6)
 - Lateral stretch penalty for center column keys (+0.3)
 
 **Bigram transition effort** incorporates:
+
 - Same-finger penalty (worst: 2.5+, scaled by row distance)
 - Same-hand outward roll penalty (+0.5)
 - Same-hand inward roll bonus (-0.5)
@@ -128,7 +130,7 @@ Output: `data/scored/{lang}_scored.tsv` (word, effort_score).
 
 ### Key Effort Values
 
-```
+```text
 Home row:  a=1.6  s=1.3  d=1.1  f=1.0  g=1.3  h=1.3  j=1.0  k=1.1  l=1.3
 Top row:   q=2.4  w=1.95 e=1.65 r=1.5  t=1.8  y=1.8  u=1.5  i=1.65 o=1.95 p=2.4
 Bottom:    z=2.88 x=2.34 c=1.98 v=1.8  b=2.1  n=1.8  m=1.8

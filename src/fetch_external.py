@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import re
 import sys
-import tempfile
 import tomllib
 from collections import Counter
 from pathlib import Path
@@ -34,12 +33,12 @@ def fetch_mccarthy_concordance(url: str, dest: Path) -> None:
     process them.
     """
     if dest.exists() and dest.stat().st_size > 0:
-        print(f"  [McCarthy] concordance (cached)")
+        print("  [McCarthy] concordance (cached)")
         return
 
     dest.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"  [McCarthy] downloading concordance PDF...")
+    print("  [McCarthy] downloading concordance PDF...")
     with httpx.Client(follow_redirects=True, timeout=60.0) as client:
         resp = client.get(url)
         resp.raise_for_status()
@@ -124,7 +123,9 @@ def main() -> None:
 
     if "nabokov" in external:
         cfg = external["nabokov"]
-        build_nabokov_concordance(cfg["repo"], cfg["files"], DATA_RAW / "en" / "nabokov_concordance.txt")
+        build_nabokov_concordance(
+            cfg["repo"], cfg["files"], DATA_RAW / "en" / "nabokov_concordance.txt"
+        )
 
 
 if __name__ == "__main__":

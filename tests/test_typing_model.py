@@ -29,7 +29,9 @@ class TestKeyEffort:
 
     def test_index_finger_cheaper_than_pinky(self):
         assert KEY_EFFORT["f"] < KEY_EFFORT["a"]  # Left hand home row
-        assert KEY_EFFORT["j"] < KEY_EFFORT["l"]  # Right hand home row (l is ring, not pinky, but close)
+        assert (
+            KEY_EFFORT["j"] < KEY_EFFORT["l"]
+        )  # Right hand home row (l is ring, not pinky, but close)
 
 
 class TestBigramEffort:
@@ -48,7 +50,7 @@ class TestBigramEffort:
 
     def test_inward_roll_cheaper_than_outward(self):
         # Left hand: f->d (index to middle = inward) vs d->f (middle to index = outward)
-        inward = bigram_effort("f", "d")   # index -> middle on left = inward roll
+        inward = bigram_effort("f", "d")  # index -> middle on left = inward roll
         outward = bigram_effort("d", "f")  # middle -> index on left = outward roll
         assert inward < outward
 
