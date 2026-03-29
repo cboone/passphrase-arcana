@@ -1,4 +1,4 @@
-# Word Lists
+# Passphrase Arcana
 
 A passphrase word list built from the vocabularies of authors known for
 distinctive, unusual language. Standard passphrase lists (EFF, diceware)
@@ -11,11 +11,11 @@ and other passphrase generators.
 
 ## The word list
 
-**`word-list.txt`** contains 31,210 lowercase ASCII words, one per
+**`passphrase-arcana.txt`** contains 31,210 lowercase ASCII words, one per
 line, ready for use:
 
 ```bash
-phraze -c word-list.txt -w 5 -s -
+phraze -c passphrase-arcana.txt -w 5 -s -
 ```
 
 Sample passphrases:
@@ -136,7 +136,7 @@ regression trained on 136 million keystrokes.
 1. Filters out offensive words using `blocklist.txt`
 2. Removes prefix words (shorter word dropped when it prefixes a longer one)
 3. Removes suffix words (same logic, reversed)
-4. Outputs the final sorted list to `word-list.txt`
+4. Outputs the final sorted list to `passphrase-arcana.txt`
 
 ## Blocklist
 
@@ -153,32 +153,81 @@ lists:
 
 ## Generating passphrases
 
-`bin/generate-passphrase` generates a passphrase and validates its strength
-using multiple tools:
+### Installation
 
 ```bash
-bin/generate-passphrase        # default: 80 bits minimum entropy
-bin/generate-passphrase 100    # 100 bits minimum entropy
+git clone https://github.com/cboone/passphrase-arcana.git
+cd passphrase-arcana
+make install             # symlinks bin/generate-passphrase to ~/.local/bin/
 ```
 
-It runs [phraze](https://github.com/sts10/phraze) to generate the passphrase,
-then checks it against:
+The symlink points back to the repo, so the script always finds the word
+list. `git pull` updates both. To use a different prefix:
 
-- [zxcvbn](https://github.com/dropbox/zxcvbn) for pattern-based strength
-  scoring and crack time estimates
-- [KeePassXC](https://keepassxc.org/) (`keepassxc-cli estimate --advanced`)
-  for an independent entropy estimate with per-segment breakdown
-- [Pwned Passwords](https://haveibeenpwned.com/Passwords) to confirm the
-  passphrase has not appeared in known breaches
+```bash
+make install PREFIX=/usr/local
+```
 
-The passphrase never leaks outside the script: it is passed to each tool via
-stdin (using `printf`, a shell builtin, so it never appears in process
-listings), and the Pwned Passwords check uses
-[k-anonymity](https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420)
-(only the first 5 characters of the SHA-1 hash leave the machine).
+To remove:
 
-Requires `phraze`, `keepassxc-cli`, and `uv` (which provides `zxcvbn-python`
-from the project's dev dependencies).
+```bash
+make uninstall
+```
+
+### Usage
+
+`generate-passphrase` generates a passphrase and validates its strength.
+Diagnostics go to stderr; the passphrase goes to stdout.
+
+```bash
+generate-passphrase            # default: 80 bits minimum entropy
+generate-passphrase 100        # request 100 bits
+generate-passphrase -c         # copy to clipboard, show diagnostics
+generate-passphrase -q         # just the passphrase, no diagnostics
+generate-passphrase -qc        # silently copy to clipboard
+generate-passphrase | pbcopy   # pipe passphrase, diagnostics visible
+```
+
+The script exits 0 on success and 1 if the passphrase is found in the Pwned
+Passwords breach database (in which case the passphrase is printed to stderr
+only, not to stdout or the clipboard).
+
+### Tools
+
+**Required:**
+
+- [phraze](https://github.com/sts10/phraze): generates the passphrase
+  (`cargo install phraze`)
+
+**Recommended** (checks are skipped with a warning when missing):
+
+- [uv](https://docs.astral.sh/uv/) + `zxcvbn-python` (dev dependency):
+  pattern-based strength scoring with crack time estimates
+- [keepassxc-cli](https://keepassxc.org/): independent entropy estimate with
+  per-segment breakdown (`brew install keepassxc` or system package manager)
+- `curl` + `shasum`: [Pwned Passwords](https://haveibeenpwned.com/Passwords)
+  breach check (both are typically pre-installed)
+
+**For `--copy`** (one of):
+
+| Tool      | Platform | Notes                             |
+| --------- | -------- | --------------------------------- |
+| `pbcopy`  | macOS    | Built-in                          |
+| `wl-copy` | Wayland  | `--sensitive`; skips clip history |
+| `xclip`   | X11      | Uses `-selection clipboard`       |
+| `xsel`    | X11      | Uses `--clipboard --input`        |
+
+### Security
+
+The passphrase never leaks outside the script:
+
+- It is passed to each tool via stdin using `printf` (a shell builtin), so
+  it never appears in process listings.
+- The Pwned Passwords check uses
+  [k-anonymity](https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420):
+  only the first 5 characters of the SHA-1 hash leave the machine.
+- On Wayland, `wl-copy --sensitive` hints clipboard managers not to store the
+  content in their history.
 
 ## Running the pipeline
 

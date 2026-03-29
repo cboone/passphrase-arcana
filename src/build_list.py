@@ -117,7 +117,7 @@ def main() -> None:
     suffix_removed = initial_count - prefix_removed - len(word_list)
 
     # Write output
-    out_path = ROOT / "word-list.txt"
+    out_path = ROOT / "passphrase-arcana.txt"
     out_path.write_text("\n".join(word_list) + "\n")
 
     # Statistics

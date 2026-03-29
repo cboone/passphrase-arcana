@@ -18,11 +18,19 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve symlinks to find the real script location (portable, no readlink -f)
+SOURCE="${BASH_SOURCE[0]}"
+while [[ -L "${SOURCE}" ]]; do
+  SCRIPT_DIR="$(cd "$(dirname "${SOURCE}")" && pwd)"
+  SOURCE="$(readlink "${SOURCE}")"
+  # Handle relative symlink targets
+  [[ "${SOURCE}" != /* ]] && SOURCE="${SCRIPT_DIR}/${SOURCE}"
+done
+SCRIPT_DIR="$(cd "$(dirname "${SOURCE}")" && pwd)"
 readonly SCRIPT_DIR
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 readonly PROJECT_DIR
-readonly WORD_LIST="${PROJECT_DIR}/word-list.txt"
+readonly WORD_LIST="${PROJECT_DIR}/passphrase-arcana.txt"
 readonly DEFAULT_MINIMUM_ENTROPY=80
 
 readonly E_SUCCESS=0
@@ -41,8 +49,8 @@ Generate a passphrase and validate its strength using multiple tools.
 Diagnostics go to stderr; the passphrase goes to stdout.
 
 Options:
-  -c, --copy       Copy the passphrase to the clipboard via pbcopy
-                   (suppresses stdout)
+  -c, --copy       Copy the passphrase to the clipboard (suppresses stdout)
+                   Uses pbcopy (macOS), wl-copy (Wayland), or xclip (X11)
   -q, --quiet      Suppress diagnostics (stderr)
   -h, --help       Show this help message
 
@@ -93,6 +101,26 @@ function require_command() {
 #   0 if found, 1 if not
 function has_command() {
   command -v "${1}" > /dev/null 2>&1
+}
+
+# Detect the available clipboard command and build an argument array.
+# On Wayland, wl-copy --sensitive hints clipboard managers to skip history.
+# Sets: CLIP_CMD (array)
+# Returns:
+#   0 if a clipboard tool was found, exits with E_MISSING_TOOL if not
+function detect_clipboard() {
+  if has_command "pbcopy"; then
+    CLIP_CMD=("pbcopy")
+  elif has_command "wl-copy"; then
+    CLIP_CMD=("wl-copy" "--sensitive")
+  elif has_command "xclip"; then
+    CLIP_CMD=("xclip" "-selection" "clipboard")
+  elif has_command "xsel"; then
+    CLIP_CMD=("xsel" "--clipboard" "--input")
+  else
+    echo "Error: no clipboard tool found (pbcopy, wl-copy, xclip, or xsel)." >&2
+    exit "${E_MISSING_TOOL}"
+  fi
 }
 
 # Generate a passphrase using phraze.
@@ -253,7 +281,7 @@ function main() {
   fi
 
   if [[ "${copy_to_clipboard}" == true ]]; then
-    require_command "pbcopy"
+    detect_clipboard
   fi
 
   if [[ ! -f "${WORD_LIST}" ]]; then
@@ -320,7 +348,7 @@ function main() {
 
   # Passphrase to stdout (or clipboard)
   if [[ "${copy_to_clipboard}" == true ]]; then
-    printf '%s' "${passphrase}" | pbcopy
+    printf '%s' "${passphrase}" | "${CLIP_CMD[@]}"
     echo "" >&2
     echo "=== Passphrase ===" >&2
     echo "(copied to clipboard)" >&2
