@@ -111,6 +111,8 @@ function has_command() {
 function detect_clipboard() {
   if has_command "pbcopy"; then
     CLIP_CMD=("pbcopy")
+  elif has_command "clip.exe"; then
+    CLIP_CMD=("clip.exe")
   elif has_command "wl-copy"; then
     CLIP_CMD=("wl-copy" "--sensitive")
   elif has_command "xclip"; then
@@ -118,7 +120,7 @@ function detect_clipboard() {
   elif has_command "xsel"; then
     CLIP_CMD=("xsel" "--clipboard" "--input")
   else
-    echo "Error: no clipboard tool found (pbcopy, wl-copy, xclip, or xsel)." >&2
+    echo "Error: no clipboard tool found (pbcopy, clip.exe, wl-copy, xclip, or xsel)." >&2
     exit "${E_MISSING_TOOL}"
   fi
 }
