@@ -104,12 +104,15 @@ function has_command() {
 }
 
 # Detect the available clipboard command and build an argument array.
-# On Wayland, wl-copy --sensitive hints clipboard managers to skip history.
+# Prefers pbcopy2 (--conceal hides from clipboard history, -t 30 auto-clears).
+# Falls back to platform-native tools in order.
 # Sets: CLIP_CMD (array)
 # Returns:
 #   0 if a clipboard tool was found, exits with E_MISSING_TOOL if not
 function detect_clipboard() {
-  if has_command "pbcopy"; then
+  if has_command "pbcopy2"; then
+    CLIP_CMD=("pbcopy2" "--conceal" "-t" "30")
+  elif has_command "pbcopy"; then
     CLIP_CMD=("pbcopy")
   elif has_command "clip.exe"; then
     CLIP_CMD=("clip.exe")
@@ -120,7 +123,7 @@ function detect_clipboard() {
   elif has_command "xsel"; then
     CLIP_CMD=("xsel" "--clipboard" "--input")
   else
-    echo "Error: no clipboard tool found (pbcopy, clip.exe, wl-copy, xclip, or xsel)." >&2
+    echo "Error: no clipboard tool found (pbcopy2, pbcopy, clip.exe, wl-copy, xclip, or xsel)." >&2
     exit "${E_MISSING_TOOL}"
   fi
 }

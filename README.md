@@ -123,15 +123,18 @@ The script exits 0 on success and 1 if the passphrase is found in the Pwned Pass
 - [keepassxc-cli](https://keepassxc.org/): independent entropy estimate with per-segment breakdown (`brew install keepassxc` or system package manager)
 - `curl` + `shasum`: [Pwned Passwords](https://haveibeenpwned.com/Passwords) breach check (both are typically pre-installed)
 
-**For `--copy`** (one of):
+**For `--copy`** (first available is used):
 
-| Tool       | Platform | Notes                             |
-| ---------- | -------- | --------------------------------- |
-| `pbcopy`   | macOS    | Built-in                          |
-| `clip.exe` | WSL      | Built-in Windows clipboard        |
-| `wl-copy`  | Wayland  | `--sensitive`; skips clip history |
-| `xclip`    | X11      | Uses `-selection clipboard`       |
-| `xsel`     | X11      | Uses `--clipboard --input`        |
+| Tool                 | Platform | Notes                                               |
+| -------------------- | -------- | --------------------------------------------------- |
+| [`pbcopy2`][pbcopy2] | macOS    | `--conceal` hides from history; `-t 30` auto-clears |
+| `pbcopy`             | macOS    | Built-in fallback                                   |
+| `clip.exe`           | WSL      | Built-in Windows clipboard                          |
+| `wl-copy`            | Wayland  | `--sensitive`; skips clip history                   |
+| `xclip`              | X11      | Uses `-selection clipboard`                         |
+| `xsel`               | X11      | Uses `--clipboard --input`                          |
+
+[`pbcopy2`][pbcopy2] is preferred when available because it conceals the passphrase from clipboard history managers and auto-clears it after 30 seconds. Install with `brew install cboone/tap/pbcopy2`. Without it, the script falls back to the platform's native clipboard tool.
 
 ### Security
 
@@ -424,3 +427,4 @@ MIT
 [nist-63b]: https://pages.nist.gov/800-63-3/sp800-63b.html
 [nist-57]: https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final
 [grovers]: https://en.wikipedia.org/wiki/Grover%27s_algorithm
+[pbcopy2]: https://github.com/cboone/pbcopy2
