@@ -4,22 +4,22 @@ A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](
 
 [Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
 
-The list is designed for use with [`phraze`](https://github.com/sts10/phraze) and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#other-passphrase-testing-tools) to ensure it's strong and never before used.
+The list is designed for use with [`phraze`](https://github.com/sts10/phraze) and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#other-passphrase-testing-tools) to ensure it's strong and never before compromised.
 
 [**The word list**](#the-word-list) ・
-[**Other passphrase generators**](#other-passphrase-generators) ・
-[**Generating passphrases**](#generating-passphrases) ・
+[**Generating passphrases**](#generating-passphrases)<br>
 [**Word list attributes**](#word-list-attributes) ・
 [**Typing ease**](#typing-ease) ・
 [**Entropy and passphrase length**](#entropy-and-passphrase-length) ・
-[**Sources**](#sources) ・
-[**Processing pipeline**](#processing-pipeline) ・
+[**Sources**](#sources)<br>
 [**Other word lists**](#other-word-lists) ・
-[**Appendix: word list metrics**](#appendix-word-list-metrics)
+[**Other passphrase generators**](#other-passphrase-generators) ・
+[**Appendix: word list metrics**](#appendix-word-list-metrics)<br>
+[**Processing pipeline**](./docs/pipeline.md)
 
 ## The word list
 
-[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 24,880 lowercase ASCII words, one per line, ready for use with `phraze`:
+[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 24,880 lowercase ASCII words, ready for use with `phraze`:
 
 ```bash
 phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 80
@@ -33,48 +33,9 @@ profiled beeline tost eggcups coursers gutters
 arose speaketh mindless furlongs briskly alguacil
 ```
 
-For lists built from common words instead, see the [Orchard Street wordlists][orchard-street] (by the same author as phraze), or the [EFF dice lists][eff-dice].
-
-([EFF][eff-dice], [diceware][diceware], [Orchard Street][orchard-street])
-
-## Other passphrase generators
-
-The word list is a plain text file (one word per line) that works with any passphrase generator that accepts a custom list. Beyond `phraze`, here are some options:
-
-### CLI tools
-
-| Tool                             | Language | Custom list flag | Install                  |
-| -------------------------------- | -------- | ---------------- | ------------------------ |
-| [phraze][phraze]                 | Rust     | `--custom-list`  | `cargo install phraze`   |
-| [rusty-diceware][rusty-diceware] | Rust     | `-f`             | `cargo install diceware` |
-| [diceware][diceware-py]          | Python   | `-w`             | `pip install diceware`   |
-| [pwgen-go][pwgen-go]             | Go       | via config       | `go install` or Homebrew |
-
-Example with rusty-diceware:
-
-```bash
-diceware -f passphrase-arcana.txt -n 6
-```
-
-Example with the Python diceware tool:
-
-```bash
-diceware -w passphrase-arcana.txt -n 6
-```
-
-### Password managers
-
-[KeePassXC][keepassxc] supports custom word lists for its built-in passphrase generator. Copy the word list into KeePassXC's `share/wordlists/` directory, or use the CLI:
-
-```bash
-keepassxc-cli diceware -w passphrase-arcana.txt -W 6
-```
-
-KeePassXC requires lists with at least 1,000 words and warns below 4,000. This list's 24,880 words are well above both thresholds.
-
-[Bitwarden](https://bitwarden.com/) and [1Password](https://1password.com/) do not currently support custom word lists for passphrase generation.
-
 ## Generating passphrases
+
+[`arcana`](./bin/arcana) is a simple Bash script that runs `phraze` using the `passphrase-arcana` word list, then checks it with several tools to ensure that it's strong and never before compromised.
 
 ### Installation
 
@@ -98,24 +59,23 @@ make uninstall
 
 ### Usage
 
-`arcana` generates a passphrase and validates its strength. Diagnostics go to stderr; the passphrase goes to stdout.
+`arcana` generates a passphrase and validates its strength.
 
 ```bash
 arcana            # default: 80 bits minimum entropy
 arcana 100        # request 100 bits
-arcana -c         # copy to clipboard, show diagnostics
-arcana -q         # just the passphrase, no diagnostics
+arcana --copy     # copy to clipboard, show diagnostics
+arcana --quiet    # just the passphrase, no diagnostics
 arcana -qc        # silently copy to clipboard
-arcana | pbcopy   # pipe passphrase, diagnostics visible
 ```
 
-The script exits 0 on success and 1 if the passphrase is found in the Pwned Passwords breach database (in which case the passphrase is printed to stderr only, not to stdout or the clipboard).
+If the passphrase has been compromised before (absurdly unlikely, but might as well be sure), the script exits with status 1 and doesn't copy the passphrase to the clipboard or print it to stout.
 
 ### Tools
 
-**Required:**
+#### Required
 
-- [phraze](https://github.com/sts10/phraze): generates the passphrase (`cargo install phraze`)
+[phraze](https://github.com/sts10/phraze): generates the passphrase (`brew install sts10/phraze/phraze` or `cargo install phraze`)
 
 **Recommended** (checks are skipped with a warning when missing):
 
@@ -313,6 +273,43 @@ Words are drawn from authors with rich, unusual vocabularies. Most are sourced f
 
 The Project Gutenberg texts are in `data/raw/en/`. The McCarthy concordance is parsed from John Sepich's [academic word list](http://johnsepich.com/). The Nabokov concordance is built at fetch time from [bukvik-workshop-corpora](https://github.com/Cha-OS/bukvik-workshop-corpora) (texts are streamed and discarded; only word frequencies are kept).
 
+## Other passphrase generators
+
+The word list is a plain text file (one word per line) that works with any passphrase generator that accepts a custom list. Beyond `phraze`, here are some options:
+
+### CLI tools
+
+| Tool                             | Language | Custom list flag | Install                  |
+| -------------------------------- | -------- | ---------------- | ------------------------ |
+| [phraze][phraze]                 | Rust     | `--custom-list`  | `cargo install phraze`   |
+| [rusty-diceware][rusty-diceware] | Rust     | `-f`             | `cargo install diceware` |
+| [diceware][diceware-py]          | Python   | `-w`             | `pip install diceware`   |
+| [pwgen-go][pwgen-go]             | Go       | via config       | `go install` or Homebrew |
+
+Example with rusty-diceware:
+
+```bash
+diceware -f passphrase-arcana.txt -n 6
+```
+
+Example with the Python diceware tool:
+
+```bash
+diceware -w passphrase-arcana.txt -n 6
+```
+
+### Password managers
+
+[KeePassXC][keepassxc] supports custom word lists for its built-in passphrase generator. Copy the word list into KeePassXC's `share/wordlists/` directory, or use the CLI:
+
+```bash
+keepassxc-cli diceware -w passphrase-arcana.txt -W 6
+```
+
+KeePassXC requires lists with at least 1,000 words and warns below 4,000. This list's 24,880 words are well above both thresholds.
+
+[Bitwarden](https://bitwarden.com/) and [1Password](https://1password.com/) do not currently support custom word lists for passphrase generation.
+
 ## Processing pipeline
 
 Six-step Python pipeline, orchestrated by a Makefile and run with `uv`:
@@ -332,6 +329,10 @@ make test      # run tests
 ```
 
 ## Other word lists
+
+For lists built from common words instead, see the [Orchard Street wordlists][orchard-street] (by the same author as phraze), or the [EFF dice lists][eff-dice].
+
+([EFF][eff-dice], [diceware][diceware], [Orchard Street][orchard-street])
 
 This list prioritizes distinctive vocabulary over everyday words. If you want common, easy-to-spell words instead, these are good alternatives:
 
