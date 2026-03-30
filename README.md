@@ -31,7 +31,7 @@ The list is designed for use with [`phraze`][phraze] and [other passphrase gener
 
 ## The word list
 
-[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 32,185 lowercase ASCII words, ready for use with `phraze`:
+[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 32,162 lowercase ASCII words, ready for use with `phraze`:
 
 ```bash
 phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 80
@@ -131,7 +131,7 @@ Password or passphrase strength is measured in terms of [information entropy][pa
 entropy = num_words x log2(list_size)
 ```
 
-For this list (32,185 words), each word in your passphrase counts for **15.0 bits** of entropy. This assumes that your attacker knows that you're using this list, which is the safe assumption to make.
+For this list (32,162 words), each word in your passphrase counts for **15.0 bits** of entropy. This assumes that your attacker knows that you're using this list, which is the safe assumption to make.
 
 | Words | Entropy  | Use case                                    |
 | ----- | -------- | ------------------------------------------- |
@@ -197,7 +197,7 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 
 | Attribute                                                                          | Value           |
 | ---------------------------------------------------------------------------------- | --------------- |
-| Unique words                                                                       | 32,185          |
+| Unique words                                                                       | 32,162          |
 | Free of exact duplicates                                                           | yes             |
 | Free of [fuzzy duplicates](./docs/word-list-metrics.md#fuzzy-duplicates)           | yes             |
 | No non-ASCII characters                                                            | yes             |
@@ -222,7 +222,7 @@ Analyzed with [`wla`][wla]. See the [word list metrics docs](./docs/word-list-me
 
 Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](./docs/pipeline.md#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out.
 
-The scores for the 32,185 words in the final list range from a minimum 1.25 to a median of 1.93 and a maximum of 2.50. Lower is easier to type. About 33% of words score below 1.8 (easy range), and 57% below 2.0.
+The scores for the 32,162 words in the final list range from a minimum 1.25 to a median of 1.93 and a maximum of 2.50. Lower is easier to type. About 33% of words score below 1.8 (easy range), and 57% below 2.0.
 
 The easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). The hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
 

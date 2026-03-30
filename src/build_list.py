@@ -13,6 +13,7 @@ CONFIG = ROOT / "config.toml"
 BLOCKLIST = ROOT / "blocklist.txt"
 HOMOPHONES = ROOT / "data" / "homophones.csv"
 ARCHAIC_REJECTS = ROOT / "data" / "archaic_rejects.txt"
+CONTRACTIONS_REJECTS = ROOT / "data" / "contractions_rejects.txt"
 DATA_SCORED = ROOT / "data" / "scored"
 TIDY = Path.home() / ".cargo" / "bin" / "tidy"
 
@@ -62,6 +63,8 @@ def main() -> None:
         cmd.extend(["-r", str(BLOCKLIST)])
     if ARCHAIC_REJECTS.exists():
         cmd.extend(["-r", str(ARCHAIC_REJECTS)])
+    if CONTRACTIONS_REJECTS.exists():
+        cmd.extend(["-r", str(CONTRACTIONS_REJECTS)])
 
     # Add homophones
     if HOMOPHONES.exists():

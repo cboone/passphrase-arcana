@@ -6282,7 +6282,6 @@ coughs
 could
 coulda
 couldn
-couldnt
 couldst
 coulee
 coulees
@@ -7124,7 +7123,6 @@ dapples
 darbies
 dared
 daren
-darent
 dares
 daresay
 darest
@@ -7680,7 +7678,6 @@ diddling
 diddly
 didn
 didna
-didnt
 didst
 diego
 diehards
@@ -8189,7 +8186,6 @@ dodo
 does
 doeskin
 doesn
-doesnt
 doest
 doffed
 doffing
@@ -8301,7 +8297,6 @@ donning
 dono
 donor
 donors
-dont
 donte
 dood
 doodle
@@ -13071,7 +13066,6 @@ haddock
 haddocks
 haddy
 hadn
-hadnt
 hadron
 hadrons
 hadst
@@ -13346,7 +13340,6 @@ harveys
 hashed
 haskins
 hasn
-hasnt
 hasp
 hasps
 hassle
@@ -13411,7 +13404,6 @@ hauts
 haveing
 havelock
 havens
-havent
 haveto
 havoc
 hawkbill
@@ -15054,7 +15046,6 @@ islanding
 islands
 islet
 islets
-isnt
 isobar
 isocline
 isolate
@@ -15084,7 +15075,6 @@ iterating
 iteration
 itinerant
 itinerary
-itll
 itself
 ivied
 ivoire
@@ -25361,9 +25351,7 @@ should
 shoulder
 shoulders
 shouldn
-shouldnt
 shouldst
-shouldve
 shouted
 shouting
 shove
@@ -28674,7 +28662,6 @@ thatchers
 thatches
 thatching
 thatd
-thatll
 thats
 thatt
 thaw
@@ -28737,10 +28724,7 @@ thewless
 thews
 they
 theyd
-theyll
-theyre
 theys
-theyve
 thick
 thicken
 thickened
@@ -31072,7 +31056,6 @@ washtubs
 washy
 wasn
 wasna
-wasnt
 wasp
 waspish
 waspishly
@@ -31273,7 +31256,6 @@ wend
 wending
 wends
 weren
-werent
 wernt
 wery
 weskit
@@ -31301,7 +31283,6 @@ wetsuits
 wetter
 wettest
 wetting
-weve
 whacked
 whacking
 whackings
@@ -31918,7 +31899,6 @@ woul
 woulda
 wouldbe
 wouldn
-wouldnt
 wouldst
 wounding
 woundings
@@ -32133,18 +32113,15 @@ yore
 yori
 york
 youd
-youll
 youngest
 youngish
 youngling
 youngster
-youre
 yourn
 yourself
 youth
 youthful
 youths
-youve
 yowl
 yowled
 yowling
