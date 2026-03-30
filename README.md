@@ -33,16 +33,6 @@ profiled beeline tost eggcups coursers gutters
 arose speaketh mindless furlongs briskly alguacil
 ```
 
-### Checksum
-
-A SHA-256 checksum is generated alongside the word list at `passphrase-arcana.txt.sha256`. To verify the word list has not been modified:
-
-```bash
-shasum -a 256 -c passphrase-arcana.txt.sha256
-```
-
-The checksum is regenerated each time `make build` runs.
-
 ## Generating passphrases
 
 ### Installation
@@ -289,7 +279,6 @@ The score is normalized per character. Words above the configured threshold (def
 2. Removes prefix words (shorter word dropped when it prefixes a longer one)
 3. Removes suffix words (same logic, reversed)
 4. Outputs the final sorted list to `passphrase-arcana.txt`
-5. Writes a SHA-256 checksum to `passphrase-arcana.txt.sha256`
 
 ## Blocklist
 
@@ -318,7 +307,7 @@ make extract              # tokenize and filter
 make filter-proper-nouns  # remove likely proper nouns
 make validate             # dictionary verification
 make score                # typing difficulty
-make build                # final assembly + checksum
+make build                # final assembly
 ```
 
 Run tests:

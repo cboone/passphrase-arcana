@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import math
 import tomllib
 from pathlib import Path
@@ -119,13 +118,7 @@ def main() -> None:
 
     # Write output
     out_path = ROOT / "passphrase-arcana.txt"
-    content = "\n".join(word_list) + "\n"
-    out_path.write_text(content)
-
-    # Write SHA-256 checksum
-    sha256 = hashlib.sha256(content.encode()).hexdigest()
-    checksum_path = ROOT / "passphrase-arcana.txt.sha256"
-    checksum_path.write_text(f"{sha256}  passphrase-arcana.txt\n")
+    out_path.write_text("\n".join(word_list) + "\n")
 
     # Statistics
     count = len(word_list)
@@ -137,7 +130,6 @@ def main() -> None:
     print(f"  Words: {count}")
     print(f"  Entropy per word: {entropy:.2f} bits")
     print(f"  Mean word length: {mean_len:.1f} characters")
-    print(f"  SHA-256: {sha256}")
     print(f"  Blocked words removed: {blocked_removed}")
     print(f"  Prefix words removed: {prefix_removed}")
     print(f"  Suffix words removed: {suffix_removed}")
