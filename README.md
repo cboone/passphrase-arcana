@@ -1,25 +1,27 @@
 # Passphrase Arcana
 
-A passphrase word list built from the vocabularies of authors known for distinctive, unusual language. Standard passphrase lists ([EFF][eff-dice], [diceware][diceware], [Orchard Street][orchard-street]) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
+A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](#sources) of authors known for distinctive, unusual language, filtered for medium length and [easy typing](#typing-ease).
 
-The list is designed for use with [phraze](https://github.com/sts10/phraze) and other passphrase generators. For lists built from common words instead, see the [Orchard Street wordlists][orchard-street] (by the same author as phraze), or the [EFF dice lists][eff-dice].
+[Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
 
-[The word list](#the-word-list)
-[Generating passphrases](#generating-passphrases)
-[Word list attributes](#word-list-attributes)
-[Typing ease](#typing-ease)
-[Entropy and passphrase length](#entropy-and-passphrase-length)
-[Sources](#sources)
-[Processing pipeline](#processing-pipeline)
-[Blocklist](#blocklist)
-[Running the pipeline](#running-the-pipeline)
-[Configuration](#configuration)
-[Other wordlists](#other-wordlists)
-[Appendix: word list metrics](#appendix-word-list-metrics)
+The list is designed for use with [`phraze`](https://github.com/sts10/phraze) and other passphrase generators that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then tests it in several ways to ensure it's strong and never before used.
+
+[**The word list**](#the-word-list) ・
+[**Generating passphrases**](#generating-passphrases) ・
+[**Word list attributes**](#word-list-attributes) ・
+[**Typing ease**](#typing-ease) ・
+[**Entropy and passphrase length**](#entropy-and-passphrase-length) ・
+[**Sources**](#sources) ・
+[**Processing pipeline**](#processing-pipeline) ・
+[**Blocklist**](#blocklist) ・
+[**Running the pipeline**](#running-the-pipeline) ・
+[**Configuration**](#configuration) ・
+[**Other word lists**](#other-word-lists) ・
+[**Appendix: word list metrics**](#appendix-word-list-metrics)
 
 ## The word list
 
-**`passphrase-arcana.txt`** contains 24,880 lowercase ASCII words, one per line, ready for use with phraze or any passphrase generator:
+[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 24,880 lowercase ASCII words, one per line, ready for use with `phraze`:
 
 ```bash
 phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 80
@@ -32,6 +34,10 @@ sprouting ascendant lifters asbestos kudzu bleaching
 profiled beeline tost eggcups coursers gutters
 arose speaketh mindless furlongs briskly alguacil
 ```
+
+For lists built from common words instead, see the [Orchard Street wordlists][orchard-street] (by the same author as phraze), or the [EFF dice lists][eff-dice].
+
+([EFF][eff-dice], [diceware][diceware], [Orchard Street][orchard-street])
 
 ## Generating passphrases
 
@@ -325,7 +331,7 @@ All parameters are in `config.toml`:
 - `languages.en.sources`: mapping of author name to Project Gutenberg ebook IDs
 - `languages.en.external`: non-Project Gutenberg sources (concordance PDFs, GitHub corpora)
 
-## Other wordlists
+## Other word lists
 
 This list prioritizes distinctive vocabulary over everyday words. If you want common, easy-to-spell words instead, these are good alternatives:
 
