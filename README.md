@@ -7,7 +7,7 @@ A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](
 The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#passphrase-strength-testing) to ensure it's strong and never before compromised.
 
 > [!TIP]
-> If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even the quantum crackers of the future. (They'll steal your data another way.)
+> If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even [the quantum crackers of the future](#post-quantum-considerations). (They'll steal your data another way.)
 
 [**The word list**](#the-word-list) ・
 [Generating passphrases](#generating-passphrases) ・
