@@ -1,21 +1,31 @@
 # Passphrase Arcana
 
+[**The word list**](#the-word-list) ・
+[Generating passphrases](#generating-passphrases) ・
+[Entropy and passphrase length](#entropy-and-passphrase-strength) ・
+[Passphrase strength testing](#passphrase-strength-testing)<br>
+[**About the word list**](#about-the-word-list) ・
+[Sources](#sources) ・
+[Word list attributes](#word-list-attributes) ・
+[Typing ease](#typing-ease)<br>
+[**Other tools**](#other-tools) ・
+[Passphrase generators](#other-passphrase-generators) ・
+[Word lists](#other-word-lists)<br>
+[**Security notes**](#additional-security-notes) ・
+[Post-quantum considerations](#post-quantum-considerations) ・
+[Kerckhoff's principle](#kerckhoffss-principle) ・
+[Different entropy measurements](#why-phraze-and-keepassxc-cli-report-different-entropy)<br>
+[**Other docs**](./docs/) ・
+[Word list metrics](#appendix-word-list-metrics) ・
+[Processing pipeline](./docs/pipeline.md)
+
 A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](#sources) of authors known for distinctive, unusual language, filtered for medium length and [easy typing](#typing-ease).
 
 [Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
 
 The list is designed for use with [`phraze`](https://github.com/sts10/phraze) and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#other-passphrase-testing-tools) to ensure it's strong and never before compromised.
 
-[**The word list**](#the-word-list) ・
-[**Generating passphrases**](#generating-passphrases)<br>
-[**Word list attributes**](#word-list-attributes) ・
-[**Typing ease**](#typing-ease) ・
-[**Entropy and passphrase length**](#entropy-and-passphrase-length) ・
-[**Sources**](#sources)<br>
-[**Other word lists**](#other-word-lists) ・
-[**Other passphrase generators**](#other-passphrase-generators) ・
-[**Appendix: word list metrics**](#appendix-word-list-metrics)<br>
-[**Processing pipeline**](./docs/pipeline.md)
+If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even the quantum crackers of the future. (They'll steal your data another way.)
 
 ## The word list
 
@@ -76,40 +86,112 @@ If the passphrase has been compromised before (absurdly unlikely, but might as w
 
 #### Required
 
-[phraze](https://github.com/sts10/phraze): generates the passphrase (`brew install sts10/phraze/phraze` or `cargo install phraze`)
+[`phraze`](https://github.com/sts10/phraze)<br>
+Generates the passphrase. `brew install sts10/phraze/phraze` or `cargo install phraze` or [other methods](https://github.com/sts10/phraze#installing).
 
-#### Optional (enrich diagnostics)
+#### Optional, for strength checking
 
-These are checked automatically; missing tools are skipped with a hint. Run `arcana --setup` to see what's installed and what's missing.
+Run `arcana --setup` to see what's installed and what's missing.
 
-- [uv](https://docs.astral.sh/uv/) + `zxcvbn-python`: pattern-based strength scoring with crack time estimates. Install uv, then run `uv sync --extra dev` in the repo to set up the Python dependencies.
-- [keepassxc-cli](https://keepassxc.org/): independent entropy estimate with per-segment breakdown (`brew install keepassxc` or system package manager)
-- `curl` + `shasum`: [Pwned Passwords](https://haveibeenpwned.com/Passwords) breach check (both are typically pre-installed)
+[`uv`](https://docs.astral.sh/uv/) + [`zxcvbn-python`](https://github.com/dwolfhub/zxcvbn-python)<br>
+Pattern-based strength scoring with crack time estimates. Install `uv`, then run `uv sync --extra dev` in the repo to set up the Python dependencies.
 
-**For `--copy`** (first available is used):
+[keepassxc-cli](https://keepassxc.org/)<br>
+Independent entropy estimate with per-segment breakdown. `brew install keepassxc` or [other methods](https://keepassxc.org/download/).
+
+`curl` + `shasum`<br>
+[Pwned Passwords](https://haveibeenpwned.com/Passwords) breach check. Both are typically pre-installed.
+
+#### For `--copy` to the system clipboard
 
 | Tool                 | Platform | Notes                                               |
 | -------------------- | -------- | --------------------------------------------------- |
 | [`pbcopy2`][pbcopy2] | macOS    | `--conceal` hides from history; `-t 30` auto-clears |
-| `pbcopy`             | macOS    | Built-in fallback                                   |
+| `pbcopy`             | macOS    | Built-in default                                    |
 | `clip.exe`           | WSL      | Built-in Windows clipboard                          |
-| `wl-copy`            | Wayland  | `--sensitive`; skips clip history                   |
+| `wl-copy`            | Wayland  | `--sensitive`; skips clipboard history              |
 | `xclip`              | X11      | Uses `-selection clipboard`                         |
 | `xsel`               | X11      | Uses `--clipboard --input`                          |
 
-[`pbcopy2`][pbcopy2] is preferred when available because it conceals the passphrase from clipboard history managers and auto-clears it after 30 seconds. Install with `brew install cboone/tap/pbcopy2`. Without it, the script falls back to the platform's native clipboard tool.
+[`pbcopy2`][pbcopy2] is preferred on macOS because it conceals the passphrase from clipboard history managers and auto-clears the clipboard after 30 seconds. Install it with: `brew install cboone/tap/pbcopy2`
 
 ### Security
 
-The passphrase never leaks outside the script:
+The passphrase never leaks outside the script. It is passed to each tool via stdin using `printf` (a shell builtin), so it never appears in shell history or process listings. The Pwned Passwords check uses [k-anonymity](https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420): only the first 5 characters of the SHA-1 hash leave the machine.
 
-- It is passed to each tool via stdin using `printf` (a shell builtin), so it never appears in process listings.
-- The Pwned Passwords check uses [k-anonymity](https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420): only the first 5 characters of the SHA-1 hash leave the machine.
-- On Wayland, `wl-copy --sensitive` hints clipboard managers not to store the content in their history.
+## Entropy and passphrase strength
 
-## Word list attributes
+### How passphrase entropy works
 
-Analyzed with [wla](https://github.com/sts10/wla). See the [appendix](#appendix-word-list-metrics) for explanations of each metric.
+Password or passphrase strength is measured in terms of [information entropy](https://en.wikipedia.org/wiki/Password_strength#Entropy_as_a_measure_of_password_strength), or the minimum number of bits necessary to hold the information in the password. There are different ways to calculate this and think about this, but the most common for a passphrase with a known word list is:
+
+```text
+entropy = num_words x log2(list_size)
+```
+
+For this list (24,880 words), each word in your passphrase counts for **14.6 bits** of entropy. This assumes that your attacker knows that you're using this list, which is the safe assumption to make.
+
+| Words | Entropy  | Use case                                    |
+| ----- | -------- | ------------------------------------------- |
+| ≈4    | 60 bits  | Low-value accounts                          |
+| ≈5    | 75 bits  | Most online accounts                        |
+| ≈6    | 90 bits  | Important accounts                          |
+| ≈7    | 100 bits | High-security accounts, encryption keys     |
+| ≈8    | 128 bits | Exceeds NIST SP 800-63B highest level (112) |
+
+The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list (6 x 14.60 = 87.6 bits).
+
+### Recommended minimums
+
+Different organizations and security standards recommend different entropy floors depending on the threat model:
+
+| Minimum  | passphrase-arcana           | Source                                                   | Context                                        |
+| -------- | --------------------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| ~65 bits | ~4 words                    | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
+| ~77 bits | ~5 words                    | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
+| 80 bits  | ~5 words (`arcana` default) | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
+| 100 bits | ~7 words                    | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
+| 112 bits | ~8 words                    | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
+| 128 bits | ~9 words                    | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
+| 256 bits | ~18 words                   | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
+
+For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~117 bits) exceeds the NIST 112-bit threshold.
+
+### Passphrase strength testing
+
+The `arcana` script runs three independent checks. Each evaluates passphrase strength from a different angle:
+
+**`phraze`** provides the entropy figure you should rely on for passphrase security. It calculates entropy from the word list size and word count.
+
+**`zxcvbn`** takes a different approach: it models how a real-world attacker cracks passwords by recognizing patterns like dictionary words, keyboard walks, dates, and common substitutions. It reports a 0-4 score, estimated guess count, and crack times at various attack speeds (online throttled, offline slow hash, offline fast hash). For passphrases from a curated list, `zxcvbn` tends to underestimate strength because it matches individual words against its internal dictionaries rather than considering the combinatorial word list space.
+
+**`keepassxc-cli`** estimates entropy per character segment and totals them. Useful for seeing which parts of a passphrase contribute most to its strength, but the total typically overstates security against a word-list-aware attacker.
+
+**Pwned Passwords** checks whether the exact passphrase appears in known data breaches. It uses [k-anonymity][k-anonymity]: only the first 5 characters of the SHA-1 hash leave the machine, so the passphrase is never exposed to the API. A match does not mean the passphrase was _yours_, just that someone has used the same string before.
+
+## About the word list
+
+## Sources
+
+Words are drawn from authors with rich, unusual vocabularies. Most are sourced from [Project Gutenberg][gutenberg] (public domain texts). Two use concordances (word frequency data extracted from copyrighted works, which is non-copyrightable factual data):
+
+| Author              | Works | Source                              | Vocabulary                      |
+| ------------------- | ----- | ----------------------------------- | ------------------------------- |
+| Herman Melville     | 14    | [Project Gutenberg][pg-melville]    | Nautical, philosophical         |
+| H.P. Lovecraft      | 18    | [Project Gutenberg][pg-lovecraft]   | Cosmic, eldritch                |
+| Joseph Conrad       | 14    | [Project Gutenberg][pg-conrad]      | Maritime, colonial              |
+| James Joyce         | 5     | [Project Gutenberg][pg-joyce]       | Modern experimental             |
+| Nathaniel Hawthorne | 8     | [Project Gutenberg][pg-hawthorne]   | Archaic, allegorical            |
+| Mark Twain          | 12    | [Project Gutenberg][pg-twain]       | Vernacular, satirical           |
+| Lewis Carroll       | 7     | [Project Gutenberg][pg-carroll]     | Nonsense, mathematical          |
+| Oscar Wilde         | 12    | [Project Gutenberg][pg-wilde]       | Aesthetic, theatrical           |
+| William Shakespeare | 1     | [Project Gutenberg][pg-shakespeare] | Early Modern English            |
+| Cormac McCarthy     | 16    | Concordance                         | Archaic, Southern, Southwestern |
+| Vladimir Nabokov    | 11    | Concordance                         | Ornate, precise                 |
+
+The McCarthy concordance is parsed from John Sepich's [word list](http://johnsepich.com/). The Nabokov concordance is built at fetch time from [bukvik-workshop-corpora](https://github.com/Cha-OS/bukvik-workshop-corpora) (texts are streamed and discarded; only word frequencies are kept).
+
+### Word list attributes
 
 | Attribute                                               | Value           |
 | ------------------------------------------------------- | --------------- |
@@ -132,66 +214,60 @@ Analyzed with [wla](https://github.com/sts10/wla). See the [appendix](#appendix-
 | [Unique character prefix](#unique-character-prefix)     | 9               |
 | [Kraft-McMillan inequality](#kraft-mcmillan-inequality) | satisfied       |
 
-A 4-word passphrase provides ~58 bits of entropy. A 6-word passphrase provides ~88 bits.
+Analyzed with [`wla`](https://github.com/sts10/wla). See the [appendix](#appendix-word-list-metrics) for explanations of each metric.
 
-## Typing ease
+### Typing ease
 
-Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](docs/pipeline.md#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out. The scores for the 24,880 words in the final list:
+Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](./docs/pipeline.md#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out.
 
-| Statistic       | Effort per character |
-| --------------- | -------------------- |
-| Minimum         | 1.25                 |
-| 10th percentile | 1.64                 |
-| 25th percentile | 1.75                 |
-| Median          | 1.94                 |
-| Mean            | 1.97                 |
-| 75th percentile | 2.19                 |
-| 90th percentile | 2.36                 |
-| Maximum         | 2.50 (threshold)     |
+The scores for the 24,880 words in the final list range from a minimum 1.25 to a median of 1.94 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
 
-Lower is easier. The scale runs from ~1.0 (home-row keys with hand alternation) to 2.5 (the configured cutoff). About 32% of words score below 1.8 (easy range), and 55% below 2.0.
+The easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). The hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
 
-Easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). Hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
+## Other tools
 
-## Entropy and passphrase length
+### Other passphrase generators
 
-### How passphrase entropy works
+The word list is a plain text file (one word per line) that works with any passphrase generator that accepts a custom list.
 
-Entropy measures how many guesses an attacker needs to crack a passphrase. With a known word list, the calculation is:
+#### CLI tools
 
-```text
-entropy = num_words x log2(list_size)
+| Tool                             | Language | Custom list flag |
+| -------------------------------- | -------- | ---------------- |
+| [phraze][phraze]                 | Rust     | `--custom-list`  |
+| [rusty-diceware][rusty-diceware] | Rust     | `-f`             |
+| [diceware][diceware-py]          | Python   | `-w`             |
+| [pwgen-go][pwgen-go]             | Go       | via config       |
+
+#### Password managers
+
+[KeePassXC][keepassxc] supports custom word lists for its built-in passphrase generator. Copy the word list into KeePassXC's `share/wordlists/` directory, or use the CLI:
+
+```bash
+keepassxc-cli diceware -w passphrase-arcana.txt -W 6
 ```
 
-For this list (24,880 words): **14.60 bits per word**.
+[Bitwarden](https://bitwarden.com/) and [1Password](https://1password.com/) do not currently support custom word lists for passphrase generation.
 
-| Words | Entropy   | Length | Use case                                    |
-| ----- | --------- | ------ | ------------------------------------------- |
-| 4     | ~58 bits  | ~33 ch | Low-value accounts                          |
-| 5     | ~73 bits  | ~42 ch | Most online accounts                        |
-| 6     | ~88 bits  | ~50 ch | Important accounts, the `arcana` default    |
-| 7     | ~102 bits | ~58 ch | High-security accounts, encryption keys     |
-| 8     | ~117 bits | ~67 ch | Exceeds NIST SP 800-63B highest level (112) |
+### Other word lists
 
-Length assumes space separators and the list's mean word length of 7.45 characters.
+The `passphrase-arcana` list prioritizes distinctive vocabulary over everyday words. If you want common, easy-to-spell words instead, these are good alternatives:
 
-The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list (6 x 14.60 = 87.6 bits).
+| List                                   | Words  | Bits/word | Description                                                     |
+| -------------------------------------- | ------ | --------- | --------------------------------------------------------------- |
+| [Orchard Street Long][os-long]         | 17,576 | 14.10     | Common English from Wikipedia and Google Books                  |
+| [Orchard Street Medium][os-medium]     | 8,192  | 13.00     | Common English, power-of-2 optimized for phraze                 |
+| [EFF Long][eff-long]                   | 7,776  | 12.93     | Common English, designed for easy spelling                      |
+| [Orchard Street Diceware][os-diceware] | 7,776  | 12.93     | Common English, diceware-compatible (6^5 words)                 |
+| [Orchard Street QWERTY][os-qwerty]     | 1,296  | 10.34     | Optimized for tvs and other devices with a QWERTY layout        |
+| [Orchard Street Alpha][os-alpha]       | 1,296  | 10.34     | Optimized for tvs and other devices with an alphabetical layout |
+| [EFF Short 1][eff-short]               | 1,296  | 10.34     | Short common words                                              |
 
-### Recommended minimums
+Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (~78 bits) is roughly equivalent to a 5-word passphrase from this list (~73 bits).
 
-Different organizations and security standards recommend different entropy floors depending on the threat model:
+The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert](https://github.com/sts10), who also created [phraze](https://github.com/sts10/phraze).
 
-| Minimum  | Source                                                   | Context                                        |
-| -------- | -------------------------------------------------------- | ---------------------------------------------- |
-| ~65 bits | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
-| ~77 bits | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
-| 80 bits  | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
-| 100 bits | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
-| 112 bits | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
-| 128 bits | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
-| 256 bits | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
-
-For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~117 bits) approaches the NIST 112-bit threshold.
+## Additional security notes
 
 ### Post-quantum considerations
 
@@ -236,159 +312,6 @@ Both tools are correct, but they model different attacks:
 **keepassxc-cli** uses character-level analysis. It examines the passphrase as a string of characters, recognizes patterns (dictionary words, sequences, repeated characters), and estimates entropy from that. It does not know which word list generated the passphrase, so it applies a general-purpose model. This often produces a higher number because character-level brute force against a long passphrase is harder than word-level guessing against a known list.
 
 **Which to trust:** Use phraze's estimate (the word-level one). It represents the realistic attack: an adversary who knows you use passphrase-arcana.txt and is enumerating word combinations. The keepassxc-cli number is useful as a sanity check, but it overstates security against a targeted attack.
-
-### Other passphrase testing tools
-
-The `arcana` script runs three independent checks. Each evaluates passphrase strength from a different angle:
-
-| Tool                         | What it measures                               | Install                           |
-| ---------------------------- | ---------------------------------------------- | --------------------------------- |
-| [phraze][phraze]             | Word-level entropy from list size              | `cargo install phraze`            |
-| [zxcvbn][zxcvbn]             | Pattern-based guessability and crack time      | `uv sync --extra dev`             |
-| [keepassxc-cli][keepassxc]   | Character-level entropy with segment breakdown | `brew install keepassxc`          |
-| [Pwned Passwords][pwned-api] | Breach database lookup (k-anonymity)           | `curl` + `shasum` (pre-installed) |
-
-**phraze** provides the entropy figure you should rely on for passphrase security. It calculates entropy from the word list size and word count.
-
-**zxcvbn** (by Dropbox) takes a different approach: it models how a real-world attacker cracks passwords by recognizing patterns like dictionary words, keyboard walks, dates, and common substitutions. It reports a 0-4 score, estimated guess count, and crack times at various attack speeds (online throttled, offline slow hash, offline fast hash). For passphrases from a curated list, zxcvbn tends to underestimate strength because it matches individual words against its internal dictionaries rather than considering the combinatorial word list space.
-
-**keepassxc-cli** estimates entropy per character segment and totals them. Useful for seeing which parts of a passphrase contribute most to its strength, but the total typically overstates security against a word-list-aware attacker (see [Why phraze and keepassxc-cli report different entropy](#why-phraze-and-keepassxc-cli-report-different-entropy) above).
-
-**Pwned Passwords** checks whether the exact passphrase appears in known data breaches. It uses [k-anonymity][k-anonymity]: only the first 5 characters of the SHA-1 hash leave the machine, so the passphrase is never exposed to the API. A match does not mean the passphrase was _yours_, just that someone has used the same string before.
-
-## Sources
-
-Words are drawn from authors with rich, unusual vocabularies. Most are sourced from [Project Gutenberg][gutenberg] (public domain texts). Two use concordances (word frequency data extracted from copyrighted works, which is non-copyrightable factual data):
-
-| Author                                | Works | Source            | Vocabulary              |
-| ------------------------------------- | ----- | ----------------- | ----------------------- |
-| [Herman Melville][pg-melville]        | 14    | Project Gutenberg | Nautical, philosophical |
-| [H.P. Lovecraft][pg-lovecraft]        | 18    | Project Gutenberg | Cosmic, eldritch        |
-| [Joseph Conrad][pg-conrad]            | 14    | Project Gutenberg | Maritime, colonial      |
-| [James Joyce][pg-joyce]               | 5     | Project Gutenberg | Experimental            |
-| [Nathaniel Hawthorne][pg-hawthorne]   | 8     | Project Gutenberg | Archaic, allegorical    |
-| [Mark Twain][pg-twain]                | 12    | Project Gutenberg | Vernacular, satirical   |
-| [Lewis Carroll][pg-carroll]           | 7     | Project Gutenberg | Nonsense, mathematical  |
-| [Oscar Wilde][pg-wilde]               | 12    | Project Gutenberg | Aesthetic, theatrical   |
-| [William Shakespeare][pg-shakespeare] | 1     | Project Gutenberg | Early Modern English    |
-| Cormac McCarthy                       | 16    | Concordance       | Archaic, Southwestern   |
-| Vladimir Nabokov                      | 11    | Concordance       | Ornate, precise         |
-
-The Project Gutenberg texts are in `data/raw/en/`. The McCarthy concordance is parsed from John Sepich's [academic word list](http://johnsepich.com/). The Nabokov concordance is built at fetch time from [bukvik-workshop-corpora](https://github.com/Cha-OS/bukvik-workshop-corpora) (texts are streamed and discarded; only word frequencies are kept).
-
-## Other passphrase generators
-
-The word list is a plain text file (one word per line) that works with any passphrase generator that accepts a custom list. Beyond `phraze`, here are some options:
-
-### CLI tools
-
-| Tool                             | Language | Custom list flag | Install                  |
-| -------------------------------- | -------- | ---------------- | ------------------------ |
-| [phraze][phraze]                 | Rust     | `--custom-list`  | `cargo install phraze`   |
-| [rusty-diceware][rusty-diceware] | Rust     | `-f`             | `cargo install diceware` |
-| [diceware][diceware-py]          | Python   | `-w`             | `pip install diceware`   |
-| [pwgen-go][pwgen-go]             | Go       | via config       | `go install` or Homebrew |
-
-Example with rusty-diceware:
-
-```bash
-diceware -f passphrase-arcana.txt -n 6
-```
-
-Example with the Python diceware tool:
-
-```bash
-diceware -w passphrase-arcana.txt -n 6
-```
-
-### Password managers
-
-[KeePassXC][keepassxc] supports custom word lists for its built-in passphrase generator. Copy the word list into KeePassXC's `share/wordlists/` directory, or use the CLI:
-
-```bash
-keepassxc-cli diceware -w passphrase-arcana.txt -W 6
-```
-
-KeePassXC requires lists with at least 1,000 words and warns below 4,000. This list's 24,880 words are well above both thresholds.
-
-[Bitwarden](https://bitwarden.com/) and [1Password](https://1password.com/) do not currently support custom word lists for passphrase generation.
-
-## Processing pipeline
-
-Six-step Python pipeline, orchestrated by a Makefile and run with `uv`:
-
-```text
-fetch -> extract -> filter proper nouns -> validate -> score typing -> build
-```
-
-Each step is idempotent: fetches are cached, and `make all` skips completed steps. See **[docs/pipeline.md](docs/pipeline.md)** for the full documentation of each step, the blocklist, configuration, and how to run individual steps.
-
-Quick start:
-
-```bash
-uv sync
-make all       # run the full pipeline
-make test      # run tests
-```
-
-## Other word lists
-
-For lists built from common words instead, see the [Orchard Street wordlists][orchard-street] (by the same author as phraze), or the [EFF dice lists][eff-dice].
-
-([EFF][eff-dice], [diceware][diceware], [Orchard Street][orchard-street])
-
-This list prioritizes distinctive vocabulary over everyday words. If you want common, easy-to-spell words instead, these are good alternatives:
-
-| List                                   |  Words | Bits/word | Description                                     |
-| -------------------------------------- | -----: | --------: | ----------------------------------------------- |
-| **Passphrase Arcana**                  | 24,880 |     14.60 | Literary vocabulary, distinctive words          |
-| [Orchard Street Long][os-long]         | 17,576 |     14.10 | Common English from Wikipedia and Google Books  |
-| [Orchard Street Medium][os-medium]     |  8,192 |     13.00 | Common English, power-of-2 optimized for phraze |
-| [EFF Long][eff-long]                   |  7,776 |     12.93 | Common English, designed for easy spelling      |
-| [Orchard Street Diceware][os-diceware] |  7,776 |     12.93 | Common English, diceware-compatible (6^5 words) |
-| [Orchard Street QWERTY][os-qwerty]     |  1,296 |     10.34 | Optimized for QWERTY typing ease                |
-| [Orchard Street Alpha][os-alpha]       |  1,296 |     10.34 | Alphabetically distinct, for reading aloud      |
-| [EFF Short 1][eff-short]               |  1,296 |     10.34 | Short common words                              |
-
-Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (~78 bits) is roughly equivalent to a 5-word passphrase from this list (~73 bits).
-
-The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert](https://github.com/sts10), who also created [phraze](https://github.com/sts10/phraze).
-
-## Appendix: word list metrics
-
-Definitions for the metrics in the [word list attributes](#word-list-attributes) table. All are computed by [wla](https://github.com/sts10/wla).
-
-### Fuzzy duplicates
-
-Words that are identical except for minor typographical differences. For example, "theater" and "theatre", or "color" and "colour". A list free of fuzzy duplicates avoids ambiguity when a user hears or reads a passphrase word.
-
-### Prefix and suffix words
-
-A prefix word is a word that is the beginning of another word in the list. For example, if both "cat" and "catalog" are in the list, "cat" is a prefix word. Suffix words are the reverse: "log" would be a suffix of "catalog". Removing these ensures the list is safe to use without separators between words, since the decoder can always determine where one word ends and the next begins.
-
-### Uniquely decodable
-
-A list is uniquely decodable if, when you concatenate words from it without separators, there is exactly one way to split the result back into the original words. This is a stronger property than being free of prefix words: it guarantees unambiguous decoding even in edge cases where prefix-freeness alone would not. In practice, a list that is both prefix-free and suffix-free is always uniquely decodable.
-
-### Above brute force line
-
-The list has enough words that randomly selecting from it provides more entropy per character than brute-forcing a random password of the same length. This is the minimum bar for a passphrase word list to be worthwhile compared to a random character password.
-
-### Efficiency per character
-
-Entropy per word divided by mean word length. Higher values mean more entropy per keystroke. This list's efficiency of 1.96 bits/character means a 50-character passphrase (about 6 words with spaces) provides ~88 bits of entropy, compared to ~50 bits from a random string of 50 lowercase letters (which has ~4.7 bits per character but is much harder to remember).
-
-### Edit distance
-
-The [Levenshtein edit distance](https://en.wikipedia.org/wiki/Levenshtein_distance) between two words is the minimum number of single-character insertions, deletions, or substitutions needed to transform one into the other. The shortest edit distance in the list is the distance between the two most similar words. A higher value means the list is more resistant to typos causing one valid word to be mistaken for another. A shortest edit distance of 1 means there exists at least one pair of words differing by a single character (e.g., "word" and "cord").
-
-### Unique character prefix
-
-The minimum number of leading characters needed to uniquely identify every word in the list. With a value of 9 (equal to the maximum word length), some words require their full length to be distinguished. This matters for autocomplete systems: a lower value means fewer characters are needed to disambiguate.
-
-### Kraft-McMillan inequality
-
-A mathematical condition from [information theory](https://en.wikipedia.org/wiki/Kraft%27s_inequality) that must hold for a set of codewords to be uniquely decodable. If the inequality is satisfied, it is theoretically possible to construct a prefix code with the given codeword lengths. For passphrase word lists, satisfying this inequality confirms the list's structure supports unambiguous concatenation.
 
 ## License
 
