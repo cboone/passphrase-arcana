@@ -20,7 +20,7 @@ The list has enough words that randomly selecting from it provides more entropy 
 
 ## Efficiency per character
 
-Entropy per word divided by mean word length. Higher values mean more entropy per keystroke. This list's efficiency of 2.09 bits/character means a 48-character passphrase (about 6 words with spaces) provides ~90 bits of entropy, compared to ~48 bits from a random string of 48 lowercase letters (which has ~4.7 bits per character but is much harder to remember).
+Entropy per word divided by mean word length. Higher values mean more entropy per keystroke. This list's efficiency of 1.96 bits/character means a 50-character passphrase (about 6 words with spaces) provides ~88 bits of entropy, compared to ~50 bits from a random string of 50 lowercase letters (which has ~4.7 bits per character but is much harder to remember).
 
 ## Edit distance
 

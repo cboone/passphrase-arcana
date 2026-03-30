@@ -31,7 +31,7 @@ The list is designed for use with [`phraze`][phraze] and [other passphrase gener
 
 ## The word list
 
-[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 32,162 lowercase ASCII words, ready for use with `phraze`:
+[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 24,642 lowercase ASCII words, ready for use with `phraze`:
 
 ```bash
 phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 80
@@ -131,19 +131,19 @@ Password or passphrase strength is measured in terms of [information entropy][pa
 entropy = num_words x log2(list_size)
 ```
 
-For this list (32,162 words), each word in your passphrase counts for **15.0 bits** of entropy. This assumes that your attacker knows that you're using this list, which is the safe assumption to make.
+For this list (24,642 words), each word in your passphrase counts for **14.6 bits** of entropy. This assumes that your attacker knows that you're using this list, which is the safe assumption to make.
 
 | Words | Entropy   | Length | Use case                                    |
 | ----- | --------- | ------ | ------------------------------------------- |
-| 4     | ~60 bits  | ~32 ch | Low-value accounts                          |
-| 5     | ~75 bits  | ~40 ch | Most online accounts                        |
-| 6     | ~90 bits  | ~48 ch | Important accounts, the `arcana` default    |
-| 7     | ~105 bits | ~56 ch | High-security accounts, encryption keys     |
-| 8     | ~120 bits | ~64 ch | Exceeds NIST SP 800-63B highest level (112) |
+| 4     | ~58 bits  | ~33 ch | Low-value accounts                          |
+| 5     | ~73 bits  | ~41 ch | Most online accounts                        |
+| 6     | ~88 bits  | ~50 ch | Important accounts, the `arcana` default    |
+| 7     | ~102 bits | ~58 ch | High-security accounts, encryption keys     |
+| 8     | ~117 bits | ~67 ch | Exceeds NIST SP 800-63B highest level (112) |
 
-Length assumes space separators and the list's mean word length of 7.15 characters.
+Length assumes space separators and the list's mean word length of 7.46 characters.
 
-The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list (6 x 15.0 = 89.8 bits).
+The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list (6 x 14.6 = 87.5 bits).
 
 ### Recommended minimums
 
@@ -157,9 +157,9 @@ Different organizations and security standards recommend different entropy floor
 | 100 bits | ~7 words                    | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
 | 112 bits | ~8 words                    | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
 | 128 bits | ~9 words                    | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
-| 256 bits | ~17 words                   | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
+| 256 bits | ~18 words                   | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
 
-For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~90 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~120 bits) exceeds the NIST 112-bit threshold.
+For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~117 bits) exceeds the NIST 112-bit threshold.
 
 ### Passphrase strength testing
 
@@ -199,22 +199,22 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 
 | Attribute                                                                          | Value           |
 | ---------------------------------------------------------------------------------- | --------------- |
-| Unique words                                                                       | 32,162          |
+| Unique words                                                                       | 24,642          |
 | Free of exact duplicates                                                           | yes             |
 | Free of [fuzzy duplicates](./docs/word-list-metrics.md#fuzzy-duplicates)           | yes             |
 | No non-ASCII characters                                                            | yes             |
 | Unicode normalized                                                                 | yes             |
-| Free of [prefix words](./docs/word-list-metrics.md#prefix-and-suffix-words)        | no              |
-| Free of [suffix words](./docs/word-list-metrics.md#prefix-and-suffix-words)        | no              |
+| Free of [prefix words](./docs/word-list-metrics.md#prefix-and-suffix-words)        | yes             |
+| Free of [suffix words](./docs/word-list-metrics.md#prefix-and-suffix-words)        | yes             |
 | [Uniquely decodable](./docs/word-list-metrics.md#uniquely-decodable)               | yes             |
 | [Above brute force line](./docs/word-list-metrics.md#above-brute-force-line)       | yes             |
 | Shortest word                                                                      | 4 characters    |
 | Longest word                                                                       | 9 characters    |
-| Mean word length                                                                   | 7.15 characters |
-| [Entropy per word](#how-passphrase-entropy-works)                                  | 14.974 bits     |
-| [Efficiency per character](./docs/word-list-metrics.md#efficiency-per-character)   | 2.093 bits      |
+| Mean word length                                                                   | 7.46 characters |
+| [Entropy per word](#how-passphrase-entropy-works)                                  | 14.589 bits     |
+| [Efficiency per character](./docs/word-list-metrics.md#efficiency-per-character)   | 1.956 bits      |
 | [Shortest edit distance](./docs/word-list-metrics.md#edit-distance)                | 1               |
-| [Mean edit distance](./docs/word-list-metrics.md#edit-distance)                    | 6.880           |
+| [Mean edit distance](./docs/word-list-metrics.md#edit-distance)                    | 7.058           |
 | [Unique character prefix](./docs/word-list-metrics.md#unique-character-prefix)     | 9               |
 | [Kraft-McMillan inequality](./docs/word-list-metrics.md#kraft-mcmillan-inequality) | satisfied       |
 
@@ -224,7 +224,7 @@ Analyzed with [`wla`][wla]. See the [word list metrics docs](./docs/word-list-me
 
 Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](./docs/pipeline.md#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out.
 
-The scores for the 32,162 words in the final list range from a minimum 1.25 to a median of 1.93 and a maximum of 2.50. Lower is easier to type. About 33% of words score below 1.8 (easy range), and 57% below 2.0.
+The scores for the 24,642 words in the final list range from a minimum 1.25 to a median of 1.94 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
 
 The easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). The hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
 
@@ -267,7 +267,7 @@ The `passphrase-arcana` list prioritizes distinctive vocabulary over everyday wo
 | [Orchard Street Alpha][os-alpha]       | 1,296  | 10.34     | Optimized for tvs and other devices with an alphabetical layout |
 | [EFF Short 1][eff-short]               | 1,296  | 10.34     | Short common words                                              |
 
-Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (~78 bits) is roughly equivalent to a 5-word passphrase from this list (~75 bits).
+Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (~78 bits) is roughly equivalent to a 5-word passphrase from this list (~73 bits).
 
 The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert][sts10], who also created [`phraze`][phraze].
 
@@ -277,7 +277,7 @@ The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert
 
 [Grover's algorithm][grovers], a quantum computing algorithm, provides a square-root speedup for brute-force search. This effectively halves your security bits: 128-bit entropy drops to 64-bit security against a quantum attacker, and 256 bits drops to 128. NIST's post-quantum guidance recommends 256-bit symmetric keys (equivalent to 128-bit post-quantum security) for long-term protection.
 
-For passphrases, 256 bits would require ~17 words from this list, which is not practical. In reality, passphrases protect secrets that are processed through slow key derivation functions (argon2, bcrypt, scrypt) before use, and each hash evaluation adds significant cost to both classical and quantum brute force. A 10-word passphrase (~150 bits) run through argon2 is likely adequate even against future quantum computers, but the honest answer is that nobody knows exactly when or whether large-scale quantum brute force will become feasible.
+For passphrases, 256 bits would require ~18 words from this list, which is not practical. In reality, passphrases protect secrets that are processed through slow key derivation functions (argon2, bcrypt, scrypt) before use, and each hash evaluation adds significant cost to both classical and quantum brute force. A 10-word passphrase (~146 bits) run through argon2 is likely adequate even against future quantum computers, but the honest answer is that nobody knows exactly when or whether large-scale quantum brute force will become feasible.
 
 If you need a secret that is unambiguously quantum-resistant without relying on key stretching, use a random string instead of a passphrase:
 
