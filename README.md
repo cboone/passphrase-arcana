@@ -1,5 +1,15 @@
 # Passphrase Arcana
 
+A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](#sources) of authors known for distinctive, unusual language, filtered for medium length and [easy typing](#typing-ease).
+
+[Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
+
+The list is designed for use with [`phraze`](https://github.com/sts10/phraze) and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#passphrase-strength-testing) to ensure it's strong and never before compromised.
+
+If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even the quantum crackers of the future. (They'll steal your data another way.)
+
+## Contents
+
 [**The word list**](#the-word-list) ・
 [Generating passphrases](#generating-passphrases) ・
 [Entropy and passphrase length](#entropy-and-passphrase-strength) ・
@@ -16,16 +26,8 @@
 [Kerckhoff's principle](#kerckhoffss-principle) ・
 [Different entropy measurements](#why-phraze-and-keepassxc-cli-report-different-entropy)<br>
 [**Other docs**](./docs/) ・
-[Word list metrics](#appendix-word-list-metrics) ・
+[Word list metrics](./docs/word-list-metrics.md) ・
 [Processing pipeline](./docs/pipeline.md)
-
-A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](#sources) of authors known for distinctive, unusual language, filtered for medium length and [easy typing](#typing-ease).
-
-[Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
-
-The list is designed for use with [`phraze`](https://github.com/sts10/phraze) and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#other-passphrase-testing-tools) to ensure it's strong and never before compromised.
-
-If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even the quantum crackers of the future. (They'll steal your data another way.)
 
 ## The word list
 
