@@ -1,14 +1,13 @@
 # Passphrase Arcana
 
-A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](#sources) of authors known for distinctive, unusual language, filtered for medium length and [easy typing](#typing-ease).
+A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](#sources) of authors known for distinctive, unusual language, filtered for the [easiest to type](#typing-ease). Also filtered to remove proper nouns, prefixes and suffixes, non-uniquely decodable words, offensive words, homophones, and words that are similar enough that a typo could transform one into the other.
 
 [Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
 
 The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#passphrase-strength-testing) to ensure it's strong and never before compromised.
 
-If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even the quantum crackers of the future. (They'll steal your data another way.)
-
-## Contents
+> [!TIP]
+> If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even the quantum crackers of the future. (They'll steal your data another way.)
 
 [**The word list**](#the-word-list) ・
 [Generating passphrases](#generating-passphrases) ・
@@ -16,6 +15,7 @@ If you just need a strong non-human readable password, use `openssl rand -base64
 [Passphrase strength testing](#passphrase-strength-testing)<br>
 [**About the word list**](#about-the-word-list) ・
 [Sources](#sources) ・
+[Word selection](#word-selection) ・
 [Word list attributes](#word-list-attributes) ・
 [Typing ease](#typing-ease)<br>
 [**Other tools**](#other-tools) ・
@@ -37,7 +37,7 @@ If you just need a strong non-human readable password, use `openssl rand -base64
 phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 80
 ```
 
-Sample passphrases:
+Produces passphrases like:
 
 ```text
 sprouting ascendant lifters asbestos kudzu bleaching
@@ -57,13 +57,13 @@ cd passphrase-arcana
 make install             # symlinks bin/arcana to ~/.local/bin/
 ```
 
-The symlink points back to the repo, so the script always finds the word list. `git pull` updates both. To use a different prefix:
+To install in a different directory:
 
 ```bash
 make install PREFIX=/usr/local
 ```
 
-To remove:
+To uninstall:
 
 ```bash
 make uninstall
@@ -71,7 +71,7 @@ make uninstall
 
 ### Usage
 
-`arcana` generates a passphrase and validates its strength.
+`arcana` generates a passphrase and [validates its strength](#passphrase-strength-testing).
 
 ```bash
 arcana            # default: 80 bits minimum entropy
@@ -84,27 +84,25 @@ arcana --setup    # check dependencies, show install instructions
 
 If the passphrase has been compromised before (absurdly unlikely, but might as well be sure), the script exits with status 1 and doesn't copy the passphrase to the clipboard or print it to stout.
 
-### Tools
-
-#### Required
-
-[`phraze`][phraze]<br>
-Generates the passphrase. `brew install sts10/phraze/phraze` or `cargo install phraze` or [other methods][phraze-install].
-
-#### Optional, for strength checking
+### Dependencies
 
 Run `arcana --setup` to see what's installed and what's missing.
 
-[`uv`][uv] + [`zxcvbn-python`][zxcvbn-python]<br>
-Pattern-based strength scoring with crack time estimates. Install `uv`, then run `uv sync --extra dev` in the repo to set up the Python dependencies.
+[`phraze`][phraze] **(required)**<br>
+Generates the passphrase. `brew install sts10/phraze/phraze` or `cargo install phraze` or [other methods][phraze-install].
 
-[keepassxc-cli][keepassxc]<br>
-Independent entropy estimate with per-segment breakdown. `brew install keepassxc` or [other methods][keepassxc-download].
-
-`curl` + `shasum`<br>
+`curl` + `shasum` _(optional)_<br>
 [Pwned Passwords][pwned-api] breach check. Both are typically pre-installed.
 
-#### For `--copy` to the system clipboard
+[`uv`][uv] + [`zxcvbn-python`][zxcvbn-python] _(optional)_<br>
+Pattern-based strength scoring with crack time estimates. Install `uv`, then run `uv sync --extra dev` in the repo to set up the Python dependencies.
+
+[keepassxc-cli][keepassxc] _(optional)_<br>
+Independent entropy estimate with per-segment breakdown. `brew install keepassxc` or [other methods][keepassxc-download].
+
+### Copying to the system clipboard
+
+If you pass `--copy`, `arcana` will use the appropriate tool from this list to copy the generated passphrase to the system clipbard:
 
 | Tool                 | Platform | Notes                                               |
 | -------------------- | -------- | --------------------------------------------------- |
@@ -117,15 +115,17 @@ Independent entropy estimate with per-segment breakdown. `brew install keepassxc
 
 [`pbcopy2`][pbcopy2] is preferred on macOS because it conceals the passphrase from clipboard history managers and auto-clears the clipboard after 30 seconds. Install it with: `brew install cboone/tap/pbcopy2`
 
-### Security
+### Script security
 
 The passphrase never leaks outside the script. It is passed to each tool via stdin using `printf` (a shell builtin), so it never appears in shell history or process listings. The Pwned Passwords check uses [k-anonymity][k-anonymity]: only the first 5 characters of the SHA-1 hash leave the machine.
 
 ## Entropy and passphrase strength
 
+There are different ways to think about and measure password or passphrase strength. It's hard to make a general rule that covers all cases. The most common metric is [entropy](#how-passphrase-entropy-works),
+
 ### How passphrase entropy works
 
-Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. There are different ways to calculate this and think about this, but the most common for a passphrase with a known word list is:
+Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. (Thanks to [the OG Claude](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf).) There are different ways to calculate this and to think about this, but the most common for a passphrase with a known word list is:
 
 ```text
 entropy = num_words x log2(list_size)
