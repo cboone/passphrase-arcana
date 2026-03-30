@@ -31,7 +31,7 @@ The list is designed for use with [`phraze`][phraze] and [other passphrase gener
 
 ## The word list
 
-[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 26,382 lowercase ASCII words, ready for use with `phraze`:
+[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 29,484 lowercase ASCII words, ready for use with `phraze`:
 
 ```bash
 phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 80
@@ -145,7 +145,7 @@ If you have a passphrase that's generated from a known list (which [you should a
 \mathrm{entropy} = \mathrm{words} \times \log_2(\textup{list size})
 ```
 
-For this list (26,382 words), each word in your passphrase counts for 14.7 bits of entropy. The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list:
+For this list (29,484 words), each word in your passphrase counts for 14.8 bits of entropy. The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list:
 
 ```math
 88.1 \text{ bits of entropy} = 6 \times \log_2(26\,382)
@@ -165,7 +165,7 @@ Different organizations and security standards recommend different entropy floor
 | 128 bits | ~9 words                    | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
 | 256 bits | ~18 words                   | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
 
-For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~118 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're probably better off with [a random password](#post-quantum-considerations).
+For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~89 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~119 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're probably better off with [a random password](#post-quantum-considerations).
 
 ### Passphrase strength testing
 
@@ -185,30 +185,42 @@ The `arcana` script runs three independent checks. Each evaluates passphrase str
 
 ## Sources
 
-Words are drawn from authors with rich, unusual vocabularies. Most are sourced from [Project Gutenberg][gutenberg] (public domain texts). Two use concordances (word frequency data extracted from copyrighted works, which is non-copyrightable factual data):
+Words are drawn from authors with rich, unusual vocabularies. Most are sourced from [Standard Ebooks][se] (preferred, professionally proofread) and [Project Gutenberg][gutenberg] (public domain texts). Two use concordances (word frequency data extracted from copyrighted works, which is non-copyrightable factual data):
 
-| Author              | Works | Source                              | Vocabulary                      |
-| ------------------- | ----- | ----------------------------------- | ------------------------------- |
-| Jane Austen         | 7     | [Project Gutenberg][pg-austen]      | Regency, ironic                 |
-| Charlotte Bronte    | 3     | [Project Gutenberg][pg-cbronte]     | Gothic, passionate              |
-| Lewis Carroll       | 7     | [Project Gutenberg][pg-carroll]     | Nonsense, mathematical          |
-| Agatha Christie     | 10    | [Project Gutenberg][pg-christie]    | Detective, conversational       |
-| Joseph Conrad       | 14    | [Project Gutenberg][pg-conrad]      | Maritime, colonial              |
-| W.E.B. Du Bois      | 6     | [Project Gutenberg][pg-dubois]      | Sociological, literary          |
-| George Eliot        | 10    | [Project Gutenberg][pg-eliot]       | Victorian, psychological        |
-| F. Scott Fitzgerald | 6     | [Project Gutenberg][pg-fitzgerald]  | Jazz Age, lyrical               |
-| Nathaniel Hawthorne | 8     | [Project Gutenberg][pg-hawthorne]   | Archaic, allegorical            |
-| Henry James         | 23    | [Project Gutenberg][pg-hjames]      | Psychological, ornate           |
-| James Joyce         | 5     | [Project Gutenberg][pg-joyce]       | Modern experimental             |
-| H.P. Lovecraft      | 18    | [Project Gutenberg][pg-lovecraft]   | Cosmic, eldritch                |
-| Cormac McCarthy     | 16    | Concordance                         | Archaic, Southern, Southwestern |
-| Herman Melville     | 14    | [Project Gutenberg][pg-melville]    | Nautical, philosophical         |
-| Vladimir Nabokov    | 11    | Concordance                         | Ornate, precise                 |
-| William Shakespeare | 1     | [Project Gutenberg][pg-shakespeare] | Early Modern English            |
-| Mary Shelley        | 6     | [Project Gutenberg][pg-mshelley]    | Gothic, Romantic                |
-| Mark Twain          | 12    | [Project Gutenberg][pg-twain]       | Vernacular, satirical           |
-| Oscar Wilde         | 12    | [Project Gutenberg][pg-wilde]       | Aesthetic, theatrical           |
-| P.G. Wodehouse      | 24    | [Project Gutenberg][pg-wodehouse]   | Comic, Edwardian                |
+| Author                 | Source                         | Vocabulary                      |
+| ---------------------- | ------------------------------ | ------------------------------- |
+| Jane Austen            | [SE][se] + [PG][pg-austen]     | Regency, ironic                 |
+| Ambrose Bierce         | [PG][pg-bierce]                | Satirical, military, sardonic   |
+| Charlotte Bronte       | [SE][se] + [PG][pg-cbronte]    | Gothic, passionate              |
+| Emily Bronte           | [PG][pg-ebronte]               | Yorkshire moors, gothic         |
+| Lewis Carroll          | [SE][se] + [PG][pg-carroll]    | Nonsense, mathematical          |
+| Agatha Christie        | [SE][se] + [PG][pg-christie]   | Detective, conversational       |
+| Joseph Conrad          | [SE][se] + [PG][pg-conrad]     | Maritime, colonial              |
+| Arthur Conan Doyle     | [PG][pg-doyle]                 | Detective, scientific           |
+| W.E.B. Du Bois         | [PG][pg-dubois]                | Sociological, literary          |
+| George Eliot           | [SE][se] + [PG][pg-eliot]      | Victorian, psychological        |
+| F. Scott Fitzgerald    | [SE][se] + [PG][pg-fitzgerald] | Jazz Age, lyrical               |
+| Thomas Hardy           | [SE][se] + [PG][pg-hardy]      | Wessex dialect, archaic rural   |
+| Nathaniel Hawthorne    | [PG][pg-hawthorne]             | Archaic, allegorical            |
+| Zora Neale Hurston     | [PG][pg-hurston]               | Southern dialect, folklore      |
+| Henry James            | [SE][se] + [PG][pg-hjames]     | Psychological, ornate           |
+| James Joyce            | [SE][se] + [PG][pg-joyce]      | Modern experimental             |
+| Rudyard Kipling        | [PG][pg-kipling]               | Colonial, Indian, vernacular    |
+| Jack London            | [PG][pg-london]                | Wilderness, frontier, maritime  |
+| H.P. Lovecraft         | [PG][pg-lovecraft]             | Cosmic, eldritch                |
+| Cormac McCarthy        | Concordance                    | Archaic, Southern, Southwestern |
+| Herman Melville        | [SE][se] + [PG][pg-melville]   | Nautical, philosophical         |
+| William Morris         | [SE][se] + [PG][pg-morris]     | Pseudo-medieval, archaic        |
+| Vladimir Nabokov       | Concordance                    | Ornate, precise                 |
+| Edgar Allan Poe        | [SE][se] + [PG][pg-poe]        | Gothic, macabre, scientific     |
+| William Shakespeare    | [PG][pg-shakespeare]           | Early Modern English            |
+| Mary Shelley           | [SE][se] + [PG][pg-mshelley]   | Gothic, Romantic                |
+| Robert Louis Stevenson | [SE][se] + [PG][pg-stevenson]  | Scottish, maritime, gothic      |
+| Mark Twain             | [SE][se] + [PG][pg-twain]      | Vernacular, satirical           |
+| Edith Wharton          | [PG][pg-wharton]               | Gilded Age, social, literary    |
+| Oscar Wilde            | [SE][se] + [PG][pg-wilde]      | Aesthetic, theatrical           |
+| P.G. Wodehouse         | [SE][se] + [PG][pg-wodehouse]  | Comic, Edwardian                |
+| Virginia Woolf         | [SE][se] + [PG][pg-woolf]      | Impressionistic, psychological  |
 
 The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The Nabokov concordance is built at fetch time from [bukvik-workshop-corpora][bukvik] (texts are streamed and discarded; only word frequencies are kept).
 
@@ -216,7 +228,7 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 
 | Attribute                                                                          | Value           |
 | ---------------------------------------------------------------------------------- | --------------- |
-| Unique words                                                                       | 26,382          |
+| Unique words                                                                       | 29,484          |
 | Free of exact duplicates                                                           | yes             |
 | Free of [fuzzy duplicates](./docs/word-list-metrics.md#fuzzy-duplicates)           | yes             |
 | No non-ASCII characters                                                            | yes             |
@@ -227,11 +239,11 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 | [Above brute force line](./docs/word-list-metrics.md#above-brute-force-line)       | yes             |
 | Shortest word                                                                      | 4 characters    |
 | Longest word                                                                       | 9 characters    |
-| Mean word length                                                                   | 7.47 characters |
-| [Entropy per word](#how-passphrase-entropy-works)                                  | 14.687 bits     |
-| [Efficiency per character](./docs/word-list-metrics.md#efficiency-per-character)   | 1.967 bits      |
+| Mean word length                                                                   | 7.45 characters |
+| [Entropy per word](#how-passphrase-entropy-works)                                  | 14.848 bits     |
+| [Efficiency per character](./docs/word-list-metrics.md#efficiency-per-character)   | 1.994 bits      |
 | [Shortest edit distance](./docs/word-list-metrics.md#edit-distance)                | 1               |
-| [Mean edit distance](./docs/word-list-metrics.md#edit-distance)                    | 7.064           |
+| [Mean edit distance](./docs/word-list-metrics.md#edit-distance)                    | 7.059           |
 | [Unique character prefix](./docs/word-list-metrics.md#unique-character-prefix)     | 9               |
 | [Kraft-McMillan inequality](./docs/word-list-metrics.md#kraft-mcmillan-inequality) | satisfied       |
 
@@ -241,7 +253,7 @@ Analyzed with [`wla`][wla]. See the [word list metrics docs](./docs/word-list-me
 
 Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](./docs/pipeline.md#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out.
 
-The scores for the 26,382 words in the final list range from a minimum of 1.25 to a median of 1.94 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
+The scores for the 29,484 words in the final list range from a minimum of 1.25 to a median of 1.94 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
 
 The easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). The hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
 
@@ -294,7 +306,7 @@ The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert
 
 [Grover's algorithm][grovers], a quantum computing algorithm, provides a square-root speedup for brute-force search. This effectively halves your security bits: 128-bit entropy drops to 64-bit security against a quantum attacker, and 256 bits drops to 128. NIST's post-quantum guidance recommends 256-bit symmetric keys (equivalent to 128-bit post-quantum security) for long-term protection.
 
-For passphrases, 256 bits would require ~18 words from this list, which is not practical. In reality, passphrases protect secrets that are processed through slow key derivation functions (argon2, bcrypt, scrypt) before use, and each hash evaluation adds significant cost to both classical and quantum brute force. A 10-word passphrase (~147 bits) run through argon2 is likely adequate even against future quantum computers, but the honest answer is that nobody knows exactly when or whether large-scale quantum brute force will become feasible.
+For passphrases, 256 bits would require ~18 words from this list, which is not practical. In reality, passphrases protect secrets that are processed through slow key derivation functions (argon2, bcrypt, scrypt) before use, and each hash evaluation adds significant cost to both classical and quantum brute force. A 10-word passphrase (~148 bits) run through argon2 is likely adequate even against future quantum computers, but the honest answer is that nobody knows exactly when or whether large-scale quantum brute force will become feasible.
 
 If you need a secret that is unambiguously quantum-resistant without relying on key stretching, use a random string instead of a passphrase:
 
@@ -366,7 +378,20 @@ MIT
 [pg-hjames]: https://www.gutenberg.org/ebooks/author/113
 [pg-mshelley]: https://www.gutenberg.org/ebooks/author/61
 [pg-christie]: https://www.gutenberg.org/ebooks/author/451
+[pg-bierce]: https://www.gutenberg.org/ebooks/author/206
+[pg-doyle]: https://www.gutenberg.org/ebooks/author/69
+[pg-ebronte]: https://www.gutenberg.org/ebooks/author/405
+[pg-hardy]: https://www.gutenberg.org/ebooks/author/23
+[pg-hurston]: https://www.gutenberg.org/ebooks/author/6368
+[pg-kipling]: https://www.gutenberg.org/ebooks/author/132
+[pg-london]: https://www.gutenberg.org/ebooks/author/120
+[pg-morris]: https://www.gutenberg.org/ebooks/author/314
+[pg-poe]: https://www.gutenberg.org/ebooks/author/481
+[pg-stevenson]: https://www.gutenberg.org/ebooks/author/35
+[pg-wharton]: https://www.gutenberg.org/ebooks/author/104
 [pg-wodehouse]: https://www.gutenberg.org/ebooks/author/783
+[pg-woolf]: https://www.gutenberg.org/ebooks/author/6328
+[se]: https://standardebooks.org/
 [carpalx]: https://mk.bcgsc.ca/carpalx/?typing_effort
 [kerckhoffs]: https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle
 [phraze]: https://github.com/sts10/phraze
