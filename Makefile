@@ -1,6 +1,4 @@
-PREFIX ?= $(HOME)/.local
-
-.PHONY: all clean fetch extract filter-proper-nouns validate score build install uninstall test lint fmt format format-check lint-md help
+.PHONY: all clean fetch extract filter-proper-nouns validate score build test lint fmt format format-check lint-md help
 
 all: build
 
@@ -22,17 +20,6 @@ score: validate
 
 build: score
 	uv run src/build_list.py
-
-install:
-	@mkdir -p "$(PREFIX)/bin"
-	ln -sf "$(CURDIR)/bin/arcana" "$(PREFIX)/bin/arcana"
-	@echo "Installed: $(PREFIX)/bin/arcana -> $(CURDIR)/bin/arcana"
-	@echo ""
-	@echo "Run 'arcana --setup' to check dependencies and see install instructions."
-
-uninstall:
-	rm -f "$(PREFIX)/bin/arcana"
-	@echo "Removed: $(PREFIX)/bin/arcana"
 
 clean:
 	rm -rf data/raw data/words data/validated data/scored data/reference

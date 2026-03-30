@@ -4,15 +4,13 @@ A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](
 
 [Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
 
-The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#passphrase-strength-testing) to ensure it's strong and never before compromised.
+The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists.
 
 > [!TIP]
 > If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even [the quantum crackers of the future](#post-quantum-considerations). (They'll steal your data another way.)
 
 [**The word list**](#the-word-list) ・
-[Generating passphrases](#generating-passphrases) ・
-[Entropy and passphrase length](#entropy-and-passphrase-strength) ・
-[Passphrase strength testing](#passphrase-strength-testing)<br>
+[Entropy and passphrase length](#entropy-and-passphrase-strength)<br>
 [**About the word list**](#about-the-word-list) ・
 [Sources](#sources) ・
 [About the word list](#about-the-word-list) ・
@@ -45,80 +43,6 @@ profiled beeline tost eggcups coursers gutters
 arose speaketh mindless furlongs briskly alguacil
 ```
 
-## Generating passphrases
-
-[`arcana`](./bin/arcana) is a simple Bash script that runs `phraze` using the `passphrase-arcana` word list, then checks it with several tools to ensure that it's strong and never before compromised.
-
-### Installation
-
-```bash
-git clone https://github.com/cboone/passphrase-arcana.git
-cd passphrase-arcana
-make install             # symlinks bin/arcana to ~/.local/bin/
-```
-
-To install in a different directory:
-
-```bash
-make install PREFIX=/usr/local
-```
-
-To uninstall:
-
-```bash
-make uninstall
-```
-
-### Usage
-
-`arcana` generates a passphrase and [validates its strength](#passphrase-strength-testing).
-
-```bash
-arcana            # default: 80 bits minimum entropy
-arcana 100        # request 100 bits
-arcana --copy     # copy to clipboard, show diagnostics
-arcana --quiet    # just the passphrase, no diagnostics
-arcana -qc        # silently copy to clipboard
-arcana --setup    # check dependencies, show install instructions
-```
-
-If the passphrase has been compromised before (absurdly unlikely, but might as well be sure), the script exits with status 1 and doesn't copy the passphrase to the clipboard or print it to stout.
-
-### Dependencies
-
-Run `arcana --setup` to see what's installed and what's missing.
-
-[`phraze`][phraze] **(required)**<br>
-Generates the passphrase. `brew install sts10/phraze/phraze` or `cargo install phraze` or [other methods][phraze-install].
-
-`curl` + `shasum` _(optional)_<br>
-[Pwned Passwords][pwned-api] breach check. Both are typically pre-installed.
-
-[`uv`][uv] + [`zxcvbn-python`][zxcvbn-python] _(optional)_<br>
-Pattern-based strength scoring with crack time estimates. Install `uv`, then run `uv sync --extra dev` in the repo to set up the Python dependencies.
-
-[keepassxc-cli][keepassxc] _(optional)_<br>
-Independent entropy estimate with per-segment breakdown. `brew install keepassxc` or [other methods][keepassxc-download].
-
-### Copying to the system clipboard
-
-If you pass `--copy`, `arcana` will use the appropriate tool from this list to copy the generated passphrase to the system clipbard:
-
-| Tool                 | Platform | Notes                                               |
-| -------------------- | -------- | --------------------------------------------------- |
-| [`pbcopy2`][pbcopy2] | macOS    | `--conceal` hides from history; `-t 30` auto-clears |
-| `pbcopy`             | macOS    | Built-in default                                    |
-| `clip.exe`           | WSL      | Built-in Windows clipboard                          |
-| `wl-copy`            | Wayland  | `--sensitive`; skips clipboard history              |
-| `xclip`              | X11      | Uses `-selection clipboard`                         |
-| `xsel`               | X11      | Uses `--clipboard --input`                          |
-
-[`pbcopy2`][pbcopy2] is preferred on macOS because it conceals the passphrase from clipboard history managers and auto-clears the clipboard after 30 seconds. Install it with: `brew install cboone/tap/pbcopy2`
-
-### Script security
-
-The passphrase never leaks outside the script. It is passed to each tool via stdin using `printf` (a shell builtin), so it never appears in shell history or process listings. The Pwned Passwords check uses [k-anonymity][k-anonymity]: only the first 5 characters of the SHA-1 hash leave the machine.
-
 ## Entropy and passphrase strength
 
 There are different ways to think about password or passphrase strength, and they fail into two buckets: measurements of the randomness of generation and measurements of the difficulty of cracking.
@@ -133,6 +57,8 @@ All of which is to say, measuring cracking time using the kinds of algorithms ac
 
 Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. (Thanks to [the OG Claude](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf).)
 
+The entropy of a password or passphrase is a function of how many characters or words it has in it and how many characters or words there are to choose from.
+
 If you have a password that's [truly random](#post-quantum-considerations), a string of characters generated with a cryptographical random number generator, the entropy is just a function of the password's length:
 
 ```math
@@ -145,7 +71,7 @@ If you have a passphrase that's generated from a known list (which [you should a
 \mathrm{entropy} = \mathrm{words} \times \log_2(\textup{list size})
 ```
 
-For this list (29,484 words), each word in your passphrase counts for 14.8 bits of entropy. The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list:
+For this list (29,484 words), each word in your passphrase counts for 14.8 bits of entropy. A 6-word passphrase provides:
 
 ```math
 88.1 \text{ bits of entropy} = 6 \times \log_2(26\,382)
@@ -155,31 +81,17 @@ For this list (29,484 words), each word in your passphrase counts for 14.8 bits 
 
 Different organizations and security standards recommend different entropy floors depending on the threat model:
 
-| Minimum  | passphrase-arcana           | Source                                                   | Context                                        |
-| -------- | --------------------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| ~65 bits | ~4 words                    | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
-| ~77 bits | ~5 words                    | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
-| 80 bits  | ~6 words (`arcana` default) | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
-| 100 bits | ~7 words                    | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
-| 112 bits | ~8 words                    | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
-| 128 bits | ~9 words                    | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
-| 256 bits | ~18 words                   | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
+| Minimum  | passphrase-arcana | Source                                                   | Context                                        |
+| -------- | ----------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| ~65 bits | ~4 words          | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
+| ~77 bits | ~5 words          | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
+| 80 bits  | ~6 words          | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
+| 100 bits | ~7 words          | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
+| 112 bits | ~8 words          | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
+| 128 bits | ~9 words          | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
+| 256 bits | ~18 words         | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
 
 For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~89 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~119 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're probably better off with [a random password](#post-quantum-considerations).
-
-### Passphrase strength testing
-
-The `arcana` script runs three independent checks. Each evaluates passphrase strength from a different angle:
-
-`phraze` provides the entropy figure you should rely on for passphrase security. It calculates entropy from the word list size and word count, as described above.
-
-`zxcvbn` takes a different approach: It models how a real-world attacker cracks passwords by recognizing patterns like dictionary words, keyboard walks, dates, and common substitutions. It reports a 0-4 score, estimated guess count, and crack times at various attack speeds (online throttled, offline slow hash, offline fast hash).
-
-`keepassxc-cli` estimates entropy per character segment and totals them. Useful for seeing which parts of a passphrase contribute most to its strength, but the total typically overstates security against a word-list-aware attacker.
-
-### Passphrase leak detection
-
-**Pwned Passwords** checks whether the exact passphrase appears in known data breaches. It uses [k-anonymity][k-anonymity]: only the first 5 characters of the SHA-1 hash leave the machine, so the passphrase is never exposed to the API. A match does not mean the passphrase was _yours_, just that someone has used the same string before.
 
 ## About the word list
 
@@ -396,8 +308,6 @@ MIT
 [kerckhoffs]: https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle
 [phraze]: https://github.com/sts10/phraze
 [keepassxc]: https://keepassxc.org/
-[pwned-api]: https://haveibeenpwned.com/Passwords
-[k-anonymity]: https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420
 [rusty-diceware]: https://crates.io/crates/diceware
 [diceware-py]: https://github.com/ulif/diceware
 [pwgen-go]: https://github.com/gabe565/pwgen-go
@@ -406,11 +316,6 @@ MIT
 [nist-63b]: https://pages.nist.gov/800-63-3/sp800-63b.html
 [nist-57]: https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final
 [grovers]: https://en.wikipedia.org/wiki/Grover%27s_algorithm
-[pbcopy2]: https://github.com/cboone/pbcopy2
-[phraze-install]: https://github.com/sts10/phraze#installing
-[uv]: https://docs.astral.sh/uv/
-[zxcvbn-python]: https://github.com/dwolfhub/zxcvbn-python
-[keepassxc-download]: https://keepassxc.org/download/
 [password-entropy]: https://en.wikipedia.org/wiki/Password_strength#Entropy_as_a_measure_of_password_strength
 [sepich]: http://johnsepich.com/
 [bukvik]: https://github.com/Cha-OS/bukvik-workshop-corpora
