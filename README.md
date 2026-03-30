@@ -225,8 +225,32 @@ Different organizations and security standards recommend different entropy floor
 | 100 bits | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
 | 112 bits | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
 | 128 bits | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
+| 256 bits | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
 
 For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~117 bits) approaches the NIST 112-bit threshold.
+
+### Post-quantum considerations
+
+[Grover's algorithm][grovers], a quantum computing algorithm, provides a square-root speedup for brute-force search. This effectively halves your security bits: 128-bit entropy drops to 64-bit security against a quantum attacker, and 256 bits drops to 128. NIST's post-quantum guidance recommends 256-bit symmetric keys (equivalent to 128-bit post-quantum security) for long-term protection.
+
+For passphrases, 256 bits would require ~18 words from this list, which is not practical. In reality, passphrases protect secrets that are processed through slow key derivation functions (argon2, bcrypt, scrypt) before use, and each hash evaluation adds significant cost to both classical and quantum brute force. A 10-word passphrase (~146 bits) run through argon2 is likely adequate even against future quantum computers, but the honest answer is that nobody knows exactly when or whether large-scale quantum brute force will become feasible.
+
+If you need a secret that is unambiguously quantum-resistant without relying on key stretching, use a random string instead of a passphrase:
+
+```bash
+openssl rand -base64 32    # 256 bits of entropy, ~44 characters
+```
+
+The argument to `openssl rand -base64` is the number of random **bytes**. Each byte contributes 8 bits of entropy, so the mapping is straightforward:
+
+| Bytes | Entropy  | Output length | Quantum-equivalent |
+| ----- | -------- | ------------- | ------------------ |
+| 16    | 128 bits | ~24 chars     | 64 bits            |
+| 24    | 192 bits | ~32 chars     | 96 bits            |
+| 32    | 256 bits | ~44 chars     | 128 bits           |
+| 48    | 384 bits | ~64 chars     | 192 bits           |
+
+The output is longer than the input because base64 encodes 3 bytes into 4 printable characters, but the entropy comes entirely from the random bytes, not the encoding. These strings are not human-memorable, so they are best suited for secrets stored in a password manager or used programmatically.
 
 ### Kerckhoffs's principle
 
@@ -479,3 +503,4 @@ MIT
 [anssi]: https://www.ssi.gouv.fr/en/
 [nist-63b]: https://pages.nist.gov/800-63-3/sp800-63b.html
 [nist-57]: https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final
+[grovers]: https://en.wikipedia.org/wiki/Grover%27s_algorithm
