@@ -185,26 +185,26 @@ Words are drawn from authors with rich, unusual vocabularies. Most are sourced f
 
 | Author              | Works | Source                              | Vocabulary                      |
 | ------------------- | ----- | ----------------------------------- | ------------------------------- |
-| Herman Melville     | 14    | [Project Gutenberg][pg-melville]    | Nautical, philosophical         |
-| H.P. Lovecraft      | 18    | [Project Gutenberg][pg-lovecraft]   | Cosmic, eldritch                |
-| Joseph Conrad       | 14    | [Project Gutenberg][pg-conrad]      | Maritime, colonial              |
-| James Joyce         | 5     | [Project Gutenberg][pg-joyce]       | Modern experimental             |
-| Nathaniel Hawthorne | 8     | [Project Gutenberg][pg-hawthorne]   | Archaic, allegorical            |
-| Mark Twain          | 12    | [Project Gutenberg][pg-twain]       | Vernacular, satirical           |
-| Lewis Carroll       | 7     | [Project Gutenberg][pg-carroll]     | Nonsense, mathematical          |
-| Oscar Wilde         | 12    | [Project Gutenberg][pg-wilde]       | Aesthetic, theatrical           |
-| William Shakespeare | 1     | [Project Gutenberg][pg-shakespeare] | Early Modern English            |
-| F. Scott Fitzgerald | 6     | [Project Gutenberg][pg-fitzgerald]  | Jazz Age, lyrical               |
-| George Eliot        | 10    | [Project Gutenberg][pg-eliot]       | Victorian, psychological        |
-| Charlotte Bronte    | 3     | [Project Gutenberg][pg-cbronte]     | Gothic, passionate              |
 | Jane Austen         | 7     | [Project Gutenberg][pg-austen]      | Regency, ironic                 |
-| W.E.B. Du Bois      | 6     | [Project Gutenberg][pg-dubois]      | Sociological, literary          |
-| Henry James         | 23    | [Project Gutenberg][pg-hjames]      | Psychological, ornate           |
-| Mary Shelley        | 6     | [Project Gutenberg][pg-mshelley]    | Gothic, Romantic                |
+| Charlotte Bronte    | 3     | [Project Gutenberg][pg-cbronte]     | Gothic, passionate              |
+| Lewis Carroll       | 7     | [Project Gutenberg][pg-carroll]     | Nonsense, mathematical          |
 | Agatha Christie     | 10    | [Project Gutenberg][pg-christie]    | Detective, conversational       |
-| P.G. Wodehouse      | 24    | [Project Gutenberg][pg-wodehouse]   | Comic, Edwardian                |
+| Joseph Conrad       | 14    | [Project Gutenberg][pg-conrad]      | Maritime, colonial              |
+| W.E.B. Du Bois      | 6     | [Project Gutenberg][pg-dubois]      | Sociological, literary          |
+| George Eliot        | 10    | [Project Gutenberg][pg-eliot]       | Victorian, psychological        |
+| F. Scott Fitzgerald | 6     | [Project Gutenberg][pg-fitzgerald]  | Jazz Age, lyrical               |
+| Nathaniel Hawthorne | 8     | [Project Gutenberg][pg-hawthorne]   | Archaic, allegorical            |
+| Henry James         | 23    | [Project Gutenberg][pg-hjames]      | Psychological, ornate           |
+| James Joyce         | 5     | [Project Gutenberg][pg-joyce]       | Modern experimental             |
+| H.P. Lovecraft      | 18    | [Project Gutenberg][pg-lovecraft]   | Cosmic, eldritch                |
 | Cormac McCarthy     | 16    | Concordance                         | Archaic, Southern, Southwestern |
+| Herman Melville     | 14    | [Project Gutenberg][pg-melville]    | Nautical, philosophical         |
 | Vladimir Nabokov    | 11    | Concordance                         | Ornate, precise                 |
+| William Shakespeare | 1     | [Project Gutenberg][pg-shakespeare] | Early Modern English            |
+| Mary Shelley        | 6     | [Project Gutenberg][pg-mshelley]    | Gothic, Romantic                |
+| Mark Twain          | 12    | [Project Gutenberg][pg-twain]       | Vernacular, satirical           |
+| Oscar Wilde         | 12    | [Project Gutenberg][pg-wilde]       | Aesthetic, theatrical           |
+| P.G. Wodehouse      | 24    | [Project Gutenberg][pg-wodehouse]   | Comic, Edwardian                |
 
 The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The Nabokov concordance is built at fetch time from [bukvik-workshop-corpora][bukvik] (texts are streamed and discarded; only word frequencies are kept).
 
