@@ -9,21 +9,13 @@ The list is designed for use with [`phraze`][phraze] and [other passphrase gener
 > [!TIP]
 > If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even [the quantum crackers of the future](#post-quantum-considerations). (They'll steal your data another way.)
 
-[**The word list**](#the-word-list) ・
-[Entropy and passphrase length](#entropy-and-passphrase-strength)<br>
-[**About the word list**](#about-the-word-list) ・
-[Sources](#sources) ・
+[The word list](#the-word-list) ・
+[Entropy and passphrase strength](#entropy-and-passphrase-strength) ・
 [About the word list](#about-the-word-list) ・
-[Word list attributes](#word-list-attributes) ・
-[Typing ease](#typing-ease)<br>
-[**Other tools**](#other-tools) ・
-[Passphrase generators](#other-passphrase-generators) ・
-[Word lists](#other-word-lists)<br>
-[**Security notes**](#additional-security-notes) ・
+[Sources](#sources) ・
+[Other word lists](#other-word-lists) ・
 [Post-quantum considerations](#post-quantum-considerations) ・
 [Kerckhoff's principle](#kerckhoffss-principle) ・
-[Different entropy measurements](#why-phraze-and-keepassxc-cli-report-different-entropy)<br>
-[**Other docs**](./docs/) ・
 [Word list metrics](./docs/word-list-metrics.md) ・
 [Processing pipeline](./docs/pipeline.md)
 
@@ -39,13 +31,46 @@ Produces passphrases like:
 
 ```text
 haltered secluding prophesy yesterday
-bedpans demagogue fractious tilbury
-arose speaketh mindless furlongs briskly alguacil
+genteeler flimsily vicars guestroom
+porkpie impinged twentytwo naturae
 ```
+
+Or use [`diceware`][diceware-py] or [`keepassxc-cli`][keepassxc]:
+
+```bash
+diceware --no-caps --delimiter " " --num 4 < passphrase-arcana.txt
+keepassxc-cli diceware --word-list passphrase-arcana.txt --words 4
+```
+
+Bitwarden, 1Password, and Proton Pass do not support custom word lists.
+
+I like `phraze` because it's the only tool that allows you to set a minimum entropy value for your passphrase. For all the others you need to work backwards from entropy / strength to number of words.
 
 ## Entropy and passphrase strength
 
-There are different ways to think about password or passphrase strength, and they fail into two buckets: measurements of the randomness of generation and measurements of the difficulty of cracking.
+### Recommended minimums
+
+Different organizations and security standards recommend different entropy floors depending on the threat model:
+
+| Minimum  | passphrase-arcana | Source                                                   | Context                                        |
+| -------- | ----------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| ~65 bits | ~4 words          | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
+| ~77 bits | ~5 words          | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
+| 80 bits  | ~6 words          | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
+| 100 bits | ~7 words          | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
+| 112 bits | ~8 words          | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
+| 128 bits | ~9 words          | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
+| 256 bits | ~18 words         | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
+
+For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (90 bits) comfortably exceeds the EFF and ANSSI general-use recommendations.
+
+In fact, for well locked down scenarios (macOS user accounts on M1 or more recent machines, for example, where guessing is hardware rate limited), 2-4 words (30-60 bits) can be plenty. But you sure be more confident in your understanding of the mechanics of the system and in the details of your threat model before you go that low.
+
+For high-security applications like encryption keys, 8 words (118 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're better off with [a random password](#post-quantum-considerations).
+
+### Entropy and other strength measurements
+
+There are different ways to think about password or passphrase strength, and they fall into two general buckets: measurements of the randomness of generation and measurements of the difficulty of cracking.
 
 The most common metric is [entropy](#how-passphrase-entropy-works), which is a mathematical measure of the randomness of the secret. That can be measured either in terms of the randomness of the characters in the secret or the randomness of the selection of words in the passphrase. Entropy is a useful metric in guiding secret generation, since it provides an abstract measurement of how random the process is. From the cracking perspective, it's less useful, since it really only captures how hard it would be to brute-force crack a password. (Generate random characters or word combinations until you find a match.)
 
@@ -57,7 +82,11 @@ All of which is to say, measuring cracking time using the kinds of algorithms ac
 
 Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. (Thanks to [the OG Claude](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf).)
 
-The entropy of a password or passphrase is a function of how many characters or words it has in it and how many characters or words there are to choose from.
+The entropy of a password or passphrase is a function of how many characters or words it has in it and how many characters or words there are to choose from:
+
+```math
+\mathrm{entropy} = \mathrm{N} \times \log_2(\textup{possible values of N})
+```
 
 If you have a password that's [truly random](#post-quantum-considerations), a string of characters generated with a cryptographical random number generator, the entropy is just a function of the password's length:
 
@@ -76,22 +105,6 @@ For this list (29,484 words), each word in your passphrase counts for 14.8 bits 
 ```math
 88.1 \text{ bits of entropy} = 6 \times \log_2(26\,382)
 ```
-
-### Recommended entropy minimums
-
-Different organizations and security standards recommend different entropy floors depending on the threat model:
-
-| Minimum  | passphrase-arcana | Source                                                   | Context                                        |
-| -------- | ----------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| ~65 bits | ~4 words          | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
-| ~77 bits | ~5 words          | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
-| 80 bits  | ~6 words          | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
-| 100 bits | ~7 words          | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
-| 112 bits | ~8 words          | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
-| 128 bits | ~9 words          | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
-| 256 bits | ~18 words         | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
-
-For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~89 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~119 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're probably better off with [a random password](#post-quantum-considerations).
 
 ## About the word list
 
