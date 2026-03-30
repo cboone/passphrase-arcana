@@ -1,15 +1,20 @@
-"""Step 5: Build the final word list: deduplicate, remove prefix and suffix words, output."""
+"""Step 6: Build the final word list using tidy for Schlinkert pruning."""
 
 from __future__ import annotations
 
 import math
+import subprocess
+import tempfile
 import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "config.toml"
 BLOCKLIST = ROOT / "blocklist.txt"
+HOMOPHONES = ROOT / "data" / "homophones.csv"
+ARCHAIC_REJECTS = ROOT / "data" / "archaic_rejects.txt"
 DATA_SCORED = ROOT / "data" / "scored"
+TIDY = Path.home() / ".cargo" / "bin" / "tidy"
 
 
 def load_scored_words(lang: str) -> list[str]:
@@ -18,109 +23,70 @@ def load_scored_words(lang: str) -> list[str]:
     if not path.exists():
         return []
     lines = path.read_text().strip().splitlines()
-    # Skip header
     return [line.split("\t")[0] for line in lines[1:]]
-
-
-def remove_prefix_words(words: list[str]) -> list[str]:
-    """Remove words that are prefixes of other words in the list.
-
-    When a conflict is found, the shorter (prefix) word is removed,
-    keeping the longer, more distinctive word.
-    """
-    word_set = set(words)
-    prefixes_to_remove: set[str] = set()
-
-    # Sort by length so we check shorter words as potential prefixes
-    sorted_by_len = sorted(word_set, key=len)
-
-    for i, candidate in enumerate(sorted_by_len):
-        if candidate in prefixes_to_remove:
-            continue
-        # Check if this word is a prefix of any longer word
-        for j in range(i + 1, len(sorted_by_len)):
-            longer = sorted_by_len[j]
-            if longer.startswith(candidate):
-                prefixes_to_remove.add(candidate)
-                break
-
-    return sorted(word_set - prefixes_to_remove)
-
-
-def remove_suffix_words(words: list[str]) -> list[str]:
-    """Remove words that are suffixes of other words in the list.
-
-    When a conflict is found, the shorter (suffix) word is removed,
-    keeping the longer, more distinctive word.
-    """
-    word_set = set(words)
-    suffixes_to_remove: set[str] = set()
-
-    sorted_by_len = sorted(word_set, key=len)
-
-    for i, candidate in enumerate(sorted_by_len):
-        if candidate in suffixes_to_remove:
-            continue
-        for j in range(i + 1, len(sorted_by_len)):
-            longer = sorted_by_len[j]
-            if longer.endswith(candidate):
-                suffixes_to_remove.add(candidate)
-                break
-
-    return sorted(word_set - suffixes_to_remove)
-
-
-def load_blocklist() -> set[str]:
-    """Load the offensive word blocklist."""
-    if not BLOCKLIST.exists():
-        return set()
-    return set(BLOCKLIST.read_text().strip().splitlines())
-
-
-def remove_blocked_words(words: list[str], blocklist: set[str]) -> tuple[list[str], int]:
-    """Remove words that appear in the blocklist or contain a blocked word."""
-    kept = []
-    removed = 0
-    for word in words:
-        if word in blocklist:
-            removed += 1
-        else:
-            kept.append(word)
-    return kept, removed
 
 
 def main() -> None:
     config = tomllib.loads(CONFIG.read_text())
     languages = config["languages"]
 
-    # Load words in priority order (en > fr > pt)
-    all_words: set[str] = set()
-    lang_counts: dict[str, int] = {}
+    # Load words in priority order (en > fr > pt), dedup across languages
+    all_words: list[str] = []
+    seen: set[str] = set()
     for lang in languages:
         lang_words = load_scored_words(lang)
-        new_words = [w for w in lang_words if w not in all_words]
-        all_words.update(new_words)
-        lang_counts[lang] = len(new_words)
+        new_words = [w for w in lang_words if w not in seen]
+        seen.update(new_words)
+        all_words.extend(new_words)
         lang_name = languages[lang]["name"]
         print(f"[{lang_name}] {len(new_words)} unique words added ({len(lang_words)} before dedup)")
 
-    # Remove blocked (offensive) words
-    blocklist = load_blocklist()
-    word_list = sorted(all_words)
-    word_list, blocked_removed = remove_blocked_words(word_list, blocklist)
+    # Write temporary word list for tidy
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as tmp:
+        tmp.write("\n".join(all_words) + "\n")
+        tmp_path = tmp.name
 
-    # Remove prefix and suffix words
-    initial_count = len(word_list)
-    word_list = remove_prefix_words(word_list)
-    prefix_removed = initial_count - len(word_list)
-    word_list = remove_suffix_words(word_list)
-    suffix_removed = initial_count - prefix_removed - len(word_list)
-
-    # Write output
+    # Build tidy command
     out_path = ROOT / "passphrase-arcana.txt"
-    out_path.write_text("\n".join(word_list) + "\n")
+    cmd = [
+        str(TIDY),
+        "-K",  # Schlinkert pruning (Sardinas-Patterson unique decodability)
+        "-AAAA",  # Print full attributes
+        "-f",  # Force overwrite output
+        "-o",
+        str(out_path),
+    ]
 
-    # Statistics
+    # Add reject lists
+    if BLOCKLIST.exists():
+        cmd.extend(["-r", str(BLOCKLIST)])
+    if ARCHAIC_REJECTS.exists():
+        cmd.extend(["-r", str(ARCHAIC_REJECTS)])
+
+    # Add homophones
+    if HOMOPHONES.exists():
+        cmd.extend(["--homophones", str(HOMOPHONES)])
+
+    cmd.append(tmp_path)
+
+    # Run tidy
+    print("\nRunning tidy (Schlinkert pruning)...")
+    result = subprocess.run(cmd, capture_output=True, text=True)
+
+    # Clean up temp file
+    Path(tmp_path).unlink()
+
+    # Print tidy output (attributes go to stderr)
+    if result.stderr:
+        print(result.stderr.rstrip())
+    if result.returncode != 0:
+        print(f"tidy exited with code {result.returncode}")
+        if result.stdout:
+            print(result.stdout)
+        return
+
+    # Print our own statistics
+    word_list = out_path.read_text().strip().splitlines()
     count = len(word_list)
     entropy = math.log2(count) if count > 0 else 0
     lengths = [len(w) for w in word_list]
@@ -130,9 +96,8 @@ def main() -> None:
     print(f"  Words: {count}")
     print(f"  Entropy per word: {entropy:.2f} bits")
     print(f"  Mean word length: {mean_len:.1f} characters")
-    print(f"  Blocked words removed: {blocked_removed}")
-    print(f"  Prefix words removed: {prefix_removed}")
-    print(f"  Suffix words removed: {suffix_removed}")
+    print(f"  Input words: {len(all_words)}")
+    print(f"  Removed by tidy: {len(all_words) - count}")
 
 
 if __name__ == "__main__":

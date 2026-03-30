@@ -35,7 +35,7 @@ make install    # Symlink bin/arcana to ~/.local/bin/
 make clean      # Remove intermediate pipeline outputs
 ```
 
-Dependencies are managed with `uv`. Linting uses `ruff` (configured in `pyproject.toml`).
+Dependencies are managed with `uv`. Linting uses `ruff` (configured in `pyproject.toml`). The build step requires [tidy](https://github.com/sts10/tidy) (`cargo install tidy`) for Schlinkert pruning.
 
 ## Conventions
 

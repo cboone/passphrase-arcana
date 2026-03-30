@@ -44,12 +44,15 @@ The score is normalized per character. Words above the configured threshold (def
 
 ## Step 6: Build list
 
-1. Filters out offensive words using `blocklist.txt`
-2. Removes prefix words (shorter word dropped when it prefixes a longer one)
-3. Removes suffix words (same logic, reversed)
-4. Outputs the final sorted list to `passphrase-arcana.txt`
+Uses [tidy](https://github.com/sts10/tidy) (by the author of phraze) for the final assembly:
 
-## Blocklist
+1. Filters out offensive words using `blocklist.txt` (tidy's `-r` flag)
+2. Filters out archaic verb forms using `data/archaic_rejects.txt`
+3. Removes one word from each homophone pair using `data/homophones.csv` (tidy's `--homophones` flag), so the list never contains two words that sound identical (e.g., "discreet" and "discrete")
+4. Applies [Schlinkert pruning](https://sts10.github.io/2022/08/12/efficiently-pruning-until-uniquely-decodable.html) (tidy's `-K` flag), which uses the [Sardinas-Patterson algorithm](https://en.wikipedia.org/wiki/Sardinas%E2%80%93Patterson_algorithm) to remove the minimum set of words needed for unique decodability. This keeps ~31% more words than the naive approach of removing all prefix and suffix words.
+5. Outputs the final sorted list to `passphrase-arcana.txt`
+
+### Blocklist
 
 `blocklist.txt` is a merged, deduplicated combination of three profanity lists:
 
@@ -57,7 +60,13 @@ The score is normalized per character. Words above the configured threshold (def
 - [Google Profanity Words](https://github.com/coffee-and-fun/google-profanity-words) (MIT)
 - [dsojevic/profanity-list](https://github.com/dsojevic/profanity-list) (MIT)
 
-1,429 terms total. 166 matched and were removed from the word list.
+1,429 terms total.
+
+### Homophones
+
+`data/homophones.csv` is generated from the [CMU Pronouncing Dictionary](https://github.com/cmusphinx/cmudict) (130,000+ words with phonetic transcriptions). Words sharing the same pronunciation are grouped, and tidy removes one from each pair that appears in the list. This prevents passphrase confusion where a user can't remember whether they used "principal" or "principle".
+
+Generate or update the CSV with: `uv run src/generate_homophones.py`
 
 ## Running the pipeline
 
