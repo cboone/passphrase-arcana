@@ -7,6 +7,7 @@ A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](
 The list is designed for use with [`phraze`](https://github.com/sts10/phraze) and other passphrase generators that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then tests it in several ways to ensure it's strong and never before used.
 
 [**The word list**](#the-word-list) ・
+[**Other passphrase generators**](#other-passphrase-generators) ・
 [**Generating passphrases**](#generating-passphrases) ・
 [**Word list attributes**](#word-list-attributes) ・
 [**Typing ease**](#typing-ease) ・
@@ -38,6 +39,43 @@ arose speaketh mindless furlongs briskly alguacil
 For lists built from common words instead, see the [Orchard Street wordlists][orchard-street] (by the same author as phraze), or the [EFF dice lists][eff-dice].
 
 ([EFF][eff-dice], [diceware][diceware], [Orchard Street][orchard-street])
+
+## Other passphrase generators
+
+The word list is a plain text file (one word per line) that works with any passphrase generator that accepts a custom list. Beyond `phraze`, here are some options:
+
+### CLI tools
+
+| Tool                             | Language | Custom list flag | Install                  |
+| -------------------------------- | -------- | ---------------- | ------------------------ |
+| [phraze][phraze]                 | Rust     | `--custom-list`  | `cargo install phraze`   |
+| [rusty-diceware][rusty-diceware] | Rust     | `-f`             | `cargo install diceware` |
+| [diceware][diceware-py]          | Python   | `-w`             | `pip install diceware`   |
+| [pwgen-go][pwgen-go]             | Go       | via config       | `go install` or Homebrew |
+
+Example with rusty-diceware:
+
+```bash
+diceware -f passphrase-arcana.txt -n 6
+```
+
+Example with the Python diceware tool:
+
+```bash
+diceware -w passphrase-arcana.txt -n 6
+```
+
+### Password managers
+
+[KeePassXC][keepassxc] supports custom word lists for its built-in passphrase generator. Copy the word list into KeePassXC's `share/wordlists/` directory, or use the CLI:
+
+```bash
+keepassxc-cli diceware -w passphrase-arcana.txt -W 6
+```
+
+KeePassXC requires lists with at least 1,000 words and warns below 4,000. This list's 24,880 words are well above both thresholds.
+
+[Bitwarden](https://bitwarden.com/) and [1Password](https://1password.com/) do not currently support custom word lists for passphrase generation.
 
 ## Generating passphrases
 
@@ -174,6 +212,21 @@ For this list (24,880 words): **14.60 bits per word**.
 Length assumes space separators and the list's mean word length of 7.45 characters.
 
 The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list (6 x 14.60 = 87.6 bits).
+
+### Recommended minimums
+
+Different organizations and security standards recommend different entropy floors depending on the threat model:
+
+| Minimum  | Source                                                   | Context                                        |
+| -------- | -------------------------------------------------------- | ---------------------------------------------- |
+| ~65 bits | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
+| ~77 bits | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
+| 80 bits  | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
+| 100 bits | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
+| 112 bits | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
+| 128 bits | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
+
+For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~117 bits) approaches the NIST 112-bit threshold.
 
 ### Kerckhoffs's principle
 
@@ -419,3 +472,10 @@ MIT
 [keepassxc]: https://keepassxc.org/
 [pwned-api]: https://haveibeenpwned.com/Passwords
 [k-anonymity]: https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420
+[rusty-diceware]: https://crates.io/crates/diceware
+[diceware-py]: https://github.com/ulif/diceware
+[pwgen-go]: https://github.com/gabe565/pwgen-go
+[diceware-faq]: https://theworld.com/~reinhold/dicewarefaq.html
+[anssi]: https://www.ssi.gouv.fr/en/
+[nist-63b]: https://pages.nist.gov/800-63-3/sp800-63b.html
+[nist-57]: https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final
