@@ -2,7 +2,7 @@
 
 A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](#sources) of authors known for distinctive, unusual language, filtered for the [easiest to type](#typing-ease). Also filtered to remove proper nouns, prefixes and suffixes, non-uniquely decodable words, offensive words, homophones, and words that are similar enough that a typo could transform one into the other.
 
-[Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
+[Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out. It's [the XKCD approach](https://xkcd.com/936/), but inverted.
 
 The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists.
 
@@ -32,14 +32,14 @@ The list is designed for use with [`phraze`][phraze] and [other passphrase gener
 [`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 29,484 lowercase ASCII words, ready for use with `phraze`:
 
 ```bash
-phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 80
+phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 50
 ```
 
 Produces passphrases like:
 
 ```text
-sprouting ascendant lifters asbestos kudzu bleaching
-profiled beeline tost eggcups coursers gutters
+haltered secluding prophesy yesterday
+bedpans demagogue fractious tilbury
 arose speaketh mindless furlongs briskly alguacil
 ```
 
@@ -175,24 +175,13 @@ The easiest words tend to use home-row and index-finger keys with hand alternati
 
 The word list is a plain text file (one word per line) that works with any passphrase generator that accepts a custom list.
 
-#### CLI tools
+| Tool                    | Custom list flag                                  |
+| ----------------------- | ------------------------------------------------- |
+| [phraze][phraze]        | `--custom-list passphrase-arcana.txt`             |
+| [diceware][diceware-py] | `-w passphrase-arcana.txt`                        |
+| [KeePassXC][keepassxc]  | `keepassxc-cli diceware -w passphrase-arcana.txt` |
 
-| Tool                             | Language | Custom list flag |
-| -------------------------------- | -------- | ---------------- |
-| [phraze][phraze]                 | Rust     | `--custom-list`  |
-| [rusty-diceware][rusty-diceware] | Rust     | `-f`             |
-| [diceware][diceware-py]          | Python   | `-w`             |
-| [pwgen-go][pwgen-go]             | Go       | via config       |
-
-#### Password managers
-
-[KeePassXC][keepassxc] supports custom word lists for its built-in passphrase generator. Copy the word list into KeePassXC's `share/wordlists/` directory, or use the CLI:
-
-```bash
-keepassxc-cli diceware -w passphrase-arcana.txt -W 6
-```
-
-[Bitwarden][bitwarden] and [1Password][1password] do not currently support custom word lists for passphrase generation.
+Bitwarden, 1Password, and Proton Pass do not support custom word lists.
 
 ### Other word lists
 
@@ -308,9 +297,7 @@ MIT
 [kerckhoffs]: https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle
 [phraze]: https://github.com/sts10/phraze
 [keepassxc]: https://keepassxc.org/
-[rusty-diceware]: https://crates.io/crates/diceware
 [diceware-py]: https://github.com/ulif/diceware
-[pwgen-go]: https://github.com/gabe565/pwgen-go
 [diceware-faq]: https://theworld.com/~reinhold/dicewarefaq.html
 [anssi]: https://www.ssi.gouv.fr/en/
 [nist-63b]: https://pages.nist.gov/800-63-3/sp800-63b.html
@@ -320,6 +307,4 @@ MIT
 [sepich]: http://johnsepich.com/
 [bukvik]: https://github.com/Cha-OS/bukvik-workshop-corpora
 [wla]: https://github.com/sts10/wla
-[bitwarden]: https://bitwarden.com/
-[1password]: https://1password.com/
 [sts10]: https://github.com/sts10
