@@ -1,9 +1,9 @@
 {
   "list": {
-    "words": 29484,
+    "words": 29474,
     "input_words": 45134,
-    "removed_by_tidy": 15650,
-    "entropy_per_word": 14.848,
+    "removed_by_tidy": 15660,
+    "entropy_per_word": 14.847,
     "mean_word_length": 7.45,
     "efficiency_per_char": 1.994,
     "shortest_word": 4,
@@ -20,7 +20,7 @@
     "kraft_mcmillan": "satisfied"
   },
   "typing_effort": {
-    "words_with_scores": 29484,
+    "words_with_scores": 29474,
     "minimum": 1.25,
     "percentile_10": 1.64,
     "percentile_25": 1.75,

@@ -17,6 +17,8 @@ BLOCKLIST = ROOT / "blocklist.txt"
 HOMOPHONES = ROOT / "data" / "homophones.csv"
 ARCHAIC_REJECTS = ROOT / "data" / "archaic_rejects.txt"
 CONTRACTIONS_REJECTS = ROOT / "data" / "contractions_rejects.txt"
+ROMAN_REJECTS = ROOT / "data" / "roman_numerals_rejects.txt"
+MANUAL_REJECTS = ROOT / "data" / "manual_rejects.txt"
 DATA_SCORED = ROOT / "data" / "scored"
 STATS_PATH = ROOT / "docs" / "stats.json"
 TIDY = Path.home() / ".cargo" / "bin" / "tidy"
@@ -164,6 +166,10 @@ def main() -> None:
         cmd.extend(["-r", str(ARCHAIC_REJECTS)])
     if CONTRACTIONS_REJECTS.exists():
         cmd.extend(["-r", str(CONTRACTIONS_REJECTS)])
+    if ROMAN_REJECTS.exists():
+        cmd.extend(["-r", str(ROMAN_REJECTS)])
+    if MANUAL_REJECTS.exists():
+        cmd.extend(["-r", str(MANUAL_REJECTS)])
 
     # Add homophones
     if HOMOPHONES.exists():

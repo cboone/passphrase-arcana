@@ -2391,7 +2391,6 @@ bewitched
 bewitches
 bewrayed
 bewraying
-bexar
 beyond
 bezants
 bezels
@@ -5613,7 +5612,6 @@ cosey
 cosier
 cosiest
 cosign
-cosily
 cosiness
 cosmetics
 cosmical
@@ -15308,10 +15306,7 @@ luxuriate
 luxuries
 luxurious
 luxury
-lxii
-lxiv
-lxix
-lxvi
+lvii
 lychgate
 lydy
 lyeth
@@ -15879,7 +15874,6 @@ mcghee
 mcgill
 mcgovern
 mcgregor
-mcintyre
 mckellar
 mckenzie
 mckinley
@@ -26483,7 +26477,6 @@ tigresses
 tigris
 tijuana
 tikes
-tilbury
 tildes
 tiled
 tiler
@@ -29312,10 +29305,7 @@ wyte
 wyth
 xanthic
 xavier
-xlii
-xliv
-xlix
-xlvii
+xlvi
 xrays
 yaas
 yachted
