@@ -67,6 +67,7 @@ arcana 100        # request 100 bits
 arcana --copy     # copy to clipboard, show diagnostics
 arcana --quiet    # just the passphrase, no diagnostics
 arcana -qc        # silently copy to clipboard
+arcana --setup    # check dependencies, show install instructions
 ```
 
 If the passphrase has been compromised before (absurdly unlikely, but might as well be sure), the script exits with status 1 and doesn't copy the passphrase to the clipboard or print it to stout.
@@ -77,9 +78,11 @@ If the passphrase has been compromised before (absurdly unlikely, but might as w
 
 [phraze](https://github.com/sts10/phraze): generates the passphrase (`brew install sts10/phraze/phraze` or `cargo install phraze`)
 
-**Recommended** (checks are skipped with a warning when missing):
+#### Optional (enrich diagnostics)
 
-- [uv](https://docs.astral.sh/uv/) + `zxcvbn-python` (dev dependency): pattern-based strength scoring with crack time estimates
+These are checked automatically; missing tools are skipped with a hint. Run `arcana --setup` to see what's installed and what's missing.
+
+- [uv](https://docs.astral.sh/uv/) + `zxcvbn-python`: pattern-based strength scoring with crack time estimates. Install uv, then run `uv sync --extra dev` in the repo to set up the Python dependencies.
 - [keepassxc-cli](https://keepassxc.org/): independent entropy estimate with per-segment breakdown (`brew install keepassxc` or system package manager)
 - `curl` + `shasum`: [Pwned Passwords](https://haveibeenpwned.com/Passwords) breach check (both are typically pre-installed)
 

@@ -27,6 +27,8 @@ install:
 	@mkdir -p "$(PREFIX)/bin"
 	ln -sf "$(CURDIR)/bin/arcana" "$(PREFIX)/bin/arcana"
 	@echo "Installed: $(PREFIX)/bin/arcana -> $(CURDIR)/bin/arcana"
+	@echo ""
+	@echo "Run 'arcana --setup' to check dependencies and see install instructions."
 
 uninstall:
 	rm -f "$(PREFIX)/bin/arcana"

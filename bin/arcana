@@ -6,6 +6,10 @@
 # Security model:
 #   - Passphrase lives only in a shell variable (not exported, not in env)
 #   - printf is a shell builtin: piping it never exposes the value in ps/proc
+#   - All tools receive the passphrase via stdin, never as a CLI argument.
+#     This is why we use `uv run python3` for zxcvbn and `curl+shasum` for
+#     Pwned Passwords instead of the zxcvbn-cli and `pwned pw` CLIs, which
+#     take the password as an argument and briefly expose it in ps output.
 #   - Pwned Passwords API uses k-anonymity: only the first 5 chars of the
 #     SHA-1 hash leave the machine
 #   - No temp files are created
@@ -50,9 +54,9 @@ Diagnostics go to stderr; the passphrase goes to stdout.
 
 Options:
   -c, --copy       Copy the passphrase to the clipboard (suppresses stdout)
-                   Uses pbcopy (macOS), wl-copy (Wayland), or xclip (X11)
   -q, --quiet      Suppress diagnostics (stderr)
   -h, --help       Show this help message
+  --setup          Check dependencies and show install instructions
 
 Arguments:
   minimum-entropy  Minimum entropy in bits (default: 80)
@@ -68,12 +72,22 @@ Examples:
   arcana -qc              # silently copy to clipboard
   arcana | pbcopy         # pipe passphrase, diagnostics still visible
   arcana 100              # 100 bits minimum entropy
+  arcana --setup          # check what's installed
 
-Tools used:
-  phraze           Generate the passphrase
-  keepassxc-cli    Independent entropy estimate
-  zxcvbn           Password strength scoring (via Python, stdin)
-  Pwned Passwords  Breach database check (k-anonymity, safe)
+Tools (required):
+  phraze           Generate the passphrase (cargo install phraze)
+
+Tools (optional, enrich diagnostics):
+  zxcvbn           Pattern-based strength scoring (via uv + zxcvbn-python)
+  keepassxc-cli    Independent entropy estimate (brew install keepassxc)
+  curl + shasum    Pwned Passwords breach check (usually pre-installed)
+
+Clipboard (--copy, first available):
+  pbcopy2          macOS, conceals from history (brew install cboone/tap/pbcopy2)
+  pbcopy           macOS built-in
+  clip.exe         WSL built-in
+  wl-copy          Wayland (--sensitive)
+  xclip / xsel     X11
 USAGE_TEXT
 }
 
@@ -109,6 +123,81 @@ function has_command() {
 # Sets: CLIP_CMD (array)
 # Returns:
 #   0 if a clipboard tool was found, exits with E_MISSING_TOOL if not
+# Print dependency status and install instructions.
+# Outputs:
+#   Writes dependency report to stderr, exits 0
+function setup_check() {
+  local ok
+  local missing
+  if [[ -t 2 ]]; then
+    ok=$'\033[32mok\033[0m'
+    missing=$'\033[31mmissing\033[0m'
+  else
+    ok="ok"
+    missing="missing"
+  fi
+
+  echo "=== arcana dependency check ===" >&2
+  echo "" >&2
+
+  echo "Required:" >&2
+  if has_command "phraze"; then
+    echo "  phraze           ${ok}  ($(phraze --version 2>&1 | head -1))" >&2
+  else
+    echo "  phraze           ${missing}  cargo install phraze" >&2
+  fi
+
+  echo "" >&2
+  echo "Optional (strength diagnostics):" >&2
+
+  if has_command "uv" && uv run python3 -c "import zxcvbn" > /dev/null 2>&1; then
+    echo "  zxcvbn (Python)  ${ok}" >&2
+  elif has_command "uv"; then
+    echo "  zxcvbn (Python)  ${missing}  cd ${PROJECT_DIR} && uv sync --extra dev" >&2
+  else
+    echo "  zxcvbn (Python)  ${missing}  install uv (https://docs.astral.sh/uv/), then: cd ${PROJECT_DIR} && uv sync --extra dev" >&2
+  fi
+
+  if has_command "keepassxc-cli"; then
+    echo "  keepassxc-cli    ${ok}" >&2
+  else
+    echo "  keepassxc-cli    ${missing}  brew install keepassxc" >&2
+  fi
+
+  if has_command "curl" && has_command "shasum"; then
+    echo "  curl + shasum    ${ok}" >&2
+  else
+    echo "  curl + shasum    ${missing}  (usually pre-installed)" >&2
+  fi
+
+  echo "" >&2
+  echo "Clipboard (--copy, first available used):" >&2
+  local found_clip=false
+  for tool in pbcopy2 pbcopy clip.exe wl-copy xclip xsel; do
+    if has_command "${tool}"; then
+      if [[ "${found_clip}" == false ]]; then
+        echo "  ${tool}  ${ok}  (will be used)" >&2
+        found_clip=true
+      else
+        echo "  ${tool}  ${ok}" >&2
+      fi
+    fi
+  done
+  if [[ "${found_clip}" == false ]]; then
+    echo "  (none found)" >&2
+  fi
+
+  echo "" >&2
+  echo "Word list: ${WORD_LIST}" >&2
+  if [[ -f "${WORD_LIST}" ]]; then
+    local count
+    count="$(wc -l < "${WORD_LIST}" | tr -d ' ')"
+    echo "  ${ok}  ${count} words" >&2
+  else
+    echo "  ${missing}  run 'make build' in ${PROJECT_DIR}" >&2
+  fi
+}
+
 function detect_clipboard() {
   if has_command "pbcopy2"; then
     CLIP_CMD=("pbcopy2" "--conceal" "-t" "30")
@@ -242,6 +331,10 @@ function main() {
         usage
         exit "${E_SUCCESS}"
         ;;
+      --setup)
+        setup_check
+        exit "${E_SUCCESS}"
+        ;;
       --)
         shift
         break
@@ -273,7 +366,7 @@ function main() {
   local has_keepassxc=false
   local has_pwned=false
 
-  if has_command "uv"; then
+  if has_command "uv" && uv run python3 -c "import zxcvbn" > /dev/null 2>&1; then
     has_zxcvbn=true
   fi
 
@@ -320,7 +413,7 @@ function main() {
   if [[ "${has_zxcvbn}" == true ]]; then
     check_zxcvbn "${passphrase}"
   else
-    echo "(skipped: uv not installed)" >&2
+    echo "(skipped: run 'uv sync --extra dev' in the repo, or see arcana --setup)" >&2
   fi
 
   echo "" >&2

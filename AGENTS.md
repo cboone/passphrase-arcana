@@ -42,3 +42,9 @@ Dependencies are managed with `uv`. Linting uses `ruff` (configured in `pyprojec
 - Conventional commits with scopes: `feat(wordlist):`, `fix(cli):`, `refactor(pipeline):`
 - Single version number for the whole repo (word list + CLI ship together)
 - Python formatting and linting via ruff
+
+## Design decisions
+
+### arcana stdin security model
+
+The arcana script pipes the passphrase into every tool via stdin (`printf '%s' "$passphrase" | tool`), never as a CLI argument. `printf` is a shell builtin and invisible to `ps`. This is why we use `uv run python3` for zxcvbn and `curl+shasum` for Pwned Passwords instead of the `zxcvbn-cli` and `pwned pw` CLIs, which take the password as an argument and briefly expose it in process listings. Do not replace these with the CLI equivalents without solving the stdin issue first.
