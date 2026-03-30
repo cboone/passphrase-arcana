@@ -4,7 +4,7 @@ A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](
 
 [Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out.
 
-The list is designed for use with [`phraze`](https://github.com/sts10/phraze) and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#passphrase-strength-testing) to ensure it's strong and never before compromised.
+The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists. There's also [a helper script](#generating-passphrases) that runs `phraze` to generate a passphrase, then [tests it in several ways](#passphrase-strength-testing) to ensure it's strong and never before compromised.
 
 If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even the quantum crackers of the future. (They'll steal your data another way.)
 
@@ -88,21 +88,21 @@ If the passphrase has been compromised before (absurdly unlikely, but might as w
 
 #### Required
 
-[`phraze`](https://github.com/sts10/phraze)<br>
-Generates the passphrase. `brew install sts10/phraze/phraze` or `cargo install phraze` or [other methods](https://github.com/sts10/phraze#installing).
+[`phraze`][phraze]<br>
+Generates the passphrase. `brew install sts10/phraze/phraze` or `cargo install phraze` or [other methods][phraze-install].
 
 #### Optional, for strength checking
 
 Run `arcana --setup` to see what's installed and what's missing.
 
-[`uv`](https://docs.astral.sh/uv/) + [`zxcvbn-python`](https://github.com/dwolfhub/zxcvbn-python)<br>
+[`uv`][uv] + [`zxcvbn-python`][zxcvbn-python]<br>
 Pattern-based strength scoring with crack time estimates. Install `uv`, then run `uv sync --extra dev` in the repo to set up the Python dependencies.
 
-[keepassxc-cli](https://keepassxc.org/)<br>
-Independent entropy estimate with per-segment breakdown. `brew install keepassxc` or [other methods](https://keepassxc.org/download/).
+[keepassxc-cli][keepassxc]<br>
+Independent entropy estimate with per-segment breakdown. `brew install keepassxc` or [other methods][keepassxc-download].
 
 `curl` + `shasum`<br>
-[Pwned Passwords](https://haveibeenpwned.com/Passwords) breach check. Both are typically pre-installed.
+[Pwned Passwords][pwned-api] breach check. Both are typically pre-installed.
 
 #### For `--copy` to the system clipboard
 
@@ -119,13 +119,13 @@ Independent entropy estimate with per-segment breakdown. `brew install keepassxc
 
 ### Security
 
-The passphrase never leaks outside the script. It is passed to each tool via stdin using `printf` (a shell builtin), so it never appears in shell history or process listings. The Pwned Passwords check uses [k-anonymity](https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420): only the first 5 characters of the SHA-1 hash leave the machine.
+The passphrase never leaks outside the script. It is passed to each tool via stdin using `printf` (a shell builtin), so it never appears in shell history or process listings. The Pwned Passwords check uses [k-anonymity][k-anonymity]: only the first 5 characters of the SHA-1 hash leave the machine.
 
 ## Entropy and passphrase strength
 
 ### How passphrase entropy works
 
-Password or passphrase strength is measured in terms of [information entropy](https://en.wikipedia.org/wiki/Password_strength#Entropy_as_a_measure_of_password_strength), or the minimum number of bits necessary to hold the information in the password. There are different ways to calculate this and think about this, but the most common for a passphrase with a known word list is:
+Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. There are different ways to calculate this and think about this, but the most common for a passphrase with a known word list is:
 
 ```text
 entropy = num_words x log2(list_size)
@@ -191,32 +191,32 @@ Words are drawn from authors with rich, unusual vocabularies. Most are sourced f
 | Cormac McCarthy     | 16    | Concordance                         | Archaic, Southern, Southwestern |
 | Vladimir Nabokov    | 11    | Concordance                         | Ornate, precise                 |
 
-The McCarthy concordance is parsed from John Sepich's [word list](http://johnsepich.com/). The Nabokov concordance is built at fetch time from [bukvik-workshop-corpora](https://github.com/Cha-OS/bukvik-workshop-corpora) (texts are streamed and discarded; only word frequencies are kept).
+The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The Nabokov concordance is built at fetch time from [bukvik-workshop-corpora][bukvik] (texts are streamed and discarded; only word frequencies are kept).
 
 ### Word list attributes
 
-| Attribute                                               | Value           |
-| ------------------------------------------------------- | --------------- |
-| Unique words                                            | 24,880          |
-| Free of exact duplicates                                | yes             |
-| Free of [fuzzy duplicates](#fuzzy-duplicates)           | yes             |
-| No non-ASCII characters                                 | yes             |
-| Unicode normalized                                      | yes             |
-| Free of [prefix words](#prefix-and-suffix-words)        | yes             |
-| Free of [suffix words](#prefix-and-suffix-words)        | yes             |
-| [Uniquely decodable](#uniquely-decodable)               | yes             |
-| [Above brute force line](#above-brute-force-line)       | yes             |
-| Shortest word                                           | 4 characters    |
-| Longest word                                            | 9 characters    |
-| Mean word length                                        | 7.45 characters |
-| [Entropy per word](#how-passphrase-entropy-works)       | 14.603 bits     |
-| [Efficiency per character](#efficiency-per-character)   | 1.960 bits      |
-| [Shortest edit distance](#edit-distance)                | 1               |
-| [Mean edit distance](#edit-distance)                    | 7.018           |
-| [Unique character prefix](#unique-character-prefix)     | 9               |
-| [Kraft-McMillan inequality](#kraft-mcmillan-inequality) | satisfied       |
+| Attribute                                                                          | Value           |
+| ---------------------------------------------------------------------------------- | --------------- |
+| Unique words                                                                       | 24,880          |
+| Free of exact duplicates                                                           | yes             |
+| Free of [fuzzy duplicates](./docs/word-list-metrics.md#fuzzy-duplicates)           | yes             |
+| No non-ASCII characters                                                            | yes             |
+| Unicode normalized                                                                 | yes             |
+| Free of [prefix words](./docs/word-list-metrics.md#prefix-and-suffix-words)        | yes             |
+| Free of [suffix words](./docs/word-list-metrics.md#prefix-and-suffix-words)        | yes             |
+| [Uniquely decodable](./docs/word-list-metrics.md#uniquely-decodable)               | yes             |
+| [Above brute force line](./docs/word-list-metrics.md#above-brute-force-line)       | yes             |
+| Shortest word                                                                      | 4 characters    |
+| Longest word                                                                       | 9 characters    |
+| Mean word length                                                                   | 7.45 characters |
+| [Entropy per word](#how-passphrase-entropy-works)                                  | 14.603 bits     |
+| [Efficiency per character](./docs/word-list-metrics.md#efficiency-per-character)   | 1.960 bits      |
+| [Shortest edit distance](./docs/word-list-metrics.md#edit-distance)                | 1               |
+| [Mean edit distance](./docs/word-list-metrics.md#edit-distance)                    | 7.018           |
+| [Unique character prefix](./docs/word-list-metrics.md#unique-character-prefix)     | 9               |
+| [Kraft-McMillan inequality](./docs/word-list-metrics.md#kraft-mcmillan-inequality) | satisfied       |
 
-Analyzed with [`wla`](https://github.com/sts10/wla). See the [appendix](#appendix-word-list-metrics) for explanations of each metric.
+Analyzed with [`wla`][wla]. See the [word list metrics docs](./docs/word-list-metrics.md) for explanations of each metric.
 
 ### Typing ease
 
@@ -249,7 +249,7 @@ The word list is a plain text file (one word per line) that works with any passp
 keepassxc-cli diceware -w passphrase-arcana.txt -W 6
 ```
 
-[Bitwarden](https://bitwarden.com/) and [1Password](https://1password.com/) do not currently support custom word lists for passphrase generation.
+[Bitwarden][bitwarden] and [1Password][1password] do not currently support custom word lists for passphrase generation.
 
 ### Other word lists
 
@@ -267,7 +267,7 @@ The `passphrase-arcana` list prioritizes distinctive vocabulary over everyday wo
 
 Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (~78 bits) is roughly equivalent to a 5-word passphrase from this list (~73 bits).
 
-The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert](https://github.com/sts10), who also created [phraze](https://github.com/sts10/phraze).
+The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert][sts10], who also created [`phraze`][phraze].
 
 ## Additional security notes
 
@@ -321,10 +321,8 @@ MIT
 
 <!-- Reference links -->
 
-[eff-dice]: https://www.eff.org/dice
 [eff-long]: https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
 [eff-short]: https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
-[diceware]: https://theworld.com/~reinhold/diceware.html
 [orchard-street]: https://github.com/sts10/orchard-street-wordlists
 [os-long]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-long.txt
 [os-medium]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-medium.txt
@@ -344,7 +342,6 @@ MIT
 [carpalx]: https://mk.bcgsc.ca/carpalx/?typing_effort
 [kerckhoffs]: https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle
 [phraze]: https://github.com/sts10/phraze
-[zxcvbn]: https://github.com/dropbox/zxcvbn
 [keepassxc]: https://keepassxc.org/
 [pwned-api]: https://haveibeenpwned.com/Passwords
 [k-anonymity]: https://www.troyhunt.com/ive-just-launched-pwned-passwords-version-2/#702702420
@@ -357,3 +354,14 @@ MIT
 [nist-57]: https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final
 [grovers]: https://en.wikipedia.org/wiki/Grover%27s_algorithm
 [pbcopy2]: https://github.com/cboone/pbcopy2
+[phraze-install]: https://github.com/sts10/phraze#installing
+[uv]: https://docs.astral.sh/uv/
+[zxcvbn-python]: https://github.com/dwolfhub/zxcvbn-python
+[keepassxc-download]: https://keepassxc.org/download/
+[password-entropy]: https://en.wikipedia.org/wiki/Password_strength#Entropy_as_a_measure_of_password_strength
+[sepich]: http://johnsepich.com/
+[bukvik]: https://github.com/Cha-OS/bukvik-workshop-corpora
+[wla]: https://github.com/sts10/wla
+[bitwarden]: https://bitwarden.com/
+[1password]: https://1password.com/
+[sts10]: https://github.com/sts10
