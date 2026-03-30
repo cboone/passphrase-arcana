@@ -121,35 +121,37 @@ The passphrase never leaks outside the script. It is passed to each tool via std
 
 ## Entropy and passphrase strength
 
-There are different ways to think about and measure password or passphrase strength, and they fail into two buckets: measurements of the randomness of generation and measurements of the difficulty of cracking.
+There are different ways to think about password or passphrase strength, and they fail into two buckets: measurements of the randomness of generation and measurements of the difficulty of cracking.
 
 The most common metric is [entropy](#how-passphrase-entropy-works), which is a mathematical measure of the randomness of the secret. That can be measured either in terms of the randomness of the characters in the secret or the randomness of the selection of words in the passphrase. Entropy is a useful metric in guiding secret generation, since it provides an abstract measurement of how random the process is. From the cracking perspective, it's less useful, since it really only captures how hard it would be to brute-force crack a password. (Generate random characters or word combinations until you find a match.)
 
-Password cracking these days (early 2026)
+Password cracking these days (early 2026) is much more advanced than simple brute forcing, though that's always a fall back option. Tools like [John the Ripper](https://github.com/openwall/john) and [Hashcat](https://github.com/hashcat/hashcat) create combinations and permutations of words and numbers and symbols, using rules that follow how people create passwords in real life. The newest generation of tools, like [PassLLM](https://github.com/Tzohar/PassLLM), use neural networks trained on massive datasets of breached passwords and incorporate leaked PII data as well. And as the capabilities of the frontier LLMs continue to advance, password security will get harder and harder to maintain.
+
+All of which is to say, measuring cracking time using the kinds of algorithms actually at use in the wild needs to be far more sophisticated than just measuring randomness or brute force difficulty.
 
 ### How passphrase entropy works
 
-Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. (Thanks to [the OG Claude](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf).) There are different ways to calculate this and to think about this, but the most common for a passphrase with a known word list is:
+Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. (Thanks to [the OG Claude](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf).)
 
-```text
-entropy = num_words x log2(list_size)
+If you have a password that's [truly random](#post-quantum-considerations), a string of characters generated with a cryptographical random number generator, the entropy is just a function of the password's length:
+
+```math
+\mathrm{entropy} = 2^\mathrm{length}
 ```
 
-For this list (26,382 words), each word in your passphrase counts for **14.7 bits** of entropy. This assumes that your attacker knows that you're using this list, which is the safe assumption to make.
+If you have a passphrase that's generated from a known list (which [you should assume it to be](#kerckhoffss-principle)), the entropy is a function of how many words you use and how many words are in the list:
 
-| Words | Entropy   | Length | Use case                                    |
-| ----- | --------- | ------ | ------------------------------------------- |
-| 4     | ~58 bits  | ~33 ch | Low-value accounts                          |
-| 5     | ~73 bits  | ~41 ch | Most online accounts                        |
-| 6     | ~88 bits  | ~50 ch | Important accounts, the `arcana` default    |
-| 7     | ~102 bits | ~58 ch | High-security accounts, encryption keys     |
-| 8     | ~117 bits | ~67 ch | Exceeds NIST SP 800-63B highest level (112) |
+```math
+\mathrm{entropy} = \mathrm{words} \times \log_2(\textup{list size})
+```
 
-Length assumes space separators and the list's mean word length of 7.47 characters.
+For this list (26,382 words), each word in your passphrase counts for 14.7 bits of entropy. The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list:
 
-The `arcana` script defaults to 80 bits minimum entropy, which requires 6 words from this list (6 x 14.7 = 88.1 bits).
+```math
+88.1 \text{ bits of entropy} = 6 \times \log_2(26\,382)
+```
 
-### Recommended minimums
+### Recommended entropy minimums
 
 Different organizations and security standards recommend different entropy floors depending on the threat model:
 
@@ -163,17 +165,19 @@ Different organizations and security standards recommend different entropy floor
 | 128 bits | ~9 words                    | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
 | 256 bits | ~18 words                   | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
 
-For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~118 bits) exceeds the NIST 112-bit threshold.
+For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations. For high-security applications like encryption keys, 8 words (~118 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're probably better off with [a random password](#post-quantum-considerations).
 
 ### Passphrase strength testing
 
 The `arcana` script runs three independent checks. Each evaluates passphrase strength from a different angle:
 
-**`phraze`** provides the entropy figure you should rely on for passphrase security. It calculates entropy from the word list size and word count.
+`phraze` provides the entropy figure you should rely on for passphrase security. It calculates entropy from the word list size and word count, as described above.
 
-**`zxcvbn`** takes a different approach: it models how a real-world attacker cracks passwords by recognizing patterns like dictionary words, keyboard walks, dates, and common substitutions. It reports a 0-4 score, estimated guess count, and crack times at various attack speeds (online throttled, offline slow hash, offline fast hash). For passphrases from a curated list, `zxcvbn` tends to underestimate strength because it matches individual words against its internal dictionaries rather than considering the combinatorial word list space.
+`zxcvbn` takes a different approach: It models how a real-world attacker cracks passwords by recognizing patterns like dictionary words, keyboard walks, dates, and common substitutions. It reports a 0-4 score, estimated guess count, and crack times at various attack speeds (online throttled, offline slow hash, offline fast hash).
 
-**`keepassxc-cli`** estimates entropy per character segment and totals them. Useful for seeing which parts of a passphrase contribute most to its strength, but the total typically overstates security against a word-list-aware attacker.
+`keepassxc-cli` estimates entropy per character segment and totals them. Useful for seeing which parts of a passphrase contribute most to its strength, but the total typically overstates security against a word-list-aware attacker.
+
+### Passphrase leak detection
 
 **Pwned Passwords** checks whether the exact passphrase appears in known data breaches. It uses [k-anonymity][k-anonymity]: only the first 5 characters of the SHA-1 hash leave the machine, so the passphrase is never exposed to the API. A match does not mean the passphrase was _yours_, just that someone has used the same string before.
 
@@ -295,7 +299,7 @@ For passphrases, 256 bits would require ~18 words from this list, which is not p
 If you need a secret that is unambiguously quantum-resistant without relying on key stretching, use a random string instead of a passphrase:
 
 ```bash
-openssl rand -base64 32    # 256 bits of entropy, ~44 characters
+openssl rand -base64 48   # 48 bytes * 8 bits / byte = 256 bits of entropy
 ```
 
 The argument to `openssl rand -base64` is the number of random **bytes**. Each byte contributes 8 bits of entropy, so the mapping is straightforward:
