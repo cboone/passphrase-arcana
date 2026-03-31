@@ -4,7 +4,7 @@ A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](
 
 [Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out. It's [the XKCD approach](https://xkcd.com/936/), but inverted.
 
-The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists.
+The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists. At 24,497 words it provides 14.7 bits of entropy per word.
 
 > [!TIP]
 > If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even [the quantum crackers of the future](#post-quantum-considerations). (They'll steal your data another way.)
@@ -52,13 +52,13 @@ I like `phraze` because it's the only tool that allows you to set a minimum entr
 
 #### _My recommendations_
 
-| Minimum information entropy | Minimum guessing entropy | Number of words from passphrase-arcana | Account type / usage context                                                                                                                                                                                           |
-| --------------------------- | ------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 30 bits                     | 537 million guesses      | 2 words                                | Hardware-enforced rate limiting (macOS on M1+) <br> Accounts with a hardware key <br> Throwaway accounts (forum registrations) <br> SSH key created with high rounds setting (`-a 100` or higher) <br> WPA3 <br> LUKS2 |
-| 45 bits                     | 17.6 trillion guesses    | 3 words                                | Accounts with TOTP <br> SSH key created with default rounds setting (`-a 16`) <br> GPG key with strong settings (AES-256, SHA-512, maximum S2K) <br> WPA2 <br> WPA3 for extra safety <br> LUKS1                        |
-| 60 bits                     | 576 quadrillion guesses  | 4 words                                | Accounts with weak 2FA (SMS or email) or no 2FA <br> GPG key with default settings (CAST5, SHA-1)                                                                                                                      |
-| 75 bits                     | 37.8 sextillion guesses  | 5 words                                | Important accounts                                                                                                                                                                                                     |
-| 90 bits                     | 619 septillion guesses   | 6 words                                | Secret protecting accounts                                                                                                                                                                                             |
+| Account type / usage context                                                                                                                                                                                           | Number of words from passphrase-arcana (~15 bits/word) | Number of words from EFF long list or Orchard Street medium list (13 bits/word) | Minimum information entropy | Minimum guessing entropy                                            |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------- |
+| Hardware-enforced rate limiting (macOS on M1+) <br> Accounts with a hardware key <br> Throwaway accounts (forum registrations) <br> SSH key created with high rounds setting (`-a 100` or higher) <br> WPA3 <br> LUKS2 | 2 words                                                | 2-3 words                                                                       | 30 bits                     | 536 million guesses                                                 |
+| Accounts with TOTP <br> SSH key created with default rounds setting (`-a 16`) <br> GPG key with strong settings (AES-256, SHA-512, maximum S2K) <br> WPA2 <br> WPA3 for extra safety <br> LUKS1                        | 3 words                                                | 3-4 words                                                                       | 45 bits                     | 17.6 trillion guesses (number of red blood cells in the human body) |
+| Accounts with weak 2FA (SMS or email) or no 2FA <br> GPG key with default settings (CAST5, SHA-1)                                                                                                                      | 4 words                                                | 5 words                                                                         | 60 bits                     | 576 quadrillion guesses                                             |
+| Important accounts                                                                                                                                                                                                     | 5 words                                                | 6 words                                                                         | 75 bits                     | 18.9 sextillion guesses (number of grains of sand on Earth)         |
+| Secret protecting accounts                                                                                                                                                                                             | 6 words                                                | 7 words                                                                         | 90 bits                     | 619 septillion guesses                                              |
 
 Passwords and PINs:
 
@@ -73,15 +73,15 @@ I emphasize "random" in the list above, because it's critical that they be truly
 
 Different organizations and security standards recommend different entropy floors depending on the threat model:
 
-| Minimum entropy | Number of words from passphrase-arcana | Source                                                   | Usage context                                  |
-| --------------- | -------------------------------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| ~65 bits        | ~4 words                               | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
-| ~77 bits        | ~5 words                               | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
-| 80 bits         | ~6 words                               | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
-| 100 bits        | ~7 words                               | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
-| 112 bits        | ~8 words                               | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
-| 128 bits        | ~9 words                               | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
-| 256 bits        | ~18 words                              | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
+| Usage context                                  | Number of words from passphrase-arcana (~15 bits/word) | Number of words from EFF long list or Orchard Street medium list (13 bits/word) | Minimum entropy | Minimum guessing entropy          | Source                                                   |
+| ---------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------- | --------------- | --------------------------------- | -------------------------------------------------------- |
+| General use, online accounts                   | 4-5 words                                              | 5 words                                                                         | ~65 bits        | 18.5 quintillion guesses          | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) |
+| "For most uses"                                | 5 words                                                | 6 words                                                                         | ~77 bits        | 75.6 sextillion guesses           | [EFF][eff-long] (6 words from the EFF long list)         |
+| Password-only authentication, no rate limiting | 6 words                                                | 6 words                                                                         | 80 bits         | 604 sextillion guesses            | [ANSSI][anssi] (French national cybersecurity agency)    |
+| Encryption keys and long-term secrets          | 7 words                                                | 8 words                                                                         | 100 bits        | 633 octillion guesses             | [ANSSI][anssi]                                           |
+| Highest assurance level for authentication     | 8 words                                                | 9 words                                                                         | 112 bits        | 2.6 decillion guesses             | [NIST SP 800-63B][nist-63b] (look-up secrets)            |
+| Cryptographic keys, tokens, long-term security | 9 words                                                | 10 words                                                                        | 128 bits        | 170 undecillion guesses           | [NIST SP 800-57][nist-57], [ANSSI][anssi]                |
+| Quantum-resistant secrets (see below)          | 18 words                                               | 20 words                                                                        | 256 bits        | 57.9 quattuorvigintillion guesses | Post-quantum ([Grover's algorithm][grovers])             |
 
 For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations.
 
@@ -106,16 +106,30 @@ Password or passphrase strength is measured in terms of [information entropy][pa
 The entropy of a password or passphrase is a function of how many characters or words it has in it and how many characters or words there are to choose from:
 
 ```math
-\mathrm{entropy} = \text{word count} \times \log_2(\textup{list size})
+\mathrm{entropy} = \text{count} \times \log_2(\textup{possible values})
 ```
 
-If you have a password that's [truly random](#post-quantum-considerations), a string of characters generated with a cryptographical random number generator, the entropy can be easily calculated:
+If you have a password that's [truly random](#post-quantum-considerations), a string of characters generated with a cryptographical random number generator, the entropy is:
 
 ```math
-\mathrm{entropy} = 2^\mathrm{length}
+\mathrm{entropy} = \text{password length} \times \log_2(\textup{possible characters})
 ```
 
-If you have a passphrase that's generated from a known list (which [you should assume it to be](#kerckhoffss-principle)), the entropy is a function of how many words you use and how many words are in the list:
+Let's say you create a 6 character password from the 26 lowercase English letters:
+
+```math
+\mathrm{entropy} = 6 \text{ characters} \times \log_2(26 \text{ possible characters})
+```
+
+```math
+\mathrm{entropy} = 6 \text{ characters} \times 4.7 \text{ bits} / \text{character}
+```
+
+```math
+\mathrm{entropy} = 28.2 \text{ bits}
+```
+
+Similarly, if you have a passphrase that's generated by randomly selecting from a known list (which [you should assume it to be](#kerckhoffss-principle)), the entropy is:
 
 ```math
 \mathrm{entropy} = \mathrm{words} \times \log_2(\textup{list size})
@@ -124,8 +138,56 @@ If you have a passphrase that's generated from a known list (which [you should a
 For this list (26,497 words), each word in your passphrase counts for 14.7 bits of entropy. A 6-word passphrase provides:
 
 ```math
-88.1 \text{ bits of entropy} = 6 \times \log_2(26\,382)
+\mathrm{entropy} = 6 \text{ words} \times \log_2(26\,497 \text{ possible words})
 ```
+
+```math
+\mathrm{entropy} = 6 \text{ words} \times 14.7 \text{ bits} / \text{word}
+```
+
+```math
+\text{entropy} = 88.2 \text{ bits}
+```
+
+### Guessing entropy
+
+Guessing entropy is a measurement of how many random (brute-force) guesses it will take to crack a password. If the password is randomly generated, the number of guesses needed is simple:
+
+```math
+\text{guessing entropy} = \frac {(\text{possible values} + 1)} 2
+```
+
+The intuition behind this is straightforward. The information entropy tells us how many bits of information are required to encode a password. If a password has 88 bits of entropy, there are $2 ^ {88}$ possible passwords. On average, to guess one password will take half as long as enumerating all possible passwords, so ${2 ^ {88}} / 2$. And since you have to start with 1 guess, it becomes ${(2 ^ {88} + 1)} / 2$.
+
+So if you have a 6 character password randomly generated from the lowercase English letters, the number of guesses required to crack it would be, on average:
+
+```math
+\text{guessing entropy} = \frac {(2 ^ {28.2} \text{ bits} + 1 \text{ bit})} {2 \text{ bits} / \text{guess}}
+```
+
+```math
+\text{guessing entropy} = \frac {309 \text{ million bits}} {2 \text{ bits} / \text{guess}}
+```
+
+```math
+\text{guessing entropy} = 154 \text{ million guesses}
+```
+
+Or for a 6 word passphrase randomly generated from this list:
+
+```math
+\text{guessing entropy} = \frac {(2 ^ {88.2} \text{ bits} + 1 \text{ bit})} {2 \text{ bits} / \text{guess}}
+```
+
+```math
+\text{guessing entropy} = \frac {328 \text{ undecillion bits}} {2 \text{ bits} / \text{guess}}
+```
+
+```math
+\text{guessing entropy} = 164 \text{ undecillion guesses}
+```
+
+And if you're rusty on what an undecillion is, it's a billion billion billion billion, or 1 with 37 zeros after it. A whole hell of a lot.
 
 ## About the word list
 
