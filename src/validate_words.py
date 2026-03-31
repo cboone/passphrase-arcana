@@ -43,9 +43,11 @@ def validate_word(
 ) -> bool:
     """Check if a word passes any validation tier."""
     # Tier 1: wordfreq (try original accented forms for fr/pt)
+    # Require zipf >= 2.0 to filter out extremely rare words, foreign words,
+    # and misspellings that appear in wordfreq's multi-language corpus.
     forms_to_check = originals | {word}
     for form in forms_to_check:
-        if zipf_frequency(form, lang) > 0:
+        if zipf_frequency(form, lang) >= 2.0:
             return True
 
     # Tier 2: pyspellchecker
