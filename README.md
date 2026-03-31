@@ -4,19 +4,21 @@ A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](
 
 [Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out. It's [the XKCD approach](https://xkcd.com/936/), but inverted.
 
-The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#other-passphrase-generators) that can use custom lists. At 24,497 words it provides 14.7 bits of entropy per word.
+The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#the-word-list) that can use custom lists. At 24,497 words it provides 14.7 bits of entropy per word.
 
 > [!TIP]
 > If you just need a strong non-human readable password, use `openssl rand -base64 32` and you'll be protected against even [the quantum crackers of the future](#post-quantum-considerations). (They'll steal your data another way.)
 
 [The word list](#the-word-list) ・
 [Entropy and passphrase strength](#entropy-and-passphrase-strength) ・
-[About the word list](#about-the-word-list) ・
-[Sources](#sources) ・
+[Recommended minimum entropy](#recommended-minimums) ・
+[Word list sources](#sources) ・
+[Word list metrics](#word-list-metrics) ・
 [Other word lists](#other-word-lists) ・
 [Post-quantum considerations](#post-quantum-considerations) ・
 [Kerckhoff's principle](#kerckhoffss-principle) ・
-[Word list metrics](./docs/word-list-metrics.md) ・
+[Word list metrics explanations](#word-list-metrics) ・
+[Minimum entropy calculations](#minimum-entropy-calculations) ・
 [Processing pipeline](./docs/pipeline.md)
 
 ## The word list
@@ -30,9 +32,9 @@ phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy
 Produces passphrases like:
 
 ```text
-empoison juicily aloofly tabooing gyratory
 composers chessmen peepshow embarks matchlock
 sobs panache sidled sulkiness headless
+nastier gnarly chuckles farewells miseries
 ```
 
 Or use [`diceware`][diceware-py] or [`keepassxc-cli`][keepassxc]:
@@ -48,11 +50,9 @@ I like `phraze` because it's the only tool that allows you to set a minimum entr
 
 ### Typing ease
 
-Besides the interesting sources and the extensive filtering and validation, the best thing about this list is that it's [filtered for ease of typing](./docs/pipeline.md#step-5-score-typing-difficulty). I believe this is the only passphrase word list that takes this into account.
+Besides the interesting sources and the extensive filtering and validation, the best thing about this list is that it's [filtered for ease of typing](./docs/pipeline.md#step-5-score-typing-difficulty). Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model. Words above the configured threshold are filtered out.
 
-Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model. Words above the configured threshold are filtered out.
-
-The scores for the 26,497 words in the final list range from a minimum of 1.25 to a median of 1.95 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
+The scores for the 26,497 words in the final list range from a minimum of 1.25 to a median of 1.95 and a maximum of 2.5. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
 
 The easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). The hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
 
@@ -201,7 +201,7 @@ And if you're rusty on what an undecillion is, it's a billion billion billion bi
 
 ## About the word list
 
-## Sources
+### Sources
 
 Words are drawn from authors with rich, unusual vocabularies. Most are sourced from [Standard Ebooks][se] (preferred, professionally proofread) and [Project Gutenberg][gutenberg] (public domain texts). Two use concordances (word frequency data extracted from copyrighted works, which is non-copyrightable factual data):
 
@@ -244,28 +244,28 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 
 ### Word list attributes
 
-| Attribute                                                                          | Value           |
-| ---------------------------------------------------------------------------------- | --------------- |
-| Unique words                                                                       | 26,497          |
-| Free of exact duplicates                                                           | yes             |
-| Free of [fuzzy duplicates](./docs/word-list-metrics.md#fuzzy-duplicates)           | yes             |
-| No non-ASCII characters                                                            | yes             |
-| Unicode normalized                                                                 | yes             |
-| Free of [prefix words](./docs/word-list-metrics.md#prefix-and-suffix-words)        | yes             |
-| Free of [suffix words](./docs/word-list-metrics.md#prefix-and-suffix-words)        | yes             |
-| [Uniquely decodable](./docs/word-list-metrics.md#uniquely-decodable)               | yes             |
-| [Above brute force line](./docs/word-list-metrics.md#above-brute-force-line)       | yes             |
-| Shortest word                                                                      | 4 characters    |
-| Longest word                                                                       | 9 characters    |
-| Mean word length                                                                   | 7.53 characters |
-| [Entropy per word](#how-passphrase-entropy-works)                                  | 14.694 bits     |
-| [Efficiency per character](./docs/word-list-metrics.md#efficiency-per-character)   | 1.953 bits      |
-| [Shortest edit distance](./docs/word-list-metrics.md#edit-distance)                | 1               |
-| [Mean edit distance](./docs/word-list-metrics.md#edit-distance)                    | 7.094           |
-| [Unique character prefix](./docs/word-list-metrics.md#unique-character-prefix)     | 9               |
-| [Kraft-McMillan inequality](./docs/word-list-metrics.md#kraft-mcmillan-inequality) | satisfied       |
+| Attribute                                               | Value           |
+| ------------------------------------------------------- | --------------- |
+| Unique words                                            | 26,497          |
+| Free of exact duplicates                                | yes             |
+| Free of [fuzzy duplicates](#fuzzy-duplicates)           | yes             |
+| No non-ASCII characters                                 | yes             |
+| Unicode normalized                                      | yes             |
+| Free of [prefix words](#prefix-and-suffix-words)        | yes             |
+| Free of [suffix words](#prefix-and-suffix-words)        | yes             |
+| [Uniquely decodable](#uniquely-decodable)               | yes             |
+| [Above brute force line](#above-brute-force-line)       | yes             |
+| Shortest word                                           | 4 characters    |
+| Longest word                                            | 9 characters    |
+| Mean word length                                        | 7.53 characters |
+| [Entropy per word](#how-passphrase-entropy-works)       | 14.694 bits     |
+| [Efficiency per character](#efficiency-per-character)   | 1.953 bits      |
+| [Shortest edit distance](#edit-distance)                | 1               |
+| [Mean edit distance](#edit-distance)                    | 7.094           |
+| [Unique character prefix](#unique-character-prefix)     | 9               |
+| [Kraft-McMillan inequality](#kraft-mcmillan-inequality) | satisfied       |
 
-Analyzed with [`wla`][wla]. See the [word list metrics docs](./docs/word-list-metrics.md) for explanations of each metric.
+Analyzed with [`wla`][wla]. See the [word list metrics docs]() for explanations of each metric.
 
 ## Other word lists
 
@@ -321,9 +321,47 @@ The entropy calculation above assumes the attacker knows which word list you are
 
 The only secret is _which specific words_ were randomly selected. This is the correct, conservative way to evaluate passphrase strength. A passphrase that is only secure because the attacker does not know your word list is not secure at all, because you cannot control what an attacker knows.
 
+## Word list metrics
+
+Definitions for the metrics in the word list attributes table. All are computed by [wla](https://github.com/sts10/wla).
+
+### Fuzzy duplicates
+
+Words that are identical except for minor typographical differences. For example, "theater" and "theatre", or "color" and "colour". A list free of fuzzy duplicates avoids ambiguity when a user hears or reads a passphrase word.
+
+### Prefix and suffix words
+
+A prefix word is a word that is the beginning of another word in the list. For example, if both "cat" and "catalog" are in the list, "cat" is a prefix word. Suffix words are the reverse: "log" would be a suffix of "catalog". Removing these ensures the list is safe to use without separators between words, since the decoder can always determine where one word ends and the next begins.
+
+### Uniquely decodable
+
+A list is uniquely decodable if, when you concatenate words from it without separators, there is exactly one way to split the result back into the original words. This is a stronger property than being free of prefix words: it guarantees unambiguous decoding even in edge cases where prefix-freeness alone would not. In practice, a list that is both prefix-free and suffix-free is always uniquely decodable.
+
+### Above brute force line
+
+The list has enough words that randomly selecting from it provides more entropy per character than brute-forcing a random password of the same length. This is the minimum bar for a passphrase word list to be worthwhile compared to a random character password.
+
+## Efficiency per character
+
+Entropy per word divided by mean word length. Higher values mean more entropy per keystroke. This list's efficiency of 1.95 bits/character means a 50-character passphrase (about 6 words with spaces) provides ~88 bits of entropy, compared to ~50 bits from a random string of 50 lowercase letters (which has ~4.7 bits per character but is much harder to remember).
+
+### Edit distance
+
+The [Levenshtein edit distance](https://en.wikipedia.org/wiki/Levenshtein_distance) between two words is the minimum number of single-character insertions, deletions, or substitutions needed to transform one into the other. The shortest edit distance in the list is the distance between the two most similar words. A higher value means the list is more resistant to typos causing one valid word to be mistaken for another. A shortest edit distance of 1 means there exists at least one pair of words differing by a single character (e.g., "word" and "cord").
+
+### Unique character prefix
+
+The minimum number of leading characters needed to uniquely identify every word in the list. With a value of 9 (equal to the maximum word length), some words require their full length to be distinguished. This matters for autocomplete systems: a lower value means fewer characters are needed to disambiguate.
+
+### Kraft-McMillan inequality
+
+A mathematical condition from [information theory](https://en.wikipedia.org/wiki/Kraft%27s_inequality) that must hold for a set of codewords to be uniquely decodable. If the inequality is satisfied, it is theoretically possible to construct a prefix code with the given codeword lengths. For passphrase word lists, satisfying this inequality confirms the list's structure supports unambiguous concatenation.
+
+## Minimum entropy calculations
+
 ## License
 
-MIT
+[MIT License](./LICENSE). TL;DR: Do whatever you want with this software, just keep the copyright notice included. The authors aren't liable if something goes wrong.
 
 <!-- Reference links -->
 
