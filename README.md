@@ -267,21 +267,7 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 
 Analyzed with [`wla`][wla]. See the [word list metrics docs](./docs/word-list-metrics.md) for explanations of each metric.
 
-## Other tools
-
-### Other passphrase generators
-
-The word list is a plain text file (one word per line) that works with any passphrase generator that accepts a custom list.
-
-| Tool                    | Custom list flag                                  |
-| ----------------------- | ------------------------------------------------- |
-| [phraze][phraze]        | `--custom-list passphrase-arcana.txt`             |
-| [diceware][diceware-py] | `-w passphrase-arcana.txt`                        |
-| [KeePassXC][keepassxc]  | `keepassxc-cli diceware -w passphrase-arcana.txt` |
-
-Bitwarden, 1Password, and Proton Pass do not support custom word lists.
-
-### Other word lists
+## Other word lists
 
 The `passphrase-arcana` list prioritizes distinctive vocabulary over everyday words. If you want common, easy-to-spell words instead, these are good alternatives:
 
@@ -334,16 +320,6 @@ The entropy calculation above assumes the attacker knows which word list you are
 - The separator character
 
 The only secret is _which specific words_ were randomly selected. This is the correct, conservative way to evaluate passphrase strength. A passphrase that is only secure because the attacker does not know your word list is not secure at all, because you cannot control what an attacker knows.
-
-### Why phraze and keepassxc-cli report different entropy
-
-Both tools are correct, but they model different attacks:
-
-**phraze** uses word-level entropy: `log2(list_size) x num_words`. This assumes the attacker knows your word list and is guessing word by word (Kerckhoffs's principle, as described above).
-
-**keepassxc-cli** uses character-level analysis. It examines the passphrase as a string of characters, recognizes patterns (dictionary words, sequences, repeated characters), and estimates entropy from that. It does not know which word list generated the passphrase, so it applies a general-purpose model. This often produces a higher number because character-level brute force against a long passphrase is harder than word-level guessing against a known list.
-
-**Which to trust:** Use phraze's estimate (the word-level one). It represents the realistic attack: an adversary who knows you use passphrase-arcana.txt and is enumerating word combinations. The keepassxc-cli number is useful as a sanity check, but it overstates security against a targeted attack.
 
 ## License
 
