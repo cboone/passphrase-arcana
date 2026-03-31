@@ -24,15 +24,15 @@ The list is designed for use with [`phraze`][phraze] and [other passphrase gener
 [`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 29,484 lowercase ASCII words, ready for use with `phraze`:
 
 ```bash
-phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 50
+phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 60
 ```
 
 Produces passphrases like:
 
 ```text
-haltered secluding prophesy yesterday
-genteeler flimsily vicars guestroom
-porkpie impinged twentytwo naturae
+squiz loudness jerkins confabs soapbox
+sparser dating godsent sparsely despiseth
+doping marbling perished revolters assertion
 ```
 
 Or use [`diceware`][diceware-py] or [`keepassxc-cli`][keepassxc]:
@@ -50,17 +50,38 @@ I like `phraze` because it's the only tool that allows you to set a minimum entr
 
 ### Recommended minimums
 
+#### _My recommendations_
+
+| Minimum information entropy | Minimum guessing entropy | Number of words from passphrase-arcana | Account type / usage context                                                                                                                                                                                           |
+| --------------------------- | ------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 30 bits                     | 537 million guesses      | 2 words                                | Hardware-enforced rate limiting (macOS on M1+) <br> Accounts with a hardware key <br> Throwaway accounts (forum registrations) <br> SSH key created with high rounds setting (`-a 100` or higher) <br> WPA3 <br> LUKS2 |
+| 45 bits                     | 17.6 trillion guesses    | 3 words                                | Accounts with TOTP <br> SSH key created with default rounds setting (`-a 16`) <br> GPG key with strong settings (AES-256, SHA-512, maximum S2K) <br> WPA2 <br> WPA3 for extra safety <br> LUKS1                        |
+| 60 bits                     | 576 quadrillion guesses  | 4 words                                | Accounts with weak 2FA (SMS or email) or no 2FA <br> GPG key with default settings (CAST5, SHA-1)                                                                                                                      |
+| 75 bits                     | 37.8 sextillion guesses  | 5 words                                | Important accounts                                                                                                                                                                                                     |
+| 90 bits                     | 619 septillion guesses   | 6 words                                | Secret protecting accounts                                                                                                                                                                                             |
+
+Passwords and PINs:
+
+- iOS: all lowercase, no spaces, no keyboard switching (numbers and symbols), 8-12 characters typed smoothly, eg 1-2 passphrase-arcana words with no separator
+- YubiKey or other severely rate-limited hardware devices: 4 digit **random** code
+- SSH key protected by Keychain or similar: 20+ character (128+ bits) **random** string, eg `openssl rand -base64 24`
+- Important account with unknown storage and protection: 45+ character (256+ bits) **random** string, eg `openssl rand -base64 32`
+
+I emphasize "random" in the list above, because it's critical that they be truly (cryptographically) random.
+
+#### _Official recommendations_
+
 Different organizations and security standards recommend different entropy floors depending on the threat model:
 
-| Minimum  | passphrase-arcana | Source                                                   | Context                                        |
-| -------- | ----------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| ~65 bits | ~4 words          | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
-| ~77 bits | ~5 words          | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
-| 80 bits  | ~6 words          | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
-| 100 bits | ~7 words          | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
-| 112 bits | ~8 words          | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
-| 128 bits | ~9 words          | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
-| 256 bits | ~18 words         | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
+| Minimum entropy | Number of words from passphrase-arcana | Source                                                   | Usage context                                  |
+| --------------- | -------------------------------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| ~65 bits        | ~4 words                               | [Diceware FAQ][diceware-faq] (5 words from a 7,776 list) | General use, online accounts                   |
+| ~77 bits        | ~5 words                               | [EFF][eff-long] (6 words from the EFF long list)         | "For most uses"                                |
+| 80 bits         | ~6 words                               | [ANSSI][anssi] (French national cybersecurity agency)    | Password-only authentication, no rate limiting |
+| 100 bits        | ~7 words                               | [ANSSI][anssi]                                           | Encryption keys and long-term secrets          |
+| 112 bits        | ~8 words                               | [NIST SP 800-63B][nist-63b] (look-up secrets)            | Highest assurance level for authentication     |
+| 128 bits        | ~9 words                               | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
+| 256 bits        | ~18 words                              | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
 
 For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (90 bits) comfortably exceeds the EFF and ANSSI general-use recommendations.
 
