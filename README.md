@@ -21,7 +21,7 @@ The list is designed for use with [`phraze`][phraze] and [other passphrase gener
 
 ## The word list
 
-[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 29,484 lowercase ASCII words, ready for use with `phraze`:
+[`passphrase-arcana.txt`](./passphrase-arcana.txt) contains 26,497 lowercase ASCII words, ready for use with `phraze`:
 
 ```bash
 phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy 60
@@ -83,9 +83,9 @@ Different organizations and security standards recommend different entropy floor
 | 128 bits        | ~9 words                               | [NIST SP 800-57][nist-57], [ANSSI][anssi]                | Cryptographic keys, tokens, long-term security |
 | 256 bits        | ~18 words                              | Post-quantum ([Grover's algorithm][grovers])             | Quantum-resistant secrets (see below)          |
 
-For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (90 bits) comfortably exceeds the EFF and ANSSI general-use recommendations.
+For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations.
 
-For high-security applications like encryption keys, 8 words (118 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're better off with [a random password](#post-quantum-considerations).
+For high-security applications like encryption keys, 8 words (~118 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're better off with [a random password](#post-quantum-considerations).
 
 ### Entropy and other strength measurements
 
@@ -121,7 +121,7 @@ If you have a passphrase that's generated from a known list (which [you should a
 \mathrm{entropy} = \mathrm{words} \times \log_2(\textup{list size})
 ```
 
-For this list (29,484 words), each word in your passphrase counts for 14.8 bits of entropy. A 6-word passphrase provides:
+For this list (26,497 words), each word in your passphrase counts for 14.7 bits of entropy. A 6-word passphrase provides:
 
 ```math
 88.1 \text{ bits of entropy} = 6 \times \log_2(26\,382)
@@ -174,7 +174,7 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 
 | Attribute                                                                          | Value           |
 | ---------------------------------------------------------------------------------- | --------------- |
-| Unique words                                                                       | 29,484          |
+| Unique words                                                                       | 26,497          |
 | Free of exact duplicates                                                           | yes             |
 | Free of [fuzzy duplicates](./docs/word-list-metrics.md#fuzzy-duplicates)           | yes             |
 | No non-ASCII characters                                                            | yes             |
@@ -185,11 +185,11 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 | [Above brute force line](./docs/word-list-metrics.md#above-brute-force-line)       | yes             |
 | Shortest word                                                                      | 4 characters    |
 | Longest word                                                                       | 9 characters    |
-| Mean word length                                                                   | 7.45 characters |
-| [Entropy per word](#how-passphrase-entropy-works)                                  | 14.848 bits     |
-| [Efficiency per character](./docs/word-list-metrics.md#efficiency-per-character)   | 1.994 bits      |
+| Mean word length                                                                   | 7.53 characters |
+| [Entropy per word](#how-passphrase-entropy-works)                                  | 14.694 bits     |
+| [Efficiency per character](./docs/word-list-metrics.md#efficiency-per-character)   | 1.953 bits      |
 | [Shortest edit distance](./docs/word-list-metrics.md#edit-distance)                | 1               |
-| [Mean edit distance](./docs/word-list-metrics.md#edit-distance)                    | 7.059           |
+| [Mean edit distance](./docs/word-list-metrics.md#edit-distance)                    | 7.094           |
 | [Unique character prefix](./docs/word-list-metrics.md#unique-character-prefix)     | 9               |
 | [Kraft-McMillan inequality](./docs/word-list-metrics.md#kraft-mcmillan-inequality) | satisfied       |
 
@@ -199,7 +199,7 @@ Analyzed with [`wla`][wla]. See the [word list metrics docs](./docs/word-list-me
 
 Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](./docs/pipeline.md#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out.
 
-The scores for the 29,484 words in the final list range from a minimum of 1.25 to a median of 1.94 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
+The scores for the 26,497 words in the final list range from a minimum of 1.25 to a median of 1.95 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
 
 The easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). The hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
 
@@ -241,7 +241,7 @@ The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert
 
 [Grover's algorithm][grovers], a quantum computing algorithm, provides a square-root speedup for brute-force search. This effectively halves your security bits: 128-bit entropy drops to 64-bit security against a quantum attacker, and 256 bits drops to 128. NIST's post-quantum guidance recommends 256-bit symmetric keys (equivalent to 128-bit post-quantum security) for long-term protection.
 
-For passphrases, 256 bits would require ~18 words from this list, which is not practical. In reality, passphrases protect secrets that are processed through slow key derivation functions (argon2, bcrypt, scrypt) before use, and each hash evaluation adds significant cost to both classical and quantum brute force. A 10-word passphrase (~148 bits) run through argon2 is likely adequate even against future quantum computers, but the honest answer is that nobody knows exactly when or whether large-scale quantum brute force will become feasible.
+For passphrases, 256 bits would require ~18 words from this list, which is not practical. In reality, passphrases protect secrets that are processed through slow key derivation functions (argon2, bcrypt, scrypt) before use, and each hash evaluation adds significant cost to both classical and quantum brute force. A 10-word passphrase (~147 bits) run through argon2 is likely adequate even against future quantum computers, but the honest answer is that nobody knows exactly when or whether large-scale quantum brute force will become feasible.
 
 If you need a secret that is unambiguously quantum-resistant without relying on key stretching, use a random string instead of a passphrase:
 
