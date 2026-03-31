@@ -30,9 +30,9 @@ phraze --verbose --sep " " --custom-list passphrase-arcana.txt --minimum-entropy
 Produces passphrases like:
 
 ```text
-squiz loudness jerkins confabs soapbox
-sparser dating godsent sparsely despiseth
-doping marbling perished revolters assertion
+empoison juicily aloofly tabooing gyratory
+composers chessmen peepshow embarks matchlock
+sobs panache sidled sulkiness headless
 ```
 
 Or use [`diceware`][diceware-py] or [`keepassxc-cli`][keepassxc]:
@@ -85,15 +85,15 @@ Different organizations and security standards recommend different entropy floor
 
 For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (90 bits) comfortably exceeds the EFF and ANSSI general-use recommendations.
 
-In fact, for well locked down scenarios (macOS user accounts on M1 or more recent machines, for example, where guessing is hardware rate limited), 2-4 words (30-60 bits) can be plenty. But you sure be more confident in your understanding of the mechanics of the system and in the details of your threat model before you go that low.
-
 For high-security applications like encryption keys, 8 words (118 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're better off with [a random password](#post-quantum-considerations).
 
 ### Entropy and other strength measurements
 
-There are different ways to think about password or passphrase strength, and they fall into two general buckets: measurements of the randomness of generation and measurements of the difficulty of cracking.
+There are different ways to think about password or passphrase strength, and they fall into three general buckets: measurements of the randomness of generation, measurements of the quantity of guesses needed, and measurements of the difficulty of cracking.
 
-The most common metric is [entropy](#how-passphrase-entropy-works), which is a mathematical measure of the randomness of the secret. That can be measured either in terms of the randomness of the characters in the secret or the randomness of the selection of words in the passphrase. Entropy is a useful metric in guiding secret generation, since it provides an abstract measurement of how random the process is. From the cracking perspective, it's less useful, since it really only captures how hard it would be to brute-force crack a password. (Generate random characters or word combinations until you find a match.)
+The most common metric is [entropy](#how-passphrase-entropy-works) ([information or Shannon entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)>)), which is a mathematical measure of the randomness of the secret. That can be measured either in terms of the randomness of the characters in the secret or the randomness of the selection of words in the passphrase. Entropy is a useful metric in guiding secret generation, since it provides an abstract measurement of how random the process is. From the cracking perspective, it's less useful, since it really only captures how hard it would be to brute-force crack a password. (Generate random characters or word combinations until you find a match.)
+
+When generating a password or passphrase randomly (truly randomly, using [a cryptographically secure random number generator](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator)), [guessing entropy](https://www.isiweb.ee.ethz.ch/papers/arch/mass-inspec-1994-4.pdf) can be calculated from the information entropy and vice versa. In other words, the randomness of the generation process dictates how many guesses an attacker would need, assuming brute-force random guessing.
 
 Password cracking these days (early 2026) is much more advanced than simple brute forcing, though that's always a fall back option. Tools like [John the Ripper](https://github.com/openwall/john) and [Hashcat](https://github.com/hashcat/hashcat) create combinations and permutations of words and numbers and symbols, using rules that follow how people create passwords in real life. The newest generation of tools, like [PassLLM](https://github.com/Tzohar/PassLLM), use neural networks trained on massive datasets of breached passwords and incorporate leaked PII data as well. And as the capabilities of the frontier LLMs continue to advance, password security will get harder and harder to maintain.
 
@@ -106,10 +106,10 @@ Password or passphrase strength is measured in terms of [information entropy][pa
 The entropy of a password or passphrase is a function of how many characters or words it has in it and how many characters or words there are to choose from:
 
 ```math
-\mathrm{entropy} = \mathrm{N} \times \log_2(\textup{possible values of N})
+\mathrm{entropy} = \text{word count} \times \log_2(\textup{list size})
 ```
 
-If you have a password that's [truly random](#post-quantum-considerations), a string of characters generated with a cryptographical random number generator, the entropy is just a function of the password's length:
+If you have a password that's [truly random](#post-quantum-considerations), a string of characters generated with a cryptographical random number generator, the entropy can be easily calculated:
 
 ```math
 \mathrm{entropy} = 2^\mathrm{length}
