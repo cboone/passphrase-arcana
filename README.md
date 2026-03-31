@@ -46,6 +46,16 @@ Bitwarden, 1Password, and Proton Pass do not support custom word lists.
 
 I like `phraze` because it's the only tool that allows you to set a minimum entropy value for your passphrase. For all the others you need to work backwards from entropy / strength to number of words.
 
+### Typing ease
+
+Besides the interesting sources and the extensive filtering and validation, the best thing about this list is that it's [filtered for ease of typing](./docs/pipeline.md#step-5-score-typing-difficulty). I believe this is the only passphrase word list that takes this into account.
+
+Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model. Words above the configured threshold are filtered out.
+
+The scores for the 26,497 words in the final list range from a minimum of 1.25 to a median of 1.95 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
+
+The easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). The hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
+
 ## Entropy and passphrase strength
 
 ### Recommended minimums
@@ -149,7 +159,7 @@ For this list (26,497 words), each word in your passphrase counts for 14.7 bits 
 \text{entropy} = 88.2 \text{ bits}
 ```
 
-### Guessing entropy
+### How guessing entropy works
 
 Guessing entropy is a measurement of how many random (brute-force) guesses it will take to crack a password. If the password is randomly generated, the number of guesses needed is simple:
 
@@ -256,14 +266,6 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 | [Kraft-McMillan inequality](./docs/word-list-metrics.md#kraft-mcmillan-inequality) | satisfied       |
 
 Analyzed with [`wla`][wla]. See the [word list metrics docs](./docs/word-list-metrics.md) for explanations of each metric.
-
-### Typing ease
-
-Every word is scored for QWERTY touch-typing effort using a [Carpalx][carpalx]-inspired model (see [Step 5](./docs/pipeline.md#step-5-score-typing-difficulty)). Words above the configured threshold are filtered out.
-
-The scores for the 26,497 words in the final list range from a minimum of 1.25 to a median of 1.95 and a maximum of 2.50. Lower is easier to type. About 32% of words score below 1.8 (easy range), and 55% below 2.0.
-
-The easiest words tend to use home-row and index-finger keys with hand alternation: "duds" (1.25), "dusks" (1.26), "disks" (1.29). The hardest words (at the 2.5 boundary) involve bottom-row keys, same-finger bigrams, or pinky stretches: "thwarted", "wharves", "withy".
 
 ## Other tools
 
