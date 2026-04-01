@@ -60,7 +60,9 @@ The easiest words tend to use home-row and index-finger keys with hand alternati
 
 ### Recommended minimums
 
-#### _My recommendations_
+#### My recommendations
+
+##### _Passphrases_
 
 See [the minimum entropy calculations section](#minimum-entropy-calculations) for the details and sources behind these numbers. For more widely accepted numbers, see [the official recommendations section](#official-recommendations).
 
@@ -72,16 +74,16 @@ See [the minimum entropy calculations section](#minimum-entropy-calculations) fo
 | Important accounts                                                                                                                                                                                                     | 5 words                                                | 6 words                                                                         | 75 bits                     | 18.9 sextillion guesses (number of grains of sand on Earth)         |
 | Secret protecting accounts                                                                                                                                                                                             | 6 words                                                | 7 words                                                                         | 90 bits                     | 619 septillion guesses                                              |
 
-Passwords and PINs:
+##### _Passwords and PINs_
 
 - iOS: all lowercase, no spaces, no keyboard switching (numbers and symbols), 8-12 characters typed smoothly, eg 1-2 passphrase-arcana words with no separator
 - YubiKey or other severely rate-limited hardware devices: 4 digit **random** code
 - SSH key protected by Keychain or similar: 20+ character (128+ bits) **random** string, eg `openssl rand -base64 24`
-- Important account with unknown storage and protection: 45+ character (256+ bits) **random** string, eg `openssl rand -base64 32`
+- Important account with unknown storage and protection (fallback default): 45+ character (256+ bits) **random** string, eg `openssl rand -base64 32`
 
 I emphasize "random" in the list above, because it's critical that they be truly (cryptographically) random.
 
-#### _Official recommendations_
+#### Official recommendations
 
 Different organizations and security standards recommend different entropy floors depending on the threat model:
 
@@ -94,10 +96,6 @@ Different organizations and security standards recommend different entropy floor
 | Highest assurance level for authentication     | 8 words                                                | 9 words                                                                         | 112 bits        | 2.6 decillion guesses             | [NIST SP 800-63B][nist-63b] (look-up secrets)            |
 | Cryptographic keys, tokens, long-term security | 9 words                                                | 10 words                                                                        | 128 bits        | 170 undecillion guesses           | [NIST SP 800-57][nist-57], [ANSSI][anssi]                |
 | Quantum-resistant secrets (see below)          | 18 words                                               | 20 words                                                                        | 256 bits        | 57.9 quattuorvigintillion guesses | Post-quantum ([Grover's algorithm][grovers])             |
-
-For most people generating a passphrase for a password manager, email, or disk encryption, 6 words from this list (~88 bits) comfortably exceeds the EFF and ANSSI general-use recommendations.
-
-For high-security applications like encryption keys, 8 words (~118 bits) exceeds the NIST 112-bit threshold. If you're worrying about 256 bit level security, you're better off with [a random password](#post-quantum-considerations).
 
 ### Entropy and other strength measurements
 
@@ -205,7 +203,7 @@ And if you're rusty on what an undecillion is, it's a billion billion billion bi
 
 ### Sources
 
-Words are drawn from authors with rich, unusual vocabularies. Most are sourced from [Standard Ebooks][se] (preferred, professionally proofread) and [Project Gutenberg][gutenberg] (public domain texts). Two use concordances (word frequency data extracted from copyrighted works, which is non-copyrightable factual data):
+Words are drawn from authors with interesting vocabularies. Most are sourced from [Standard Ebooks][se] and [Project Gutenberg][gutenberg]. Two use concordances (word frequency data extracted from copyrighted works, which is non-copyrightable factual data):
 
 | Author                 | Source                         | Vocabulary                      |
 | ---------------------- | ------------------------------ | ------------------------------- |
@@ -267,25 +265,25 @@ The McCarthy concordance is parsed from John Sepich's [word list][sepich]. The N
 | [Unique character prefix](#unique-character-prefix)     | 9               |
 | [Kraft-McMillan inequality](#kraft-mcmillan-inequality) | satisfied       |
 
-Analyzed with [`wla`][wla]. See the [word list metrics docs]() for explanations of each metric.
+Analyzed with [`wla`][wla]. See the [word list metrics](#word-list-metrics) for explanations.
 
 ## Other word lists
 
 The `passphrase-arcana` list prioritizes distinctive vocabulary over everyday words. If you want common, easy-to-spell words instead, these are good alternatives:
 
-| List                                   | Words  | Bits/word | Description                                                     |
-| -------------------------------------- | ------ | --------- | --------------------------------------------------------------- |
-| [Orchard Street Long][os-long]         | 17,576 | 14.10     | Common English from Wikipedia and Google Books                  |
-| [Orchard Street Medium][os-medium]     | 8,192  | 13.00     | Common English, power-of-2 optimized for phraze                 |
-| [EFF Long][eff-long]                   | 7,776  | 12.93     | Common English, designed for easy spelling                      |
-| [Orchard Street Diceware][os-diceware] | 7,776  | 12.93     | Common English, diceware-compatible (6^5 words)                 |
-| [Orchard Street QWERTY][os-qwerty]     | 1,296  | 10.34     | Optimized for tvs and other devices with a QWERTY layout        |
-| [Orchard Street Alpha][os-alpha]       | 1,296  | 10.34     | Optimized for tvs and other devices with an alphabetical layout |
-| [EFF Short 1][eff-short]               | 1,296  | 10.34     | Short common words                                              |
+| List                                   | Words  | Bits/word | Description                                                                 |
+| -------------------------------------- | ------ | --------- | --------------------------------------------------------------------------- |
+| [Orchard Street Long][os-long]         | 17,576 | 14.10     | Common English from Wikipedia and Google Books                              |
+| [Orchard Street Medium][os-medium]     | 8,192  | 13.00     | Common English, power-of-2 optimized for `phraze`                           |
+| [EFF Long][eff-long]                   | 7,776  | 12.93     | Common English, designed for easy spelling, diceware-compatible (6^5 words) |
+| [Orchard Street Diceware][os-diceware] | 7,776  | 12.93     | Common English, diceware-compatible (6^5 words)                             |
+| [Orchard Street QWERTY][os-qwerty]     | 1,296  | 10.34     | Optimized for TVs and other devices with a QWERTY keyboard layout           |
+| [Orchard Street Alpha][os-alpha]       | 1,296  | 10.34     | Optimized for TVs and other devices with an alphabetical keyboard layout    |
+| [EFF Short 1][eff-short]               | 1,296  | 10.34     | Short common words                                                          |
 
-Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (~78 bits) is roughly equivalent to a 5-word passphrase from this list (~73 bits).
+Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (78 bits) is roughly equivalent to a 5-word passphrase from this list (74 bits).
 
-The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert][sts10], who also created [`phraze`][phraze].
+The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert][sts10], who also created [`phraze`][phraze] and `wla`.
 
 ## Additional security notes
 
@@ -293,15 +291,15 @@ The [Orchard Street wordlists][orchard-street] are maintained by [Sam Schlinkert
 
 [Grover's algorithm][grovers], a quantum computing algorithm, provides a square-root speedup for brute-force search. This effectively halves your security bits: 128-bit entropy drops to 64-bit security against a quantum attacker, and 256 bits drops to 128. NIST's post-quantum guidance recommends 256-bit symmetric keys (equivalent to 128-bit post-quantum security) for long-term protection.
 
-For passphrases, 256 bits would require ~18 words from this list, which is not practical. In reality, passphrases protect secrets that are processed through slow key derivation functions (argon2, bcrypt, scrypt) before use, and each hash evaluation adds significant cost to both classical and quantum brute force. A 10-word passphrase (~147 bits) run through argon2 is likely adequate even against future quantum computers, but the honest answer is that nobody knows exactly when or whether large-scale quantum brute force will become feasible.
+For passphrases, 256 bits would require ~18 words from this list, which isn't practical. A 10-word passphrase (147 bits) run through argon2 is likely adequate even against future quantum computers, but nobody actually knows when or whether large-scale quantum brute-forcing will become feasible.
 
-If you need a secret that is unambiguously quantum-resistant without relying on key stretching, use a random string instead of a passphrase:
+If you need a secret that is unambiguously quantum-resistant, use a random string instead of a passphrase:
 
 ```bash
-openssl rand -base64 48   # 48 bytes * 8 bits / byte = 256 bits of entropy
+openssl rand -base64 32   # 32 bytes * 8 bits / byte = 256 bits of entropy
 ```
 
-The argument to `openssl rand -base64` is the number of random **bytes**. Each byte contributes 8 bits of entropy, so the mapping is straightforward:
+The argument to `openssl rand -base64` is the number of random bytes. Each byte contributes 8 bits of entropy, so the mapping is straightforward:
 
 | Bytes | Entropy  | Output length | Quantum-equivalent |
 | ----- | -------- | ------------- | ------------------ |
@@ -310,11 +308,13 @@ The argument to `openssl rand -base64` is the number of random **bytes**. Each b
 | 32    | 256 bits | ~44 chars     | 128 bits           |
 | 48    | 384 bits | ~64 chars     | 192 bits           |
 
-The output is longer than the input because base64 encodes 3 bytes into 4 printable characters, but the entropy comes entirely from the random bytes, not the encoding. These strings are not human-memorable, so they are best suited for secrets stored in a password manager or used programmatically.
+The output is longer than the input because base64 encodes 3 bytes into 4 printable characters, but the entropy comes from the random bytes, not the encoded output. These strings are not human-memorable, so they are best suited for secrets stored in a password manager or used programmatically.
 
 ### Kerckhoffs's principle
 
-The entropy calculation above assumes the attacker knows which word list you are using. This follows [Kerckhoffs's principle][kerckhoffs], a foundational concept in cryptography: a system should remain secure even if everything about it is public knowledge except the secret itself. For passphrases, this means assuming the attacker knows:
+The entropy calculation above assumes the attacker knows which word list you are using. This follows [Kerckhoffs's principle][kerckhoffs], a foundational concept in cryptography: A system should remain secure even if everything about it is public knowledge except the secret itself.
+
+For passphrases, this means assuming the attacker knows:
 
 - That you are using a word-based passphrase
 - Which word list you drew from
@@ -361,11 +361,9 @@ A mathematical condition from [information theory](https://en.wikipedia.org/wiki
 
 ## Minimum entropy calculations
 
-### Account types and usage contexts
+### 30 bits / 2 words
 
-#### 30 bits / 2 words
-
-##### _Hardware-enforced rate limiting (macOS on M1+)_
+#### Hardware-enforced rate limiting (macOS on M1+)
 
 These limits are enforced by [the Secure Enclave](https://support.apple.com/guide/security/the-secure-enclave-sec59b0b31ff/1/web/1) and can't be circumvented by restarts. The following assumes you have all the obvious security features turned on: require a password after sleep, File Vault, etc.
 
@@ -379,47 +377,47 @@ After first authentication, the SSD is unlocked (so make sure you have File Vaul
 
 In the worst case scenario, assuming the fastest possible repeated authentication attempt timing, an attacker could make about 12.5 attempts per second, or 45,000 per hour, or about 1 million per day. That's equivalent to about 20 bits of entropy to crack your password in one day. Going up to 30 bits means an attacker will need about 3 years.
 
-##### _Accounts with a hardware key_
+#### Accounts with a hardware key
 
-##### _Throwaway accounts (forum registrations)_
+#### Throwaway accounts (forum registrations)
 
-##### _SSH key created with high rounds setting (-a 100 or higher)_
+#### SSH key created with high rounds setting (-a 100 or higher)
 
-##### _WPA3_
+#### WPA3
 
-##### _LUKS2_
+#### LUKS2
 
-#### 45 bits / 3 words
+### 45 bits / 3 words
 
-##### _Accounts with TOTP_
+#### Accounts with TOTP 2FA
 
-##### _SSH key created with default rounds setting (-a 16)_
+#### SSH key created with default rounds setting (-a 16)
 
-##### _GPG key with strong settings (AES-256, SHA-512, maximum S2K)_
+#### GPG key with strong settings (AES-256, SHA-512, maximum S2K)
 
-##### _WPA2_
+#### WPA2
 
-##### _WPA3 for extra safety_
+#### WPA3 for extra safety
 
-##### _LUKS1_
+#### LUKS1
 
-#### 60 bits / 4 words
+### 60 bits / 4 words
 
-##### _Accounts with weak 2FA (SMS or email) or no 2FA_
+#### Accounts with weak 2FA (SMS or email) or no 2FA
 
-##### _GPG key with default settings (CAST5, SHA-1)_
+#### GPG key with default settings (CAST5, SHA-1)
 
-#### 75 bits / 5 words
+### 75 bits / 5 words
 
-##### _Important accounts_
+#### Important accounts
 
-#### 90 bits / 6 words
+### 90 bits / 6 words
 
-##### _Secret protecting accounts_
+#### Secret protecting accounts
 
-#### Passwords and PINs
+### Passwords and PINs
 
-##### _iOS and iPadOS_
+#### iOS and iPadOS
 
 [As with macOS](#hardware-enforced-rate-limiting-macos-on-m1), these limits are enforced at the hardware level using [the Secure Enclave](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1) and can't be circumvented by restarts.
 
@@ -439,15 +437,15 @@ The best option is to use 2-3 words that equal around 8-12 characters that you c
 
 10 characters of all lowercase letters gives around 47 bits of entropy, far more than an iPhone needs. But more importantly it means that even if someone sees part of what you type, your password is still extremely difficult to guess.
 
-##### _YubiKey and other hardware devices_
+#### YubiKey and other hardware devices
 
 YubiKeys allow [a maximum of 8 attempts](https://support.yubico.com/s/article/Understanding-YubiKey-PINs) before locking and requiring it to be reset.
 
 If chosen randomly (an important caveat for any PIN), a 4 digit PIN is sufficient. 6 digits is more than enough.
 
-##### _SSH key protected by Keychain_
+#### SSH key protected by Keychain (or similar)
 
-##### _Important account with unknown storage and protection_
+#### Important account with unknown storage and protection (fallback default)
 
 ## License
 
