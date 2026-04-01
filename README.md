@@ -2,7 +2,7 @@
 
 A passphrase [word list](./passphrase-arcana.txt) built from [the vocabularies](#sources) of authors known for distinctive, unusual language, filtered for the [easiest to type](#typing-ease). Also filtered to remove proper nouns, prefixes and suffixes, non-uniquely decodable words, offensive words, homophones, and words that are similar enough that a typo could transform one into the other.
 
-[Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out. It's [the XKCD approach](https://xkcd.com/936/), but inverted.
+[Standard passphrase word lists](#other-word-lists) prioritize common, everyday words. This list takes the opposite approach: words like "sheepfold", "hexapods", and "acridity" are more memorable precisely because they stand out. It's [the XKCD approach][xkcd-936], but inverted.
 
 The list is designed for use with [`phraze`][phraze] and [other passphrase generators](#the-word-list) that can use custom lists. At 26,431 words it provides 14.7 bits of entropy per word.
 
@@ -103,15 +103,15 @@ There are different ways to think about password or passphrase strength, and the
 
 The most common metric is [entropy](#how-passphrase-entropy-works) ([information or Shannon entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)>)), which is a mathematical measure of the randomness of the secret. That can be measured either in terms of the randomness of the characters in the secret or the randomness of the selection of words in the passphrase. Entropy is a useful metric in guiding secret generation, since it provides an abstract measurement of how random the process is. From the cracking perspective, it's less useful, since it really only captures how hard it would be to brute-force crack a password. (Generate random characters or word combinations until you find a match.)
 
-When generating a password or passphrase randomly (truly randomly, using [a cryptographically secure random number generator](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator)), [guessing entropy](https://www.isiweb.ee.ethz.ch/papers/arch/mass-inspec-1994-4.pdf) can be calculated from the information entropy and vice versa. In other words, the randomness of the generation process dictates how many guesses an attacker would need, assuming brute-force random guessing.
+When generating a password or passphrase randomly (truly randomly, using [a cryptographically secure random number generator][csprng]), [guessing entropy][guessing-entropy] can be calculated from the information entropy and vice versa. In other words, the randomness of the generation process dictates how many guesses an attacker would need, assuming brute-force random guessing.
 
-Password cracking these days (early 2026) is much more advanced than simple brute forcing, though that's always a fall back option. Tools like [John the Ripper](https://github.com/openwall/john) and [Hashcat](https://github.com/hashcat/hashcat) create combinations and permutations of words and numbers and symbols, using rules that follow how people create passwords in real life. The newest generation of tools, like [PassLLM](https://github.com/Tzohar/PassLLM), use neural networks trained on massive datasets of breached passwords and incorporate leaked PII data as well. And as the capabilities of the frontier LLMs continue to advance, password security will get harder and harder to maintain.
+Password cracking these days (early 2026) is much more advanced than simple brute forcing, though that's always a fall back option. Tools like [John the Ripper][john] and [Hashcat][hashcat] create combinations and permutations of words and numbers and symbols, using rules that follow how people create passwords in real life. The newest generation of tools, like [PassLLM][passllm], use neural networks trained on massive datasets of breached passwords and incorporate leaked PII data as well. And as the capabilities of the frontier LLMs continue to advance, password security will get harder and harder to maintain.
 
 All of which is to say, measuring cracking time using the kinds of algorithms actually at use in the wild needs to be far more sophisticated than just measuring randomness or brute force difficulty.
 
 ### How passphrase entropy works
 
-Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. (Thanks to [the OG Claude](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf).)
+Password or passphrase strength is measured in terms of [information entropy][password-entropy], or the minimum number of bits necessary to hold the information in the password. (Thanks to [the OG Claude][shannon-entropy].)
 
 The entropy of a password or passphrase is a function of how many characters or words it has in it and how many characters or words there are to choose from:
 
@@ -325,7 +325,7 @@ The only secret is _which specific words_ were randomly selected. This is the co
 
 ## Word list metrics
 
-Definitions for the metrics in the word list attributes table. All are computed by [wla](https://github.com/sts10/wla).
+Definitions for the metrics in the word list attributes table. All are computed by [wla][wla].
 
 ### Fuzzy duplicates
 
@@ -349,7 +349,7 @@ Entropy per word divided by mean word length. Higher values mean more entropy pe
 
 ### Edit distance
 
-The [Levenshtein edit distance](https://en.wikipedia.org/wiki/Levenshtein_distance) between two words is the minimum number of single-character insertions, deletions, or substitutions needed to transform one into the other. The shortest edit distance in the list is the distance between the two most similar words. A higher value means the list is more resistant to typos causing one valid word to be mistaken for another. A shortest edit distance of 1 means there exists at least one pair of words differing by a single character (e.g., "word" and "cord").
+The [Levenshtein edit distance][levenshtein] between two words is the minimum number of single-character insertions, deletions, or substitutions needed to transform one into the other. The shortest edit distance in the list is the distance between the two most similar words. A higher value means the list is more resistant to typos causing one valid word to be mistaken for another. A shortest edit distance of 1 means there exists at least one pair of words differing by a single character (e.g., "word" and "cord").
 
 ### Unique character prefix
 
@@ -357,7 +357,7 @@ The minimum number of leading characters needed to uniquely identify every word 
 
 ### Kraft-McMillan inequality
 
-A mathematical condition from [information theory](https://en.wikipedia.org/wiki/Kraft%27s_inequality) that must hold for a set of codewords to be uniquely decodable. If the inequality is satisfied, it is theoretically possible to construct a prefix code with the given codeword lengths. For passphrase word lists, satisfying this inequality confirms the list's structure supports unambiguous concatenation.
+A mathematical condition from [information theory][kraft-inequality] that must hold for a set of codewords to be uniquely decodable. If the inequality is satisfied, it is theoretically possible to construct a prefix code with the given codeword lengths. For passphrase word lists, satisfying this inequality confirms the list's structure supports unambiguous concatenation.
 
 ## Minimum entropy calculations
 
@@ -365,15 +365,15 @@ A mathematical condition from [information theory](https://en.wikipedia.org/wiki
 
 #### Hardware-enforced rate limiting (macOS on M1+)
 
-These limits are enforced by [the Secure Enclave](https://support.apple.com/guide/security/the-secure-enclave-sec59b0b31ff/1/web/1) and can't be circumvented by restarts. The following assumes you have all the obvious security features turned on: require a password after sleep, File Vault, etc.
+These limits are enforced by [the Secure Enclave][secure-enclave] and can't be circumvented by restarts. The following assumes you have all the obvious security features turned on: require a password after sleep, File Vault, etc.
 
-[From a fresh boot](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1), macOS allows three authentication attempts with no delay between them. After the fourth, you wait 1 minute; after the fifth, 5 minutes. Then 15 minutes, 1 hour, 3 hours, and 8 hours after the ninth attempt. After those 10 attempts are exhausted, 10 more are available in recoveryOS, and if those are also used up, 10 additional attempts are available for each FileVault recovery mechanism — iCloud recovery, FileVault recovery key, and institutional key — for a maximum of 30 additional attempts. Once all of those are gone, the Secure Enclave stops processing decryption and verification requests entirely and the data on the drive becomes unrecoverable.
+[From a fresh boot][apple-passcodes], macOS allows three authentication attempts with no delay between them. After the fourth, you wait 1 minute; after the fifth, 5 minutes. Then 15 minutes, 1 hour, 3 hours, and 8 hours after the ninth attempt. After those 10 attempts are exhausted, 10 more are available in recoveryOS, and if those are also used up, 10 additional attempts are available for each FileVault recovery mechanism — iCloud recovery, FileVault recovery key, and institutional key — for a maximum of 30 additional attempts. Once all of those are gone, the Secure Enclave stops processing decryption and verification requests entirely and the data on the drive becomes unrecoverable.
 
-The internal SSD is [protected by a key tied to the secret UID](https://support.apple.com/guide/security/the-secure-enclave-sec59b0b31ff/1/web/1) (generated randomly during processor manufacturing by the TRNG inside the Secure Enclave and fused into the hardware, thus never visible from the outside), so removing it from the machine without authenticating after a fresh boot renders its contents completely unaccessible.
+The internal SSD is [protected by a key tied to the secret UID][secure-enclave] (generated randomly during processor manufacturing by the TRNG inside the Secure Enclave and fused into the hardware, thus never visible from the outside), so removing it from the machine without authenticating after a fresh boot renders its contents completely unaccessible.
 
 Thus, before first authentication, 50 authentication attempts is the maximum before the device is inoperable. Which means that basically any random would be sufficient.
 
-After first authentication, the SSD is unlocked (so make sure you have File Vault on), and [authentication attempts are rate limited](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1) but without a maximum. The fastest attempts are allowed to be made appears to be every 80ms, but real world tests seem to imply the actual limits are even more severe.
+After first authentication, the SSD is unlocked (so make sure you have File Vault on), and [authentication attempts are rate limited][apple-passcodes] but without a maximum. The fastest attempts are allowed to be made appears to be every 80ms, but real world tests seem to imply the actual limits are even more severe.
 
 In the worst case scenario, assuming the fastest possible repeated authentication attempt timing, an attacker could make about 12.5 attempts per second, or 45,000 per hour, or about 1 million per day. That's equivalent to about 20 bits of entropy to crack your password in one day. Going up to 30 bits means an attacker will need about 3 years.
 
@@ -419,15 +419,15 @@ In the worst case scenario, assuming the fastest possible repeated authenticatio
 
 #### iOS and iPadOS
 
-[As with macOS](#hardware-enforced-rate-limiting-macos-on-m1), these limits are enforced at the hardware level using [the Secure Enclave](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1) and can't be circumvented by restarts.
+[As with macOS](#hardware-enforced-rate-limiting-macos-on-m1), these limits are enforced at the hardware level using [the Secure Enclave][secure-enclave] and can't be circumvented by restarts.
 
-The internal storage is [protected by a key tied to the secret UID](https://support.apple.com/guide/security/the-secure-enclave-sec59b0b31ff/1/web/1) (generated randomly during processor manufacturing by the TRNG inside the Secure Enclave and fused into the hardware, thus never visible from the outside), so attempting to crack machine without authenticating renders its contents completely unaccessible.
+The internal storage is [protected by a key tied to the secret UID][secure-enclave] (generated randomly during processor manufacturing by the TRNG inside the Secure Enclave and fused into the hardware, thus never visible from the outside), so attempting to crack machine without authenticating renders its contents completely unaccessible.
 
-iOS and iPadOS allow [a maximum of 10 authentication attempts](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1) before locking and requiring you to connect to a computer and perform recovery there. The first three authentication attempts have no delay between them. After the fourth, you wait 1 minute; after the fifth, 5 minutes. Then 15 minutes, 1 hour, 3 hours, and 8 hours after the ninth attempt. If you turn on Erase Data, the device will be completely erased after the tenth failed attempt.
+iOS and iPadOS allow [a maximum of 10 authentication attempts][apple-passcodes] before locking and requiring you to connect to a computer and perform recovery there. The first three authentication attempts have no delay between them. After the fourth, you wait 1 minute; after the fifth, 5 minutes. Then 15 minutes, 1 hour, 3 hours, and 8 hours after the ninth attempt. If you turn on Erase Data, the device will be completely erased after the tenth failed attempt.
 
 Limiting an attacker to 10 total attempts means almost any random passcode is enough. A 6 digits gives you 20 bits of entropy, or 1 million possible codes, which is plenty. Of course, choosing a random PIN is rarely done.
 
-As for forensic bypass tools, there are [no known techniques to brute-force](https://blog.elcomsoft.com/2025/01/the-evolution-of-ios-passcode-security/) an iPhone with an A14 or newer processor (iPhone 12 or higher). The last model that is known to have been brute-force cracked was an iPhone SE 2020 (A13 processor), and brute-forcing on that device was rate limited to about 2 attempts per minute. (Older phones were able to be brute-forced at a faster, but still very slow, rate.)
+As for forensic bypass tools, there are [no known techniques to brute-force][elcomsoft-ios] an iPhone with an A14 or newer processor (iPhone 12 or higher). The last model that is known to have been brute-force cracked was an iPhone SE 2020 (A13 processor), and brute-forcing on that device was rate limited to about 2 attempts per minute. (Older phones were able to be brute-forced at a faster, but still very slow, rate.)
 
 At that rate, it takes over a year to try 1 million codes. So again, 6 digits, or 20 bits of entropy, is plenty.
 
@@ -439,7 +439,7 @@ The best option is to use 2-3 words that equal around 8-12 characters that you c
 
 #### YubiKey and other hardware devices
 
-YubiKeys allow [a maximum of 8 attempts](https://support.yubico.com/s/article/Understanding-YubiKey-PINs) before locking and requiring it to be reset.
+YubiKeys allow [a maximum of 8 attempts][yubikey-pins] before locking and requiring it to be reset.
 
 If chosen randomly (an important caveat for any PIN), a 4 digit PIN is sufficient. 6 digits is more than enough.
 
@@ -508,3 +508,16 @@ If chosen randomly (an important caveat for any PIN), a 4 digit PIN is sufficien
 [bukvik]: https://github.com/Cha-OS/bukvik-workshop-corpora
 [wla]: https://github.com/sts10/wla
 [sts10]: https://github.com/sts10
+[xkcd-936]: https://xkcd.com/936/
+[csprng]: https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator
+[guessing-entropy]: https://www.isiweb.ee.ethz.ch/papers/arch/mass-inspec-1994-4.pdf
+[john]: https://github.com/openwall/john
+[hashcat]: https://github.com/hashcat/hashcat
+[passllm]: https://github.com/Tzohar/PassLLM
+[shannon-entropy]: https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf
+[levenshtein]: https://en.wikipedia.org/wiki/Levenshtein_distance
+[kraft-inequality]: https://en.wikipedia.org/wiki/Kraft%27s_inequality
+[secure-enclave]: https://support.apple.com/guide/security/the-secure-enclave-sec59b0b31ff/1/web/1
+[apple-passcodes]: https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1
+[elcomsoft-ios]: https://blog.elcomsoft.com/2025/01/the-evolution-of-ios-passcode-security/
+[yubikey-pins]: https://support.yubico.com/s/article/Understanding-YubiKey-PINs
