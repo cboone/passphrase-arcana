@@ -397,7 +397,6 @@ agoin
 agone
 agonies
 agonised
-agonising
 agonizes
 agonizing
 agrarians
@@ -677,16 +676,12 @@ amusement
 amusingly
 anacondas
 anadem
-anaemia
-anaemic
 anagrams
 analogies
 analogous
 analogues
 analogy
-analysed
-analyses
-analysing
+analyse
 analysis
 analysts
 analytic
@@ -1288,7 +1283,6 @@ authored
 authoress
 authorial
 authoring
-authorise
 authority
 authorize
 authors
@@ -3282,7 +3276,6 @@ candlelit
 candlemas
 candles
 candor
-candour
 candying
 canebrake
 caned
@@ -3445,7 +3438,6 @@ carob
 carolina
 caroling
 carollers
-carolling
 carols
 caromed
 caroming
@@ -3627,7 +3619,7 @@ caverns
 cavesson
 caviare
 cavilers
-cavillers
+caviller
 cavilling
 cavils
 caving
@@ -3944,7 +3936,7 @@ chillin
 chillness
 chills
 chilly
-chimaeras
+chimaera
 chimbley
 chimed
 chimeras
@@ -3980,7 +3972,6 @@ chirruped
 chirrups
 chiseled
 chiseling
-chiselled
 chiseller
 chisels
 chitchat
@@ -4140,7 +4131,6 @@ ciudad
 civets
 civic
 civilians
-civilised
 civility
 civilized
 civilizer
@@ -4177,7 +4167,6 @@ clane
 clanged
 clanging
 clangor
-clangour
 clangs
 clanked
 clanking
@@ -5329,7 +5318,6 @@ cristo
 criteria
 criterion
 critical
-criticise
 criticism
 criticize
 critics
@@ -5425,7 +5413,6 @@ crudities
 crudity
 crueler
 cruelest
-crueller
 cruellest
 cruelly
 cruelness
@@ -5487,7 +5474,6 @@ cuddling
 cuddy
 cudgeled
 cudgeling
-cudgelled
 cudgels
 cuellar
 cuesta
@@ -6115,7 +6101,6 @@ deviation
 devilfish
 deviling
 devilish
-devilling
 devilment
 devilries
 devilry
@@ -6165,7 +6150,6 @@ dialects
 dialed
 dialer
 dialing
-dialled
 dialogues
 diameters
 diamonds
@@ -6399,7 +6383,6 @@ disembark
 disengage
 disesteem
 disfavor
-disfavour
 disfigure
 disgorged
 disgorges
@@ -7050,7 +7033,6 @@ duds
 dueling
 duelists
 duelled
-duelling
 duellists
 duennas
 duets
@@ -7405,7 +7387,7 @@ empathic
 emperors
 empery
 emphases
-emphasise
+emphasis
 emphasize
 emphatic
 emphysema
@@ -7444,7 +7426,6 @@ enacting
 enactment
 enameled
 enameling
-enamelled
 enamels
 enamored
 enamoured
@@ -7715,11 +7696,9 @@ epsom
 equable
 equably
 equaled
-equalised
 equality
 equalized
 equalizes
-equalled
 equalling
 equally
 equals
@@ -7853,6 +7832,7 @@ ethnarch
 ethos
 etiam
 etiquette
+etre
 etudes
 eucharist
 euchred
@@ -9048,7 +9028,6 @@ foeman
 foemen
 foes
 foetal
-foetus
 fogeydom
 fogeyism
 fogeys
@@ -10198,7 +10177,6 @@ goggly
 goglet
 goins
 goiter
-goitre
 goldarned
 goldenrod
 goldfinch
@@ -10411,10 +10389,6 @@ gretchen
 grete
 gretna
 greyback
-greybeard
-greyer
-greyest
-greyish
 greystone
 griddle
 gridirons
@@ -10494,7 +10468,6 @@ grudger
 grudges
 grudging
 grueling
-gruelling
 gruesome
 gruffer
 gruffest
@@ -10837,7 +10810,6 @@ harmfully
 harmonica
 harmonics
 harmonies
-harmonise
 harmonize
 harnessed
 harnesses
@@ -12499,7 +12471,6 @@ jeux
 jewelers
 jewelery
 jewelled
-jewellers
 jewellery
 jewelry
 jewels
@@ -12743,7 +12714,6 @@ kelt
 kenna
 kennedys
 kenneled
-kennelled
 kennels
 kenning
 keno
@@ -12919,7 +12889,6 @@ kylix
 laager
 labeled
 labeling
-labelling
 labels
 labials
 labiate
@@ -13034,6 +13003,7 @@ laneway
 langer
 langford
 langlands
+langour
 languages
 languidly
 languish
@@ -13238,7 +13208,7 @@ leftovers
 leftward
 legacies
 legacy
-legalised
+legalise
 legalism
 legality
 legalized
@@ -13320,7 +13290,6 @@ leveled
 leveler
 leveling
 levellers
-levelling
 levelly
 levelness
 levels
@@ -13348,8 +13317,6 @@ lianas
 libations
 libeled
 libeler
-libelled
-libeller
 libelling
 libellous
 libelous
@@ -13496,7 +13463,6 @@ lino
 linsey
 linstock
 linteled
-lintelled
 lintels
 linx
 lionel
@@ -14328,7 +14294,6 @@ medals
 meddlers
 meddles
 meddling
-mediaeval
 medias
 mediately
 mediating
@@ -14395,7 +14360,6 @@ memoranda
 memorials
 memoriam
 memories
-memorised
 memorized
 memory
 memos
@@ -14946,7 +14910,7 @@ mopping
 mops
 moraines
 morales
-moralised
+moralise
 moralists
 moralized
 moralizer
@@ -15435,7 +15399,6 @@ nisi
 nisus
 niter
 nitrates
-nitre
 nitric
 nitrite
 nitrogen
@@ -15900,7 +15863,6 @@ oreads
 organdie
 organdy
 organiser
-organises
 organisms
 organists
 organizes
@@ -16226,7 +16188,7 @@ paddy
 padlocks
 padres
 padrone
-paeans
+paean
 paganism
 pagans
 pageantry
@@ -16321,7 +16283,6 @@ pandybat
 panegyric
 paneling
 panelled
-panelling
 panels
 panem
 panettone
@@ -16387,8 +16348,7 @@ paragraph
 parakeets
 parallax
 parallels
-paralysed
-paralyses
+paralyse
 paralysis
 paralytic
 paralyzed
@@ -16628,7 +16588,6 @@ pedagogic
 pedagogue
 pedagogy
 pedaling
-pedalling
 pedals
 pedantic
 pedants
@@ -16678,7 +16637,7 @@ pelvic
 pelvis
 pemican
 pemmican
-penalised
+penalise
 penalized
 penally
 penalties
@@ -16688,7 +16647,6 @@ penates
 penchant
 penciled
 penciling
-pencilled
 pencils
 pendants
 pendejo
@@ -16833,7 +16791,6 @@ pestilent
 pestles
 pesty
 petaled
-petalled
 petals
 petards
 petered
@@ -17727,7 +17684,6 @@ priestly
 priests
 priggish
 primacy
-primaeval
 primally
 primaries
 primarily
@@ -18580,7 +18536,6 @@ realer
 realest
 realised
 realises
-realising
 realism
 realistic
 realists
@@ -19244,8 +19199,7 @@ reveille
 reveled
 revelers
 reveling
-revelled
-revelling
+revell
 revelries
 revelry
 revels
@@ -19431,7 +19385,6 @@ ritually
 rituals
 rivage
 rivaled
-rivalled
 rivalling
 rivalries
 rivalry
@@ -19831,7 +19784,6 @@ saltire
 saltish
 saltness
 saltpeter
-saltpetre
 salts
 saltwater
 salty
@@ -19875,7 +19827,6 @@ sanctity
 sanctorum
 sanctuary
 sandaled
-sandalled
 sandals
 sandbags
 sandbanks
@@ -20475,7 +20426,6 @@ sepoys
 sepsis
 september
 sepulcher
-sepulchre
 sepulture
 sequels
 sequences
@@ -20856,7 +20806,6 @@ shoved
 shoveled
 shovelful
 shoveling
-shovelled
 shovels
 shoves
 shoving
@@ -21005,7 +20954,6 @@ sightseer
 sigma
 signaled
 signaling
-signalise
 signalize
 signaller
 signally
@@ -21654,7 +21602,6 @@ socage
 socal
 sociables
 sociably
-socialise
 socialism
 socialist
 socialite
@@ -22022,7 +21969,6 @@ spinsters
 spiracles
 spiraled
 spiraling
-spiralled
 spirally
 spirals
 spirited
@@ -22844,7 +22790,6 @@ subsided
 subsides
 subsidies
 subsiding
-subsidise
 subsidize
 subsidy
 subsisted
@@ -23297,7 +23242,6 @@ tanners
 tannery
 tannic
 tansy
-tantalise
 tantalize
 tantalus
 tantivy
@@ -23471,7 +23415,6 @@ templed
 temples
 temporal
 temporary
-temporise
 temporize
 tempos
 tempted
@@ -23555,7 +23498,6 @@ terrify
 terrine
 terris
 territory
-terrorise
 terrorism
 terrorist
 terrorize
@@ -23638,7 +23580,6 @@ theologue
 theorems
 theoretic
 theories
-theorised
 theorists
 theorized
 theorizer
@@ -23902,7 +23843,6 @@ tinning
 tinnitus
 tinpot
 tinseled
-tinselled
 tinsmith
 tintless
 tintypes
@@ -24149,8 +24089,6 @@ towards
 towboats
 toweled
 toweling
-towelled
-towelling
 towels
 towered
 towering
@@ -24619,7 +24557,6 @@ typists
 typos
 tyrannic
 tyrannies
-tyrannise
 tyrannize
 tyrannous
 tyrants
@@ -24893,7 +24830,7 @@ usury
 utah
 utensils
 uterine
-utilised
+utilise
 utilities
 utilized
 utilizing
@@ -25292,10 +25229,8 @@ visitings
 visitors
 visored
 vistas
-visualise
 visualize
 visually
-vitalised
 vitality
 vitalized
 vitalizes
@@ -26438,7 +26373,6 @@ yikes
 yock
 yodelers
 yodeling
-yodelling
 yodels
 yodled
 yoga

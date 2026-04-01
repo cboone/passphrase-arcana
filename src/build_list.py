@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "config.toml"
 BLOCKLIST = ROOT / "blocklist.txt"
 HOMOPHONES = ROOT / "data" / "homophones.csv"
+SPELLING_VARIANTS = ROOT / "data" / "spelling_variants.csv"
 ARCHAIC_REJECTS = ROOT / "data" / "archaic_rejects.txt"
 CONTRACTIONS_REJECTS = ROOT / "data" / "contractions_rejects.txt"
 ROMAN_REJECTS = ROOT / "data" / "roman_numerals_rejects.txt"
@@ -174,9 +175,11 @@ def main() -> None:
     if MANUAL_REJECTS.exists():
         cmd.extend(["-r", str(MANUAL_REJECTS)])
 
-    # Add homophones
+    # Add homophones and spelling variants
     if HOMOPHONES.exists():
         cmd.extend(["--homophones", str(HOMOPHONES)])
+    if SPELLING_VARIANTS.exists():
+        cmd.extend(["--homophones", str(SPELLING_VARIANTS)])
 
     cmd.append(tmp_path)
 
