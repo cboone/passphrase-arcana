@@ -62,6 +62,8 @@ The easiest words tend to use home-row and index-finger keys with hand alternati
 
 #### _My recommendations_
 
+See [the minimum entropy calculations section](#minimum-entropy-calculations) for the details and sources behind these numbers. For more widely accepted numbers, see [the official recommendations section](#official-recommendations).
+
 | Account type / usage context                                                                                                                                                                                           | Number of words from passphrase-arcana (~15 bits/word) | Number of words from EFF long list or Orchard Street medium list (13 bits/word) | Minimum information entropy | Minimum guessing entropy                                            |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------- |
 | Hardware-enforced rate limiting (macOS on M1+) <br> Accounts with a hardware key <br> Throwaway accounts (forum registrations) <br> SSH key created with high rounds setting (`-a 100` or higher) <br> WPA3 <br> LUKS2 | 2 words                                                | 2-3 words                                                                       | 30 bits                     | 536 million guesses                                                 |
@@ -358,6 +360,94 @@ The minimum number of leading characters needed to uniquely identify every word 
 A mathematical condition from [information theory](https://en.wikipedia.org/wiki/Kraft%27s_inequality) that must hold for a set of codewords to be uniquely decodable. If the inequality is satisfied, it is theoretically possible to construct a prefix code with the given codeword lengths. For passphrase word lists, satisfying this inequality confirms the list's structure supports unambiguous concatenation.
 
 ## Minimum entropy calculations
+
+### Account types and usage contexts
+
+#### 30 bits / 2 words
+
+##### _Hardware-enforced rate limiting (macOS on M1+)_
+
+These limits are enforced by [the Secure Enclave](https://support.apple.com/guide/security/the-secure-enclave-sec59b0b31ff/1/web/1) and can't be circumvented by restarts. The following assumes you have all the obvious security features turned on: require a password after sleep, File Vault, etc.
+
+[From a fresh boot](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1), macOS allows three authentication attempts with no delay between them. After the fourth, you wait 1 minute; after the fifth, 5 minutes. Then 15 minutes, 1 hour, 3 hours, and 8 hours after the ninth attempt. After those 10 attempts are exhausted, 10 more are available in recoveryOS, and if those are also used up, 10 additional attempts are available for each FileVault recovery mechanism — iCloud recovery, FileVault recovery key, and institutional key — for a maximum of 30 additional attempts. Once all of those are gone, the Secure Enclave stops processing decryption and verification requests entirely and the data on the drive becomes unrecoverable.
+
+The internal SSD is [protected by a key tied to the secret UID](https://support.apple.com/guide/security/the-secure-enclave-sec59b0b31ff/1/web/1) (generated randomly during processor manufacturing by the TRNG inside the Secure Enclave and fused into the hardware, thus never visible from the outside), so removing it from the machine without authenticating after a fresh boot renders its contents completely unaccessible.
+
+Thus, before first authentication, 50 authentication attempts is the maximum before the device is inoperable. Which means that basically any random would be sufficient.
+
+After first authentication, the SSD is unlocked (so make sure you have File Vault on), and [authentication attempts are rate limited](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1) but without a maximum. The fastest attempts are allowed to be made appears to be every 80ms, but real world tests seem to imply the actual limits are even more severe.
+
+In the worst case scenario, assuming the fastest possible repeated authentication attempt timing, an attacker could make about 12.5 attempts per second, or 45,000 per hour, or about 1 million per day. That's equivalent to about 20 bits of entropy to crack your password in one day. Going up to 30 bits means an attacker will need about 3 years.
+
+##### _Accounts with a hardware key_
+
+##### _Throwaway accounts (forum registrations)_
+
+##### _SSH key created with high rounds setting (-a 100 or higher)_
+
+##### _WPA3_
+
+##### _LUKS2_
+
+#### 45 bits / 3 words
+
+##### _Accounts with TOTP_
+
+##### _SSH key created with default rounds setting (-a 16)_
+
+##### _GPG key with strong settings (AES-256, SHA-512, maximum S2K)_
+
+##### _WPA2_
+
+##### _WPA3 for extra safety_
+
+##### _LUKS1_
+
+#### 60 bits / 4 words
+
+##### _Accounts with weak 2FA (SMS or email) or no 2FA_
+
+##### _GPG key with default settings (CAST5, SHA-1)_
+
+#### 75 bits / 5 words
+
+##### _Important accounts_
+
+#### 90 bits / 6 words
+
+##### _Secret protecting accounts_
+
+#### Passwords and PINs
+
+##### _iOS and iPadOS_
+
+[As with macOS](#hardware-enforced-rate-limiting-macos-on-m1), these limits are enforced at the hardware level using [the Secure Enclave](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1) and can't be circumvented by restarts.
+
+The internal storage is [protected by a key tied to the secret UID](https://support.apple.com/guide/security/the-secure-enclave-sec59b0b31ff/1/web/1) (generated randomly during processor manufacturing by the TRNG inside the Secure Enclave and fused into the hardware, thus never visible from the outside), so attempting to crack machine without authenticating renders its contents completely unaccessible.
+
+iOS and iPadOS allow [a maximum of 10 authentication attempts](https://support.apple.com/guide/security/passcodes-and-passwords-sec20230a10d/1/web/1) before locking and requiring you to connect to a computer and perform recovery there. The first three authentication attempts have no delay between them. After the fourth, you wait 1 minute; after the fifth, 5 minutes. Then 15 minutes, 1 hour, 3 hours, and 8 hours after the ninth attempt. If you turn on Erase Data, the device will be completely erased after the tenth failed attempt.
+
+Limiting an attacker to 10 total attempts means almost any random passcode is enough. A 6 digits gives you 20 bits of entropy, or 1 million possible codes, which is plenty. Of course, choosing a random PIN is rarely done.
+
+As for forensic bypass tools, there are [no known techniques to brute-force](https://blog.elcomsoft.com/2025/01/the-evolution-of-ios-passcode-security/) an iPhone with an A14 or newer processor (iPhone 12 or higher). The last model that is known to have been brute-force cracked was an iPhone SE 2020 (A13 processor), and brute-forcing on that device was rate limited to about 2 attempts per minute. (Older phones were able to be brute-forced at a faster, but still very slow, rate.)
+
+At that rate, it takes over a year to try 1 million codes. So again, 6 digits, or 20 bits of entropy, is plenty.
+
+The bigger risk with phone passwords is being observed entering it: shoulder-surfing, whether by a bystander or a video camera. To minimize this risk you need to optimize your password selection differently. Still, of course, choose randomly; using a common password or basing a password on personal information removes almost all entropy and makes cracking extremely easy.
+
+The best option is to use 2-3 words that equal around 8-12 characters that you can type easily and smoothly, no breaks between words, no obvious patterns from which to derive information about what it is. Keep the password all lowercase alphabetical characters, no numbers, no symbols, no need to change keyboards or hit the space bar. As uniform as possible.
+
+10 characters of all lowercase letters gives around 47 bits of entropy, far more than an iPhone needs. But more importantly it means that even if someone sees part of what you type, your password is still extremely difficult to guess.
+
+##### _YubiKey and other hardware devices_
+
+YubiKeys allow [a maximum of 8 attempts](https://support.yubico.com/s/article/Understanding-YubiKey-PINs) before locking and requiring it to be reset.
+
+If chosen randomly (an important caveat for any PIN), a 4 digit PIN is sufficient. 6 digits is more than enough.
+
+##### _SSH key protected by Keychain_
+
+##### _Important account with unknown storage and protection_
 
 ## License
 
