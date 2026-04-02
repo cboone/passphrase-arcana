@@ -395,7 +395,6 @@ agog
 agoin
 agone
 agonies
-agonised
 agonizes
 agonizing
 agrarians
@@ -885,8 +884,7 @@ appraisal
 appraised
 appraiser
 apprehend
-apprises
-apprising
+apprise
 approach
 approvals
 approver
@@ -1602,7 +1600,6 @@ bantling
 banyans
 banzais
 baps
-baptised
 baptismal
 baptisms
 baptists
@@ -2098,7 +2095,7 @@ betsy
 betta
 bettering
 betters
-bettin
+betti
 betty
 betweens
 betwixt
@@ -2503,7 +2500,6 @@ bodings
 bodkins
 bodyguard
 boeuf
-bofe
 bogart
 bogeyman
 bogeymen
@@ -3214,7 +3210,6 @@ campo
 campsites
 campus
 camshaft
-canada
 canadian
 canaille
 canakin
@@ -3730,7 +3725,6 @@ charles
 charlie
 charlock
 charlotte
-charmant
 charmed
 charmers
 charmeuse
@@ -3756,7 +3750,6 @@ chasers
 chasing
 chasms
 chasseur
-chassez
 chassis
 chastely
 chastened
@@ -3873,7 +3866,7 @@ chiefest
 chiefly
 chieftain
 chien
-chiffons
+chiffon
 chignon
 chilblain
 childbed
@@ -4465,7 +4458,7 @@ cognomens
 cogs
 cogwheels
 cohabited
-cohens
+cohen
 cohered
 coherence
 coherency
@@ -6330,7 +6323,6 @@ dished
 dishing
 dishonest
 dishonors
-dishonour
 dishpans
 dishrags
 dishwater
@@ -6789,7 +6781,6 @@ draughts
 draughty
 drave
 drawbacks
-drawed
 drawers
 drawings
 drawled
@@ -7801,7 +7792,6 @@ everthing
 everybody
 everyday
 everyones
-everythin
 everytime
 everyway
 evicting
@@ -7915,7 +7905,7 @@ exited
 exits
 exodus
 exonerate
-exorcised
+exorcise
 exorcisms
 exorcist
 exordium
@@ -8090,7 +8080,6 @@ fairways
 fairyland
 fairylike
 fairytale
-fais
 faithful
 faithless
 faiths
@@ -8249,7 +8238,6 @@ fatuus
 faubourg
 faucal
 faucets
-faugh
 faultily
 faultless
 faulty
@@ -8386,7 +8374,6 @@ ferules
 fervency
 fervently
 fervidly
-fervour
 fescue
 festal
 festered
@@ -8448,7 +8435,6 @@ fiddled
 fiddlers
 fiddles
 fiddling
-fidele
 fidelity
 fidgeted
 fidgeting
@@ -8507,7 +8493,6 @@ filibeg
 filigree
 filings
 filip
-filius
 fillers
 filles
 filleted
@@ -8986,6 +8971,7 @@ fondles
 fondling
 fondly
 fondness
+fons
 fontanel
 fonts
 foods
@@ -10387,7 +10373,6 @@ guardsman
 guardsmen
 guatemala
 guavas
-guaymas
 gude
 gudgeons
 guelder
@@ -10909,7 +10894,6 @@ hedonism
 hedonists
 heedful
 heeding
-heerd
 heftiest
 hefting
 hefty
@@ -10968,7 +10952,7 @@ henhouses
 henley
 henna
 henrietta
-henrys
+henry
 henson
 hent
 hepaticas
@@ -11013,6 +10997,7 @@ heroines
 heroisms
 heronry
 herons
+heros
 herren
 herrera
 herrings
@@ -11025,7 +11010,6 @@ hesitates
 heterodox
 hetman
 hetty
-heure
 hevin
 hexagonal
 hexameter
@@ -11112,7 +11096,6 @@ hirers
 hiring
 hiroshima
 hirsute
-hisn
 hispanic
 hisself
 hisses
@@ -12334,7 +12317,6 @@ jerseys
 jerusalem
 jessamine
 jessel
-jesses
 jessica
 jessie
 jested
@@ -13076,7 +13058,6 @@ lecturing
 ledgers
 leeringly
 leers
-leetle
 leeward
 leeway
 lefthand
@@ -13208,7 +13189,6 @@ libertine
 liberty
 libery
 libidos
-libitum
 librarian
 libraries
 libs
@@ -13625,7 +13605,6 @@ luxuries
 luxurious
 luxury
 lychgate
-lydy
 lyncher
 lynches
 lynching
@@ -13825,7 +13804,6 @@ mandates
 mandatory
 mande
 mandibles
-mandoline
 mandolins
 mandrakes
 mandrills
@@ -14087,8 +14065,7 @@ mauls
 maunds
 maurice
 mauser
-mauvais
-mauves
+mauve
 mavens
 maverick
 mavis
@@ -14255,7 +14232,6 @@ mentally
 menthol
 mentioned
 mentions
-mentis
 menton
 mentors
 meowing
@@ -14401,7 +14377,6 @@ migrating
 migration
 migratory
 miguel
-mihi
 miladi
 milady
 milagros
@@ -14447,7 +14422,6 @@ millpond
 millstone
 milords
 milts
-mimber
 mimesis
 mimetic
 mimicked
@@ -14613,12 +14587,11 @@ moats
 mobbing
 mobcaps
 mobiles
-mobilised
+mobilise
 mobility
 mobilize
 mobled
 mobsters
-mocassins
 moccasins
 mocha
 mockeries
@@ -15109,7 +15082,6 @@ negroes
 negroid
 negus
 neighbors
-neighbour
 neighed
 neighing
 neighs
@@ -15264,7 +15236,6 @@ noan
 nobbing
 nobble
 nobbling
-nobbut
 nobel
 nobility
 nobis
@@ -15397,7 +15368,7 @@ novocaine
 nowadays
 noways
 nowe
-nowheres
+nowhere
 nowhither
 nowise
 nowt
@@ -16110,7 +16081,6 @@ paltriest
 paltry
 paly
 pamby
-pamela
 pampas
 pampered
 pampering
@@ -16389,7 +16359,6 @@ pauses
 pausing
 pavan
 pavements
-paven
 paves
 pavilions
 pavings
@@ -16492,7 +16461,6 @@ pencils
 pendants
 pendejo
 pendent
-pendleton
 pendulous
 pendulums
 penetrant
@@ -16727,7 +16695,6 @@ pianists
 pianola
 pianos
 piassava
-piastres
 picadors
 picaroon
 picasso
@@ -16953,7 +16920,6 @@ plainsong
 plaintiff
 plaintive
 plaints
-plaisir
 plaister
 plaited
 plaiting
@@ -17322,7 +17288,6 @@ potluck
 potman
 potmen
 potpourri
-potrero
 potsherds
 pottage
 potteries
@@ -17430,7 +17395,6 @@ premises
 premising
 premisses
 prenatal
-prenez
 prenomens
 prentices
 preoccupy
@@ -17485,7 +17449,6 @@ prettiest
 prettily
 pretty
 pretzels
-preux
 prevailed
 prevails
 prevalent
@@ -17936,7 +17899,6 @@ putative
 putrefied
 putridity
 puttees
-putten
 puttering
 putties
 putting
@@ -18230,7 +18192,7 @@ ramrods
 ramsey
 ranched
 rancheria
-rancheros
+ranchero
 ranchers
 ranchman
 rancho
@@ -18361,12 +18323,13 @@ reaffirm
 reagents
 realer
 realest
-realised
-realises
+realise
 realism
 realistic
 realists
 realities
+realized
+realizes
 realizing
 really
 realms
@@ -19114,7 +19077,6 @@ ribber
 ribbons
 ribby
 ribcage
-ricain
 richards
 richer
 richest
@@ -19514,7 +19476,6 @@ sadistic
 sadly
 sadness
 safari
-safed
 safeguard
 safely
 safer
@@ -20151,7 +20112,6 @@ seismic
 seizes
 seizings
 seizures
-sejour
 seldomer
 selecting
 selective
@@ -21790,7 +21750,6 @@ spleenful
 spleens
 splendid
 splendors
-splendour
 splenetic
 splices
 splicing
@@ -22923,7 +22882,6 @@ tabloids
 tabooing
 taboos
 tabors
-tabour
 tabular
 tabulated
 tabulates
@@ -23237,7 +23195,6 @@ tennis
 tenoned
 tenons
 tenors
-tenour
 tenpins
 tensed
 tenseness
@@ -23652,7 +23609,6 @@ tireless
 tiresome
 tirewoman
 tisane
-tisn
 tissued
 tissues
 titanic
@@ -23732,7 +23688,6 @@ tompion
 tomtits
 tomtoms
 tonality
-tonga
 tonged
 tongs
 tongued
@@ -23850,7 +23805,6 @@ toughest
 toughness
 toughs
 toujours
-tould
 toulouse
 toupees
 toured
@@ -24008,7 +23962,6 @@ trembling
 trembly
 tremens
 tremors
-tremour
 trenchant
 trenched
 trenchers
@@ -24228,7 +24181,6 @@ turnovers
 turnpikes
 turnspits
 turnstile
-turnt
 turpitude
 turps
 turquoise
@@ -24272,7 +24224,6 @@ twelves
 twenties
 twentieth
 twenty
-twere
 twiddled
 twiddles
 twiddling
@@ -24651,7 +24602,6 @@ vainglory
 vainly
 vair
 valance
-valdez
 valences
 valentine
 valerian
@@ -24668,7 +24618,6 @@ valises
 valkyrie
 valleys
 valorous
-valour
 valse
 valuables
 valuably
@@ -24893,7 +24842,6 @@ vicars
 viceregal
 vicereine
 viceroys
-vich
 vicinage
 vicinity
 viciously
@@ -24903,7 +24851,6 @@ victims
 victorian
 victorias
 victories
-victorine
 victors
 victory
 victualed
@@ -24925,7 +24872,6 @@ vigils
 vignetted
 vignettes
 vigorous
-vigour
 vileness
 vilest
 vilified
@@ -25215,7 +25161,6 @@ wanly
 wanna
 wanner
 wanness
-wanta
 wanted
 wanter
 wanting
@@ -25926,7 +25871,6 @@ woos
 woozily
 wops
 worcester
-worde
 wordily
 wordiness
 wording
@@ -26046,7 +25990,6 @@ wroth
 wryly
 wudn
 wull
-wust
 wuthering
 wych
 wyoming
@@ -26122,7 +26065,6 @@ yens
 yeomanry
 yeomen
 yere
-yerk
 yerself
 yessir
 yesterday
@@ -26152,7 +26094,6 @@ youngest
 youngish
 youngling
 youngster
-yourn
 yourself
 youse
 youthful
