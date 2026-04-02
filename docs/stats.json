@@ -1,11 +1,11 @@
 {
   "list": {
-    "words": 26130,
+    "words": 26126,
     "input_words": 40291,
-    "removed_by_tidy": 14161,
+    "removed_by_tidy": 14165,
     "entropy_per_word": 14.673,
     "mean_word_length": 7.53,
-    "efficiency_per_char": 1.948,
+    "efficiency_per_char": 1.947,
     "shortest_word": 4,
     "longest_word": 9
   },
@@ -20,7 +20,7 @@
     "kraft_mcmillan": "satisfied"
   },
   "typing_effort": {
-    "words_with_scores": 26130,
+    "words_with_scores": 26126,
     "minimum": 1.25,
     "percentile_10": 1.64,
     "percentile_25": 1.75,
