@@ -1,11 +1,11 @@
 {
   "list": {
-    "words": 26431,
-    "input_words": 40713,
-    "removed_by_tidy": 14282,
-    "entropy_per_word": 14.69,
-    "mean_word_length": 7.52,
-    "efficiency_per_char": 1.953,
+    "words": 26189,
+    "input_words": 40291,
+    "removed_by_tidy": 14102,
+    "entropy_per_word": 14.677,
+    "mean_word_length": 7.53,
+    "efficiency_per_char": 1.949,
     "shortest_word": 4,
     "longest_word": 9
   },
@@ -15,12 +15,12 @@
     "uniquely_decodable": "true",
     "above_brute_force_line": "true",
     "shortest_edit_distance": "1",
-    "mean_edit_distance": "7.092",
+    "mean_edit_distance": "7.096",
     "unique_character_prefix": "9",
     "kraft_mcmillan": "satisfied"
   },
   "typing_effort": {
-    "words_with_scores": 26431,
+    "words_with_scores": 26189,
     "minimum": 1.25,
     "percentile_10": 1.64,
     "percentile_25": 1.75,
@@ -34,7 +34,7 @@
   },
   "passphrases": {
     "4": {
-      "entropy_bits": 58.8,
+      "entropy_bits": 58.7,
       "length_chars": 33.0
     },
     "5": {
@@ -46,15 +46,15 @@
       "length_chars": 50.0
     },
     "7": {
-      "entropy_bits": 102.8,
+      "entropy_bits": 102.7,
       "length_chars": 59.0
     },
     "8": {
-      "entropy_bits": 117.5,
+      "entropy_bits": 117.4,
       "length_chars": 67.0
     },
     "10": {
-      "entropy_bits": 146.9,
+      "entropy_bits": 146.8,
       "length_chars": 84.0
     }
   }

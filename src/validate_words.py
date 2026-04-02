@@ -38,6 +38,7 @@ def validate_word(
     word: str,
     originals: set[str],
     num_authors: int,
+    count: int,
     lang: str,
     spell: SpellChecker,
 ) -> bool:
@@ -45,9 +46,12 @@ def validate_word(
     # Tier 1: wordfreq (try original accented forms for fr/pt)
     # Require zipf >= 2.0 to filter out extremely rare words, foreign words,
     # and misspellings that appear in wordfreq's multi-language corpus.
+    # For single-author, single-occurrence words, require zipf >= 2.5 to
+    # filter the low-quality tail of barely-passing foreign words and names.
+    min_zipf = 2.5 if (num_authors == 1 and count == 1) else 2.0
     forms_to_check = originals | {word}
     for form in forms_to_check:
-        if zipf_frequency(form, lang) >= 2.0:
+        if zipf_frequency(form, lang) >= min_zipf:
             return True
 
     # Tier 2: pyspellchecker
@@ -87,7 +91,7 @@ def main() -> None:
         rejected = []
 
         for word, data in word_data.items():
-            if validate_word(word, data["originals"], data["num_authors"], lang, spell):
+            if validate_word(word, data["originals"], data["num_authors"], data["count"], lang, spell):
                 validated.append(word)
             else:
                 rejected.append(word)
