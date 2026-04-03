@@ -271,15 +271,16 @@ Analyzed with [`wla`][wla]. See the [word list metrics](#word-list-metrics) for 
 
 The `passphrase-arcana` list prioritizes distinctive vocabulary over everyday words. If you want common, easy-to-spell words instead, these are good alternatives:
 
-| List                                   | Words  | Bits/word | Description                                                                 |
-| -------------------------------------- | ------ | --------- | --------------------------------------------------------------------------- |
-| [Orchard Street Long][os-long]         | 17,576 | 14.10     | Common English from Wikipedia and Google Books                              |
-| [Orchard Street Medium][os-medium]     | 8,192  | 13.00     | Common English, power-of-2 optimized for `phraze`                           |
-| [EFF Long][eff-long]                   | 7,776  | 12.93     | Common English, designed for easy spelling, diceware-compatible (6^5 words) |
-| [Orchard Street Diceware][os-diceware] | 7,776  | 12.93     | Common English, diceware-compatible (6^5 words)                             |
-| [Orchard Street QWERTY][os-qwerty]     | 1,296  | 10.34     | Optimized for TVs and other devices with a QWERTY keyboard layout           |
-| [Orchard Street Alpha][os-alpha]       | 1,296  | 10.34     | Optimized for TVs and other devices with an alphabetical keyboard layout    |
-| [EFF Short 1][eff-short]               | 1,296  | 10.34     | Short common words                                                          |
+| List                                   | Words  | Bits/word | Description                                                                  |
+| -------------------------------------- | ------ | --------- | ---------------------------------------------------------------------------- |
+| [Orchard Street Long][os-long]         | 17,576 | 14.10     | Common English from Wikipedia and Google Books                               |
+| [Orchard Street Medium][os-medium]     | 8,192  | 13.00     | Common English, power-of-2 optimized for `phraze`                            |
+| [EFF Long][eff-long]                   | 7,776  | 12.93     | Common English, designed for easy spelling, diceware-compatible (6^5 words)  |
+| [Orchard Street Diceware][os-diceware] | 7,776  | 12.93     | Common English, diceware-compatible (6^5 words)                              |
+| [Mnemonicode][mnemonicode]             | 1,626  | 10.67     | Speakable words for encoding binary data, phonetically distinct, 4-7 letters |
+| [Orchard Street QWERTY][os-qwerty]     | 1,296  | 10.34     | Optimized for TVs and other devices with a QWERTY keyboard layout            |
+| [Orchard Street Alpha][os-alpha]       | 1,296  | 10.34     | Optimized for TVs and other devices with an alphabetical keyboard layout     |
+| [EFF Short 1][eff-short]               | 1,296  | 10.34     | Short common words                                                           |
 
 Larger lists need fewer words per passphrase to reach the same entropy. A 6-word passphrase from the EFF Long list (78 bits) is roughly equivalent to a 5-word passphrase from this list (74 bits).
 
@@ -461,6 +462,7 @@ If chosen randomly (an important caveat for any PIN), a 4 digit PIN is sufficien
 [os-diceware]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-diceware.txt
 [os-qwerty]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-qwerty.txt
 [os-alpha]: https://github.com/sts10/orchard-street-wordlists/blob/main/lists/orchard-street-alpha.txt
+[mnemonicode]: https://github.com/singpolyma/mnemonicode
 [gutenberg]: https://www.gutenberg.org/
 [pg-melville]: https://www.gutenberg.org/ebooks/author/9
 [pg-lovecraft]: https://www.gutenberg.org/ebooks/author/34724
